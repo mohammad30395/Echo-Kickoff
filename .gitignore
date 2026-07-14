@@ -1,0 +1,19 @@
+# Godot 4 editor data
+.godot/
+
+# Godot C# artifacts are excluded even though this project is GDScript-only
+.mono/
+
+# Generated builds and export output
+build/*
+!build/.gdignore
+builds/
+dist/
+exports/
+*.pck
+*.tmp
+*.temp
+
+# Local export credentials and platform metadata
+export_credentials.cfg
+.DS_Store
