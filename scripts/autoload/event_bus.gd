@@ -1,0 +1,11 @@
+extends Node
+
+signal boot_completed
+signal new_game_requested
+signal pause_requested
+signal resume_requested
+signal main_menu_requested
+signal restart_requested
+signal game_over_requested
+signal victory_requested
+signal app_state_changed(previous_state: StringName, current_state: StringName)

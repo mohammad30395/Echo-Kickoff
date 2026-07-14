@@ -2,7 +2,7 @@
 
 Echo Kickoff is a Godot 4 GameJam project for the IUT 12th ICT FEST 2026 GameJam. The locked concept is a 2D top-down stealth-horror game where every echo pulse reveals the dark facility and alerts sound-sensitive Listeners.
 
-Phase 1 currently contains only the technical boot baseline. Gameplay has not been implemented.
+Phase 2 contains the technical baseline and core application flow. Gameplay has not been implemented.
 
 ## Requirements
 
@@ -19,7 +19,7 @@ The project uses GDScript only, the Compatibility renderer, and no third-party p
 1. Launch Godot 4.7.
 2. Import or scan this directory and select `project.godot`.
 3. Press **F6/F5** or click **Run Project**.
-4. Confirm the boot screen displays `Echo Kickoff — Technical Boot Test` and the diagnostics show the renderer, viewport, and platform.
+4. Confirm the technical boot screen hands off to the main menu. The console reports the renderer, viewport, and platform.
 
 ### Command line
 
@@ -44,6 +44,26 @@ godot --headless --path . --script tests/phase_01_project_test.gd
 ```
 
 A successful configuration test writes `PHASE_01_PROJECT_TEST_OK` and exits with status 0.
+
+Validate every application navigation path and responsive scene layout:
+
+```bash
+godot --headless --path . --script tests/phase_02_flow_test.gd
+godot --headless --path . --script tests/phase_02_layout_test.gd
+```
+
+Successful tests write `PHASE_02_FLOW_TEST_OK` and `PHASE_02_LAYOUT_TEST_OK`.
+
+## Application flow
+
+```text
+Boot -> Main Menu -> Game World
+Game World -> Pause -> Resume or Main Menu
+Game World -> Game Over -> Restart or Main Menu
+Game World -> Victory -> Main Menu
+```
+
+UI scenes publish requests through `EventBus`; `GameManager` owns transitions and pause state. `AudioManager` provides the asset-free audio service boundary for later phases.
 
 ## Display and controls baseline
 
@@ -88,8 +108,9 @@ Generated build directories are ignored by Git. Serve the Web build over HTTP ra
 ## Project layout
 
 ```text
-scenes/              Godot scenes
-scripts/             GDScript source
+scenes/              Boot, game world, and UI scenes
+scripts/             GDScript source and autoload services
+tests/               Headless configuration, flow, and layout checks
 docs/                GameJam planning, compliance, and phase audits
 project.godot        Project settings and input map
 export_presets.cfg   Windows and single-threaded Web presets

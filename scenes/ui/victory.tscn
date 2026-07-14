@@ -1,16 +1,16 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scripts/boot.gd" id="1_boot"]
+[ext_resource type="Script" path="res://scripts/ui/victory.gd" id="1_victory"]
 [ext_resource type="Script" path="res://scripts/ui/procedural_background.gd" id="2_background"]
 
-[node name="Boot" type="Control"]
+[node name="Victory" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_boot")
+script = ExtResource("1_victory")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -20,7 +20,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.012, 0.025, 0.052, 1)
+color = Color(0.006, 0.032, 0.026, 1)
 
 [node name="ProceduralBackground" type="Control" parent="."]
 layout_mode = 1
@@ -31,8 +31,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_background")
-grid_color = Color(0.08, 0.39, 0.46, 0.16)
-ring_color = Color(0.15, 0.68, 0.76, 0.18)
+grid_color = Color(0.08, 0.56, 0.4, 0.12)
+ring_color = Color(0.18, 0.86, 0.62, 0.16)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -43,35 +43,34 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Content" type="VBoxContainer" parent="Center"]
-custom_minimum_size = Vector2(720, 0)
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 18
 
 [node name="Title" type="Label" parent="Center/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 36
-text = "Echo Kickoff — Technical Boot Test"
+theme_override_colors/font_color = Color(0.46, 1, 0.76, 1)
+theme_override_font_sizes/font_size = 44
+text = "EXTRACTION COMPLETE"
 horizontal_alignment = 1
 
-[node name="Divider" type="ColorRect" parent="Center/Content"]
-custom_minimum_size = Vector2(0, 2)
+[node name="Message" type="Label" parent="Center/Content"]
 layout_mode = 2
-mouse_filter = 2
-color = Color(0.18, 0.72, 0.82, 0.8)
+theme_override_colors/font_color = Color(0.46, 0.7, 0.6, 1)
+theme_override_font_sizes/font_size = 17
+text = "The signal found its way out."
+horizontal_alignment = 1
 
-[node name="DiagnosticsLabel" type="Label" parent="Center/Content"]
+[node name="MainMenuButton" type="Button" parent="Center/Content"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 52)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.57, 0.7, 0.76, 1)
-theme_override_constants/line_spacing = 8
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
-text = "Renderer: detecting…\nViewport: 1280 × 720\nPlatform: detecting…"
-horizontal_alignment = 1
+text = "MAIN MENU"
 
-[node name="Status" type="Label" parent="Center/Content"]
+[node name="Hint" type="Label" parent="Center/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.3, 0.84, 0.62, 1)
-theme_override_font_sizes/font_size = 16
-text = "INITIALIZING APPLICATION FLOW…"
+theme_override_colors/font_color = Color(0.3, 0.5, 0.42, 1)
+text = "Mouse or keyboard navigation"
 horizontal_alignment = 1

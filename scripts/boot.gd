@@ -7,6 +7,9 @@ func _ready() -> void:
 	_refresh_diagnostics()
 	get_viewport().size_changed.connect(_refresh_diagnostics)
 	print(_diagnostic_log_line())
+	await get_tree().process_frame
+	if is_inside_tree() and get_tree().current_scene == self:
+		EventBus.boot_completed.emit()
 
 
 func _refresh_diagnostics() -> void:

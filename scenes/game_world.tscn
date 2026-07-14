@@ -1,0 +1,83 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/game_world.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/ui/procedural_background.gd" id="2_background"]
+
+[node name="GameWorld" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_world")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.005, 0.01, 0.022, 1)
+
+[node name="ProceduralBackground" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_background")
+grid_color = Color(0.08, 0.28, 0.32, 0.1)
+ring_color = Color(0.11, 0.52, 0.6, 0.13)
+
+[node name="Header" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 56.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.33, 0.72, 0.78, 1)
+theme_override_font_sizes/font_size = 16
+text = "FACILITY // ARCHITECTURE PLACEHOLDER"
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Message" type="VBoxContainer" parent="Center"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Center/Message"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.9, 0.94, 1)
+theme_override_font_sizes/font_size = 34
+text = "GAME WORLD PLACEHOLDER"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="Center/Message"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.55, 0.6, 1)
+theme_override_font_sizes/font_size = 18
+text = "Core scene flow only. No gameplay mechanics are active."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PauseHint" type="Label" parent="Center/Message"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.82, 0.66, 1)
+theme_override_font_sizes/font_size = 16
+text = "ESC — PAUSE"
+horizontal_alignment = 1
