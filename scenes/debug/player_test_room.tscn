@@ -1,7 +1,9 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/debug/player_test_room_visual.gd" id="1_visual"]
 [ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/debug/player_test_room.gd" id="3_room"]
+[ext_resource type="Script" path="res://scripts/visual/echo_reveal_primitive.gd" id="4_reveal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(1632, 32)
@@ -16,9 +18,71 @@ size = Vector2(80, 320)
 size = Vector2(360, 72)
 
 [node name="PlayerTestRoom" type="Node2D"]
+script = ExtResource("3_room")
 
 [node name="RoomVisual" type="Node2D" parent="."]
 script = ExtResource("1_visual")
+
+[node name="Revealables" type="Node2D" parent="."]
+
+[node name="FloorBoundary" type="Node2D" parent="Revealables"]
+script = ExtResource("4_reveal")
+primitive_kind = 1
+primitive_size = Vector2(1600, 1000)
+
+[node name="TopWallVisual" type="Node2D" parent="Revealables"]
+position = Vector2(0, -516)
+script = ExtResource("4_reveal")
+primitive_size = Vector2(1632, 32)
+
+[node name="BottomWallVisual" type="Node2D" parent="Revealables"]
+position = Vector2(0, 516)
+script = ExtResource("4_reveal")
+primitive_size = Vector2(1632, 32)
+
+[node name="LeftWallVisual" type="Node2D" parent="Revealables"]
+position = Vector2(-816, 0)
+script = ExtResource("4_reveal")
+primitive_size = Vector2(32, 1000)
+
+[node name="RightWallVisual" type="Node2D" parent="Revealables"]
+position = Vector2(816, 0)
+script = ExtResource("4_reveal")
+primitive_size = Vector2(32, 1000)
+
+[node name="CenterWallVisual" type="Node2D" parent="Revealables"]
+position = Vector2(240, 0)
+script = ExtResource("4_reveal")
+primitive_size = Vector2(80, 320)
+
+[node name="LowerWallVisual" type="Node2D" parent="Revealables"]
+position = Vector2(-260, 180)
+script = ExtResource("4_reveal")
+primitive_size = Vector2(360, 72)
+
+[node name="DoorVisual" type="Node2D" parent="Revealables"]
+position = Vector2(-40, -300)
+script = ExtResource("4_reveal")
+primitive_kind = 2
+primitive_size = Vector2(96, 44)
+
+[node name="PropVisual" type="Node2D" parent="Revealables"]
+position = Vector2(470, 250)
+script = ExtResource("4_reveal")
+primitive_kind = 3
+primitive_size = Vector2(70, 70)
+
+[node name="TerminalVisual" type="Node2D" parent="Revealables"]
+position = Vector2(-520, -240)
+script = ExtResource("4_reveal")
+primitive_kind = 4
+primitive_size = Vector2(62, 82)
+
+[node name="HazardVisual" type="Node2D" parent="Revealables"]
+position = Vector2(-80, 340)
+script = ExtResource("4_reveal")
+primitive_kind = 5
+primitive_size = Vector2(190, 64)
 
 [node name="Boundaries" type="Node2D" parent="."]
 
@@ -118,4 +182,4 @@ offset_bottom = 82.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.48, 0.66, 0.7, 1)
 theme_override_font_sizes/font_size = 14
-text = "Move: WASD / Arrows   •   Face: Mouse   •   Pause: Esc\nNo pulse, enemies, or objectives in this phase."
+text = "Move: WASD / Arrows   •   Face: Mouse   •   Reveal room: F1   •   Pause: Esc\nReveal foundation only — no expanding pulse, enemies, or objectives."

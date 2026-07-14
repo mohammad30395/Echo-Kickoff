@@ -2,7 +2,7 @@
 
 Echo Kickoff is a Godot 4 GameJam project for the IUT 12th ICT FEST 2026 GameJam. The locked concept is a 2D top-down stealth-horror game where every echo pulse reveals the dark facility and alerts sound-sensitive Listeners.
 
-Phase 3 contains the technical baseline, core application flow, and a reusable top-down player controller in a collision test room. Echo pulses, enemies, relays, extraction, and other gameplay systems have not been implemented.
+Phase 4 contains the technical baseline, core application flow, reusable top-down player controller, and the darkness/echo-revealable visual foundation. The actual expanding echo pulse, enemies, relays, extraction, and other gameplay systems have not been implemented.
 
 ## Requirements
 
@@ -65,6 +65,14 @@ A successful controller test writes `PHASE_03_PLAYER_TEST_OK`. To run the standa
 ```bash
 godot --path . --scene res://scenes/debug/player_test_room.tscn
 ```
+
+Press **F1** in the test room to temporarily reveal all procedural geometry. Validate the reveal lifecycle, primitive coverage, dark-state cost, debug input, and shader-free Compatibility path with:
+
+```bash
+godot --headless --path . --script tests/phase_04_reveal_test.gd
+```
+
+A successful reveal-system test writes `PHASE_04_REVEAL_TEST_OK`.
 
 ## Application flow
 
