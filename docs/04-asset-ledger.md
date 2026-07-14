@@ -13,11 +13,12 @@ Source evidence should be retained locally with the project archive when applica
 
 ## Current inventory
 
-At Phase 0 there are **no game assets and no Godot project files**. `.gitattributes` is repository configuration, not a game asset.
+At Phase 3 there are **no imported image, audio, font, model, video, or other third-party asset files**. The visual inventory below is generated at runtime by original jam-authored GDScript and built-in Godot drawing primitives.
 
 | ID | Repository path | Type | Creator/source | Created/acquired | Rights basis | Modifications | Status |
 |---|---|---|---|---|---|---|---|
-| — | — | — | — | — | — | — | No assets yet |
+| VIS-001 | `scripts/entities/player_visual.gd`, `scenes/entities/player.tscn` | Runtime procedural player marker | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot circles and polygon | Cyan circular body and directional triangle | Approved |
+| VIS-002 | `scripts/debug/player_test_room_visual.gd`, `scenes/debug/player_test_room.tscn` | Runtime procedural graybox room | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot rectangles and lines | Facility grid, wall, obstacle, and HUD primitives | Approved |
 
 ## Planned procedural/team-created assets
 
@@ -25,9 +26,9 @@ These entries define intent only. Replace each with exact paths and evidence whe
 
 | Planned ID | Asset | Intended method | Release condition |
 |---|---|---|---|
-| P-VIS-01 | Player marker | Runtime Godot draw primitives authored during jam | Record script/scene path; confirm no external reference art. |
+| P-VIS-01 | Player marker | Runtime Godot draw primitives authored during jam | Fulfilled by VIS-001 in Phase 3. |
 | P-VIS-02 | Echo pulse ring and afterimages | Runtime lines/polygons/particles, Compatibility-safe | Verify Web and Windows rendering and reduced-flash option. |
-| P-VIS-03 | Facility walls/props | Runtime primitives or original shapes authored during jam | Record paths and creator. |
+| P-VIS-03 | Facility walls/props | Runtime primitives or original shapes authored during jam | Graybox portion fulfilled by VIS-002; final facility art remains planned. |
 | P-VIS-04 | Listener silhouettes | Original procedural shapes authored during jam | Confirm no resemblance traced from an existing franchise. |
 | P-VIS-05 | Relay/extraction/UI icons | Original geometric shapes authored during jam | Verify shape-based, non-color-only states. |
 | P-AUD-01 | Pulse sound | Runtime synthesis or team-created recording/synthesis | Record creator/tool/settings and exported file path if baked. |

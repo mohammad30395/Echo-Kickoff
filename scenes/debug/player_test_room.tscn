@@ -1,0 +1,121 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/player_test_room_visual.gd" id="1_visual"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2_player"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
+size = Vector2(1632, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical"]
+size = Vector2(32, 1000)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle_vertical"]
+size = Vector2(80, 320)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle_horizontal"]
+size = Vector2(360, 72)
+
+[node name="PlayerTestRoom" type="Node2D"]
+
+[node name="RoomVisual" type="Node2D" parent="."]
+script = ExtResource("1_visual")
+
+[node name="Boundaries" type="Node2D" parent="."]
+
+[node name="TopWall" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(0, -516)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/TopWall"]
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="BottomWall" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(0, 516)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/BottomWall"]
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="LeftWall" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(-816, 0)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/LeftWall"]
+shape = SubResource("RectangleShape2D_vertical")
+
+[node name="RightWall" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(816, 0)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/RightWall"]
+shape = SubResource("RectangleShape2D_vertical")
+
+[node name="CenterObstacle" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(240, 0)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/CenterObstacle"]
+shape = SubResource("RectangleShape2D_obstacle_vertical")
+
+[node name="LowerObstacle" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(-260, 180)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/LowerObstacle"]
+shape = SubResource("RectangleShape2D_obstacle_horizontal")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+unique_name_in_owner = true
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="HUDLayer"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="ColorRect" parent="HUDLayer/HUD"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 650.0
+offset_bottom = 116.0
+mouse_filter = 2
+color = Color(0.01, 0.03, 0.055, 0.88)
+
+[node name="Title" type="Label" parent="HUDLayer/HUD/Panel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 18.0
+offset_top = 12.0
+offset_right = -18.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.52, 0.92, 0.96, 1)
+theme_override_font_sizes/font_size = 18
+text = "PLAYER CONTROLLER TEST ROOM"
+
+[node name="Instructions" type="Label" parent="HUDLayer/HUD/Panel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 18.0
+offset_top = 44.0
+offset_right = -18.0
+offset_bottom = 82.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.48, 0.66, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Move: WASD / Arrows   •   Face: Mouse   •   Pause: Esc\nNo pulse, enemies, or objectives in this phase."

@@ -3,7 +3,7 @@ extends SceneTree
 const SCENES: Dictionary = {
 	"Boot": ["res://scenes/boot.tscn", "Content"],
 	"MainMenu": ["res://scenes/ui/main_menu.tscn", "Content"],
-	"GameWorld": ["res://scenes/game_world.tscn", "Message"],
+	"GameWorld": ["res://scenes/game_world.tscn", "HUD"],
 	"PauseMenu": ["res://scenes/ui/pause_menu.tscn", "Content"],
 	"GameOver": ["res://scenes/ui/game_over.tscn", "Content"],
 	"Victory": ["res://scenes/ui/victory.tscn", "Content"],

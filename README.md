@@ -2,7 +2,7 @@
 
 Echo Kickoff is a Godot 4 GameJam project for the IUT 12th ICT FEST 2026 GameJam. The locked concept is a 2D top-down stealth-horror game where every echo pulse reveals the dark facility and alerts sound-sensitive Listeners.
 
-Phase 2 contains the technical baseline and core application flow. Gameplay has not been implemented.
+Phase 3 contains the technical baseline, core application flow, and a reusable top-down player controller in a collision test room. Echo pulses, enemies, relays, extraction, and other gameplay systems have not been implemented.
 
 ## Requirements
 
@@ -53,6 +53,18 @@ godot --headless --path . --script tests/phase_02_layout_test.gd
 ```
 
 Successful tests write `PHASE_02_FLOW_TEST_OK` and `PHASE_02_LAYOUT_TEST_OK`.
+
+Validate cardinal and normalized diagonal movement, wall collision, deterministic response, pause behavior, and responsive debug-room layout:
+
+```bash
+godot --headless --path . --script tests/phase_03_player_test.gd
+```
+
+A successful controller test writes `PHASE_03_PLAYER_TEST_OK`. To run the standalone graybox room directly:
+
+```bash
+godot --path . --scene res://scenes/debug/player_test_room.tscn
+```
 
 ## Application flow
 
@@ -108,8 +120,8 @@ Generated build directories are ignored by Git. Serve the Web build over HTTP ra
 ## Project layout
 
 ```text
-scenes/              Boot, game world, and UI scenes
-scripts/             GDScript source and autoload services
+scenes/              Boot, UI, game world, reusable entities, and debug rooms
+scripts/             Typed GDScript source, procedural drawing, and autoload services
 tests/               Headless configuration, flow, and layout checks
 docs/                GameJam planning, compliance, and phase audits
 project.godot        Project settings and input map
