@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/game_world.gd" id="1_world"]
-[ext_resource type="PackedScene" path="res://scenes/levels/sector_00_test.tscn" id="2_sector"]
+[ext_resource type="PackedScene" path="res://scenes/levels/echo_facility.tscn" id="2_sector"]
 
 [node name="GameWorld" type="Control"]
 layout_mode = 3
@@ -12,4 +12,4 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_world")
 
-[node name="Sector_00_Test" parent="." instance=ExtResource("2_sector")]
+[node name="EchoFacility" parent="." instance=ExtResource("2_sector")]

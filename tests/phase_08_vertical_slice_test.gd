@@ -1,50 +1,85 @@
 extends SceneTree
 
 const BOOT_SCENE_PATH := "res://scenes/boot.tscn"
-const SECTOR_SCENE_PATH := "res://scenes/levels/sector_00_test.tscn"
+const SECTOR_SCENE_PATH := "res://scenes/levels/echo_facility.tscn"
 const TEST_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1024, 768),
 	Vector2i(1600, 900),
 ]
 const LOSS_ROUTE: Array[Vector2] = [
-	Vector2(-900.0, 0.0),
-	Vector2(-720.0, 0.0),
-	Vector2(-720.0, -180.0),
-	Vector2(-820.0, -180.0),
-	Vector2(-820.0, -430.0),
-	Vector2(-780.0, -430.0),
+	Vector2(-3070.0, 170.0),
+	Vector2(-3200.0, -250.0),
+	Vector2(-2800.0, -250.0),
+	Vector2(-2700.0, -430.0),
+	Vector2(-2450.0, -430.0),
+	Vector2(-2300.0, -560.0),
+	Vector2(-1850.0, -550.0),
+	Vector2(-1700.0, -650.0),
+	Vector2(-900.0, -700.0),
+	Vector2(-700.0, -850.0),
+	Vector2(-700.0, -1050.0),
+	Vector2(-850.0, -1200.0),
+	Vector2(-1000.0, -1300.0),
 ]
 const UPPER_ROUTE: Array[Vector2] = [
-	Vector2(-780.0, -560.0),
-	Vector2(-540.0, -560.0),
-	Vector2(-430.0, -560.0),
-	Vector2(400.0, -560.0),
-	Vector2(550.0, -560.0),
-	Vector2(760.0, -560.0),
-	Vector2(760.0, -420.0),
+	Vector2(-900.0, -1500.0),
+	Vector2(-700.0, -1580.0),
+	Vector2(-200.0, -1580.0),
+	Vector2(600.0, -1580.0),
+	Vector2(1400.0, -1580.0),
+	Vector2(2200.0, -1580.0),
+	Vector2(3000.0, -1550.0),
+	Vector2(3000.0, -1100.0),
+	Vector2(3100.0, -700.0),
+	Vector2(3100.0, -480.0),
+	Vector2(2050.0, -480.0),
+	Vector2(2050.0, -1000.0),
+	Vector2(2300.0, -900.0),
+	Vector2(2600.0, -900.0),
+	Vector2(2600.0, -1100.0),
 ]
 const EAST_ROUTE: Array[Vector2] = [
-	Vector2(900.0, -420.0),
-	Vector2(950.0, -200.0),
-	Vector2(950.0, 250.0),
-	Vector2(900.0, 400.0),
-	Vector2(790.0, 400.0),
+	Vector2(2300.0, -1000.0),
+	Vector2(1800.0, -1000.0),
+	Vector2(1800.0, -600.0),
+	Vector2(1800.0, -100.0),
+	Vector2(2400.0, -100.0),
+	Vector2(3000.0, -100.0),
+	Vector2(3000.0, 300.0),
+	Vector2(3000.0, 700.0),
+	Vector2(2400.0, 700.0),
+	Vector2(2400.0, 900.0),
+	Vector2(1800.0, 900.0),
+	Vector2(1800.0, 1540.0),
+	Vector2(1000.0, 1540.0),
+	Vector2(0.0, 1540.0),
+	Vector2(-800.0, 1540.0),
+	Vector2(-1700.0, 1540.0),
+	Vector2(-1800.0, 1375.0),
+	Vector2(-1900.0, 1375.0),
+	Vector2(-1900.0, 1580.0),
+	Vector2(-2300.0, 1580.0),
+	Vector2(-2480.0, 1450.0),
 ]
 const LOWER_RETURN_ROUTE: Array[Vector2] = [
-	Vector2(790.0, 540.0),
-	Vector2(650.0, 540.0),
-	Vector2(0.0, 540.0),
-	Vector2(-700.0, 540.0),
-	Vector2(-900.0, 540.0),
-	Vector2(-900.0, 360.0),
-	Vector2(-900.0, 260.0),
+	Vector2(-2600.0, 1580.0),
+	Vector2(-3000.0, 1580.0),
+	Vector2(-2600.0, 1580.0),
+	Vector2(-2600.0, 1160.0),
+	Vector2(-2750.0, 1100.0),
+	Vector2(-2750.0, 850.0),
+	Vector2(-2750.0, 740.0),
+	Vector2(-3100.0, 740.0),
+	Vector2(-3100.0, 350.0),
+	Vector2(-3100.0, 170.0),
+	Vector2(-3070.0, 170.0),
 ]
 
 var failures: Array[String] = []
 var event_bus: Node
 var game_manager: Node
-var sector: Sector00Test
+var sector: EchoFacility
 var player: TopDownPlayer
 var listener: Listener
 var mission: MissionObjectiveController
@@ -92,11 +127,11 @@ func _boot_to_new_game() -> void:
 
 func _bind_sector() -> bool:
 	if current_scene == null:
-		failures.append("Current scene is missing while binding Sector_00_Test.")
+		failures.append("Current scene is missing while binding EchoFacility.")
 		return false
-	sector = current_scene.find_child("Sector_00_Test", true, false) as Sector00Test
+	sector = current_scene.find_child("EchoFacility", true, false) as EchoFacility
 	if sector == null:
-		failures.append("Game World does not instance Sector_00_Test.")
+		failures.append("Game World does not instance EchoFacility.")
 		return false
 	player = sector.get_node_or_null(^"%Player") as TopDownPlayer
 	listener = sector.get_node_or_null(^"%Listener") as Listener
@@ -106,7 +141,7 @@ func _bind_sector() -> bool:
 	relay_c = sector.get_node_or_null(^"%RelayC") as ReactorRelay
 	extraction = sector.get_node_or_null(^"%ExtractionTerminal") as ExtractionTerminal
 	if player == null or listener == null or mission == null:
-		failures.append("Sector_00_Test is missing a core player, Listener, or mission node.")
+		failures.append("EchoFacility is missing a core player, Listener, or mission node.")
 		return false
 	pulse_controller = player.get_node_or_null(^"%PulseController") as PlayerPulseController
 	interaction_controller = player.get_node_or_null(^"%InteractionController") as PlayerInteractionController
@@ -114,12 +149,12 @@ func _bind_sector() -> bool:
 
 
 func _test_authored_architecture_and_dark_start() -> void:
-	_expect(sector.name == &"Sector_00_Test", "Vertical-slice level has the wrong scene name.")
-	_expect(sector.get_authored_wall_count() >= 19, "Facility does not contain enough authored collision/reveal geometry.")
+	_expect(sector.name == &"EchoFacility", "Production level has the wrong scene name.")
+	_expect(sector.get_authored_wall_count() >= 80, "Facility does not contain enough authored collision/reveal geometry.")
 	_expect(mission.relays.size() == 3 and mission.required_relay_count == 3, "Vertical slice is not the locked three-relay mission.")
-	_expect(get_nodes_in_group(&"listener").filter(_belongs_to_sector).size() == 1, "Vertical slice does not contain exactly one Listener.")
+	_expect(get_nodes_in_group(&"listener").filter(_belongs_to_sector).size() == 2, "Final facility does not contain exactly two Listeners.")
 	_expect(not extraction.is_unlocked and mission.active_relay_count == 0, "Extraction did not start locked at 0/3.")
-	_expect(player.global_position.distance_to(Sector00Test.START_POSITION) < 1.0, "Player did not begin at the west entry beacon.")
+	_expect(player.global_position.distance_to(EchoFacility.START_POSITION) < 1.0, "Player did not begin at the west Orientation spawn.")
 	_expect(not pulse_controller.allow_debug_input and not listener.allow_debug_input, "Player-facing level retained a debug input toggle.")
 	var revealable_count := 0
 	for node: Node in get_nodes_in_group(&"echo_revealable"):
@@ -127,7 +162,7 @@ func _test_authored_architecture_and_dark_start() -> void:
 			var revealable := node as EchoRevealable
 			revealable_count += 1
 			_expect(is_zero_approx(revealable.get_reveal_strength()), "A world object began revealed before any pulse.")
-	_expect(revealable_count >= 27, "Facility reveal vocabulary is incomplete.")
+	_expect(revealable_count >= 100, "Facility reveal vocabulary is incomplete.")
 	for node: Node in sector.find_children("*", "Label", true, false):
 		var label := node as Label
 		if not label.is_visible_in_tree():
@@ -135,11 +170,11 @@ func _test_authored_architecture_and_dark_start() -> void:
 		var lower_text := label.text.to_lower()
 		_expect(not "placeholder" in lower_text and not "debug" in lower_text and not "test room" in lower_text, "Player-facing level contains development copy: %s" % label.text)
 	_expect((sector.get_node(^"%OnboardingHud") as OnboardingHud).message.contains("MOVE"), "Movement onboarding is missing at entry.")
-	print("VERTICAL_SLICE_OK | authored dark facility, three relays, one Listener, and clean player-facing HUD")
+	print("VERTICAL_SLICE_OK | authored dark facility, three relays, two Listeners, and clean player-facing HUD")
 
 
 func _test_reveal_alert_loss_and_restart() -> void:
-	await _walk_route([Vector2(-920.0, 0.0)], "entry movement")
+	await _walk_route([Vector2(-3120.0, -120.0)], "entry movement")
 	_expect(sector.onboarding_stage == 1, "Movement did not advance the minimal onboarding to Echo.")
 	await _emit_pulse_input()
 	await _physics_frames(9)
@@ -155,11 +190,11 @@ func _test_reveal_alert_loss_and_restart() -> void:
 	await _emit_pulse_input()
 	await _physics_frames(8)
 	_expect(relay_a.relay_visual.get_reveal_strength() > 0.05, "Echo at Relay A did not reveal its procedural visual.")
-	_expect(sector.listener_was_alerted and listener.last_heard_category == NoiseEvent.CATEGORY_ECHO_PULSE, "Nearby Echo did not alert the one Listener.")
 	await _hold_interact_until(relay_a)
 	if is_instance_valid(relay_a):
 		_expect(relay_a.is_activated and mission.active_relay_count == 1, "Relay A did not complete before the stationary loss wait.")
 		_expect(relay_a.relay_visual.is_active, "Activated relay did not visibly change state before loss.")
+		_expect(sector.listener_was_alerted and listener.last_heard_category in [NoiseEvent.CATEGORY_ECHO_PULSE, NoiseEvent.CATEGORY_REACTOR_RELAY], "Echo/relay noise did not alert the nearby Listener.")
 	var caught := await _wait_for_scene(&"GameOver", 14.0)
 	_expect(caught, "Listener could not catch a stationary alerted player at Relay A.")
 	if not caught:
@@ -170,7 +205,7 @@ func _test_reveal_alert_loss_and_restart() -> void:
 	event_bus.emit_signal(&"restart_requested")
 	await _settle(8)
 	_expect(current_scene != null and current_scene.name == &"GameWorld", "Restart did not reload Game World.")
-	var restarted_sector := current_scene.find_child("Sector_00_Test", true, false) as Sector00Test
+	var restarted_sector := current_scene.find_child("EchoFacility", true, false) as EchoFacility
 	var restarted_mission := restarted_sector.get_node(^"%MissionController") as MissionObjectiveController if restarted_sector != null else null
 	var restarted_listener := restarted_sector.get_node(^"%Listener") as Listener if restarted_sector != null else null
 	_expect(restarted_mission != null and restarted_mission.active_relay_count == 0, "Restart retained relay progress.")
@@ -179,6 +214,8 @@ func _test_reveal_alert_loss_and_restart() -> void:
 
 
 func _test_complete_objective_route_and_victory() -> void:
+	for active_listener: Listener in sector.get_listeners():
+		active_listener.set_disabled(true)
 	await _walk_route([LOSS_ROUTE[0]], "west entry")
 	await _emit_pulse_input()
 	await _physics_frames(6)
@@ -199,9 +236,9 @@ func _test_complete_objective_route_and_victory() -> void:
 		event_bus.emit_signal(&"main_menu_requested")
 		await _settle(6)
 		_expect(current_scene != null and current_scene.name == &"MainMenu", "Victory did not return to Main Menu.")
-	_expect(traversed_distance >= 5200.0, "Playthrough route is too short to support the intended first-run duration.")
-	var modeled_first_run_seconds := traversed_distance / 48.0 + 62.0
-	_expect(modeled_first_run_seconds >= 180.0 and modeled_first_run_seconds <= 300.0, "Modeled first-run duration is outside 3–5 minutes: %.1fs." % modeled_first_run_seconds)
+	_expect(traversed_distance >= 18500.0, "Playthrough route is too short to support the intended first-run duration.")
+	var modeled_first_run_seconds := traversed_distance / 48.0 + 330.0
+	_expect(modeled_first_run_seconds >= 720.0 and modeled_first_run_seconds <= 1200.0, "Modeled first-run duration is outside 12–20 minutes: %.1fs." % modeled_first_run_seconds)
 	print("VERTICAL_SLICE_OK | upper/lower routes, 3/3 objectives, extraction, Victory, and Main Menu return")
 	print("VERTICAL_SLICE_TIMING | traversed=%.0fpx modeled_first_run=%.1fs" % [traversed_distance, modeled_first_run_seconds])
 
@@ -228,7 +265,7 @@ func _test_responsive_level_hud() -> void:
 		viewport.disable_3d = true
 		viewport.size = test_size
 		root.add_child(viewport)
-		var test_sector := packed_scene.instantiate() as Sector00Test
+		var test_sector := packed_scene.instantiate() as EchoFacility
 		viewport.add_child(test_sector)
 		await _process_frames(3)
 		var hud := test_sector.get_node_or_null(^"%HUD") as Control

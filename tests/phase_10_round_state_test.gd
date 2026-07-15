@@ -16,7 +16,7 @@ var audio_manager: Node
 var game_manager: Node
 var round_state_history: Array[StringName] = []
 
-var sector: Sector00Test
+var sector: EchoFacility
 var player: TopDownPlayer
 var listener: Listener
 var mission: MissionObjectiveController
@@ -103,9 +103,9 @@ func _bind_round() -> bool:
 	if current_scene == null or current_scene.name != &"GameWorld":
 		failures.append("Cannot bind round outside Game World.")
 		return false
-	sector = current_scene.find_child("Sector_00_Test", true, false) as Sector00Test
+	sector = current_scene.find_child("EchoFacility", true, false) as EchoFacility
 	if sector == null:
-		failures.append("Game World is missing Sector_00_Test.")
+		failures.append("Game World is missing EchoFacility.")
 		return false
 	player = sector.get_node_or_null(^"%Player") as TopDownPlayer
 	listener = sector.get_node_or_null(^"%Listener") as Listener

@@ -7,18 +7,25 @@ const TEST_SIZES: Array[Vector2i] = [
 	Vector2i(1600, 900),
 ]
 const RELAY_A_ROUTE: Array[Vector2] = [
-	Vector2(-900.0, 0.0),
-	Vector2(-720.0, 0.0),
-	Vector2(-720.0, -180.0),
-	Vector2(-820.0, -180.0),
-	Vector2(-820.0, -430.0),
-	Vector2(-780.0, -430.0),
+	Vector2(-3070.0, 170.0),
+	Vector2(-3200.0, -250.0),
+	Vector2(-2800.0, -250.0),
+	Vector2(-2700.0, -430.0),
+	Vector2(-2450.0, -430.0),
+	Vector2(-2300.0, -560.0),
+	Vector2(-1850.0, -550.0),
+	Vector2(-1700.0, -650.0),
+	Vector2(-900.0, -700.0),
+	Vector2(-700.0, -850.0),
+	Vector2(-700.0, -1050.0),
+	Vector2(-850.0, -1200.0),
+	Vector2(-1000.0, -1300.0),
 ]
 
 var failures: Array[String] = []
 var event_bus: Node
 var game_manager: Node
-var sector: Sector00Test
+var sector: EchoFacility
 var player: TopDownPlayer
 var listener: Listener
 var relay_a: ReactorRelay
@@ -66,9 +73,9 @@ func _bind_sector() -> bool:
 	if current_scene == null:
 		failures.append("Current scene is missing while binding the vertical slice.")
 		return false
-	sector = current_scene.find_child("Sector_00_Test", true, false) as Sector00Test
+	sector = current_scene.find_child("EchoFacility", true, false) as EchoFacility
 	if sector == null:
-		failures.append("Game World does not contain Sector_00_Test.")
+		failures.append("Game World does not contain EchoFacility.")
 		return false
 	player = sector.get_node_or_null(^"%Player") as TopDownPlayer
 	listener = sector.get_node_or_null(^"%Listener") as Listener
@@ -117,10 +124,10 @@ func _test_architecture_and_noise_hierarchy() -> void:
 func _test_wall_clamp_impact_pause_and_charges() -> void:
 	await _physics_frames(3)
 	var origin := player.global_position
-	var requested_target := origin + Vector2(0.0, -400.0)
+	var requested_target := origin + Vector2(-400.0, 0.0)
 	var landing := decoy_controller.update_aim_target(requested_target)
 	_expect(decoy_controller.aim_was_wall_clamped, "Solid wall did not clamp the requested throw.")
-	_expect(landing.y > -101.0 and landing.y < origin.y, "Wall-clamped landing crossed or missed the entry wall: %s." % landing)
+	_expect(landing.x > -3384.0 and landing.x < origin.x, "Wall-clamped landing crossed or missed the outer wall: %s." % landing)
 	_expect(origin.distance_to(landing) <= decoy_controller.maximum_throw_distance, "Wall-clamped landing exceeded maximum range.")
 	var point_query := PhysicsPointQueryParameters2D.new()
 	point_query.position = landing
@@ -167,7 +174,7 @@ func _restart_level() -> void:
 	event_bus.emit_signal(&"restart_requested")
 	await _settle(8)
 	_expect(current_scene != null and current_scene.name == &"GameWorld", "Restart did not reload Game World.")
-	var restarted_sector := current_scene.find_child("Sector_00_Test", true, false) as Sector00Test if current_scene != null else null
+	var restarted_sector := current_scene.find_child("EchoFacility", true, false) as EchoFacility if current_scene != null else null
 	var restarted_player := restarted_sector.get_node_or_null(^"%Player") as TopDownPlayer if restarted_sector != null else null
 	var restarted_controller := restarted_player.get_node_or_null(^"%DecoyController") as PlayerDecoyController if restarted_player != null else null
 	var restarted_hud := restarted_sector.get_node_or_null(^"%DecoyHud") as DecoyHud if restarted_sector != null else null
@@ -203,20 +210,20 @@ func _test_meaningful_relay_diversion() -> void:
 	await _physics_frames(72)
 	_expect(current_scene != null and current_scene.name == &"GameWorld", "Player was caught during the decoy-created relay escape window.")
 	if current_scene != null and current_scene.name == &"GameWorld":
-		await _walk_route([Vector2(-780.0, -560.0)])
+		await _walk_route([Vector2(-900.0, -1500.0)])
 		_expect(current_scene != null and current_scene.name == &"GameWorld", "Player could not withdraw after diverting the Listener.")
 	_expect(decoy_controller.remaining_charges == 1, "Alternative solution did not consume exactly one limited charge.")
 	print("DECOY_ALTERNATIVE_OK | precise decoy redirects distant relay target and creates a safe withdrawal window")
 
 
 func _test_responsive_hud() -> void:
-	var packed_scene := load("res://scenes/levels/sector_00_test.tscn") as PackedScene
+	var packed_scene := load("res://scenes/levels/echo_facility.tscn") as PackedScene
 	for test_size: Vector2i in TEST_SIZES:
 		var viewport := SubViewport.new()
 		viewport.disable_3d = true
 		viewport.size = test_size
 		root.add_child(viewport)
-		var test_sector := packed_scene.instantiate() as Sector00Test
+		var test_sector := packed_scene.instantiate() as EchoFacility
 		viewport.add_child(test_sector)
 		await _process_frames(3)
 		var test_hud := test_sector.get_node_or_null(^"%DecoyHud") as Control
