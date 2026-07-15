@@ -6,9 +6,9 @@ signal target_revealed(target: EchoRevealable, strength: float)
 signal pulse_finished
 
 @export_category("Pulse")
-@export_range(32.0, 1200.0, 1.0) var max_radius: float = 320.0
+@export_range(32.0, 1200.0, 1.0) var max_radius: float = 345.0
 @export_range(0.1, 3.0, 0.05) var duration: float = 0.65
-@export_range(32.0, 1600.0, 1.0) var loudness: float = 480.0
+@export_range(32.0, 1600.0, 1.0) var loudness: float = 500.0
 @export_range(0.0, 1.0, 0.01) var minimum_reveal_strength: float = 0.12
 
 @export_category("Visuals")
@@ -23,10 +23,12 @@ var revealed_target_count: int = 0
 
 var _pending_targets: Array[EchoRevealable] = []
 var _all_targets: Array[EchoRevealable] = []
+var _accessibility: Node
 
 
 func _ready() -> void:
 	add_to_group(&"active_echo_pulse")
+	_accessibility = get_node_or_null("/root/AccessibilityManager")
 	set_process(false)
 
 
@@ -123,24 +125,23 @@ func _reveal_reached_targets() -> void:
 func _draw() -> void:
 	if not is_active:
 		return
-	var accessibility := get_node_or_null("/root/AccessibilityManager")
 	var flash_multiplier := 1.0
 	var visible_reveal_color := reveal_color
 	var visible_danger_color := danger_color
-	if accessibility != null:
-		flash_multiplier = float(accessibility.call(&"get_flash_multiplier"))
-		visible_reveal_color = accessibility.call(&"get_echo_color", reveal_color) as Color
-		visible_danger_color = accessibility.call(&"get_warning_color", danger_color) as Color
+	if _accessibility != null:
+		flash_multiplier = float(_accessibility.call(&"get_flash_multiplier"))
+		visible_reveal_color = _accessibility.call(&"get_echo_color", reveal_color) as Color
+		visible_danger_color = _accessibility.call(&"get_warning_color", danger_color) as Color
 	var progress := get_progress()
 	var pulse_alpha := lerpf(0.82, 0.28, progress) * flash_multiplier
 	if current_radius >= 1.0:
 		var glow := visible_reveal_color
 		glow.a = 0.14 * pulse_alpha
-		draw_arc(Vector2.ZERO, current_radius, 0.0, TAU, 96, glow, 9.0)
+		draw_arc(Vector2.ZERO, current_radius, 0.0, TAU, 64, glow, 9.0)
 		var core := visible_reveal_color
 		core.a = pulse_alpha
-		draw_arc(Vector2.ZERO, current_radius, 0.0, TAU, 96, core, 2.5)
-		if not (accessibility != null and bool(accessibility.get("reduced_flash_enabled"))):
+		draw_arc(Vector2.ZERO, current_radius, 0.0, TAU, 64, core, 2.5)
+		if not (_accessibility != null and bool(_accessibility.get("reduced_flash_enabled"))):
 			_draw_danger_arcs(current_radius + 6.0, pulse_alpha, visible_danger_color)
 
 	var warning_alpha := clampf(1.0 - progress * 2.2, 0.0, 1.0)
@@ -174,7 +175,7 @@ func _draw_danger_arcs(radius: float, alpha: float, source_color: Color) -> void
 func _draw_debug_visuals() -> void:
 	var reveal_limit := reveal_color
 	reveal_limit.a = 0.32
-	draw_arc(Vector2.ZERO, max_radius, 0.0, TAU, 96, reveal_limit, 1.0)
+	draw_arc(Vector2.ZERO, max_radius, 0.0, TAU, 64, reveal_limit, 1.0)
 	var noise_limit := danger_color
 	noise_limit.a = 0.42
 	for index in range(24):

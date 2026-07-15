@@ -57,10 +57,10 @@ position = Vector2(-1070, -550)
 patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(20, 0), Vector2(20, -20), Vector2(0, -20)])
 initial_idle_duration = 1.2
 patrol_speed = 72.0
-investigate_speed = 108.0
-chase_speed = 148.0
+investigate_speed = 112.0
+chase_speed = 152.0
 hearing_sensitivity = 1.0
-search_duration = 3.4
+search_duration = 3.1
 detection_range = 112.0
 
 [node name="HUDLayer" type="CanvasLayer" parent="."]

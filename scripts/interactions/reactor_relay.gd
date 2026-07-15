@@ -4,7 +4,7 @@ extends FacilityInteractable
 signal relay_activated(relay: ReactorRelay, actor: Node2D)
 
 @export var relay_id: StringName = &"A"
-@export_range(100.0, 1000.0, 10.0) var activation_loudness: float = 600.0
+@export_range(100.0, 1000.0, 10.0) var activation_loudness: float = 620.0
 
 @onready var relay_visual: ReactorRelayVisual = %Visual
 

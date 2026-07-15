@@ -8,14 +8,15 @@ signal debug_visuals_changed(enabled: bool)
 const ECHO_PULSE_SCENE := preload("res://scenes/effects/echo_pulse.tscn")
 
 @export_category("Echo Pulse")
-@export_range(32.0, 1200.0, 1.0) var pulse_radius: float = 320.0
+@export_range(32.0, 1200.0, 1.0) var pulse_radius: float = 345.0
 @export_range(0.1, 3.0, 0.05) var pulse_duration: float = 0.65
-@export_range(32.0, 1600.0, 1.0) var pulse_loudness: float = 480.0
-@export_range(0.1, 5.0, 0.05) var pulse_cooldown: float = 1.2
+@export_range(32.0, 1600.0, 1.0) var pulse_loudness: float = 500.0
+@export_range(0.1, 5.0, 0.05) var pulse_cooldown: float = 1.45
+@export_range(1, 4, 1) var max_simultaneous_pulses: int = 1
 
 @export_category("Footsteps")
-@export_range(8.0, 240.0, 1.0) var footstep_distance: float = 88.0
-@export_range(1.0, 600.0, 1.0) var footstep_loudness: float = 72.0
+@export_range(8.0, 240.0, 1.0) var footstep_distance: float = 104.0
+@export_range(1.0, 600.0, 1.0) var footstep_loudness: float = 58.0
 @export_range(0.0, 300.0, 1.0) var footstep_minimum_speed: float = 35.0
 
 @export_category("Debug")
@@ -29,6 +30,8 @@ var footstep_count: int = 0
 var _player: TopDownPlayer
 var _last_position: Vector2
 var _distance_since_footstep: float = 0.0
+var _event_bus: Node
+var _active_pulse_count: int = 0
 
 
 func _ready() -> void:
@@ -37,6 +40,7 @@ func _ready() -> void:
 		push_error("PlayerPulseController must be a child of TopDownPlayer.")
 		set_physics_process(false)
 		return
+	_event_bus = get_node_or_null("/root/EventBus")
 	_last_position = _player.global_position
 	cooldown_changed.emit(get_cooldown_readiness(), cooldown_remaining)
 
@@ -56,7 +60,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func can_emit_pulse() -> bool:
-	return is_zero_approx(cooldown_remaining) and is_instance_valid(_player)
+	return (
+		is_zero_approx(cooldown_remaining)
+		and is_instance_valid(_player)
+		and _active_pulse_count < max_simultaneous_pulses
+	)
 
 
 func try_emit_pulse() -> EchoPulse:
@@ -66,6 +74,8 @@ func try_emit_pulse() -> EchoPulse:
 	pulse.configure(pulse_radius, pulse_duration, pulse_loudness, debug_visuals)
 	_player.get_parent().add_child(pulse)
 	var noise_event := pulse.begin(_player.global_position)
+	_active_pulse_count += 1
+	pulse.pulse_finished.connect(_on_pulse_finished, CONNECT_ONE_SHOT)
 	cooldown_remaining = pulse_cooldown
 	pulse_count += 1
 	cooldown_changed.emit(get_cooldown_readiness(), cooldown_remaining)
@@ -105,12 +115,15 @@ func _update_footsteps() -> void:
 	_distance_since_footstep += travelled
 	while _distance_since_footstep >= footstep_distance:
 		_distance_since_footstep -= footstep_distance
-		var event_bus := get_node_or_null("/root/EventBus")
-		if event_bus != null:
-			event_bus.call(
+		if _event_bus != null:
+			_event_bus.call(
 				&"publish_noise",
 				current_position,
 				footstep_loudness,
 				NoiseEvent.CATEGORY_FOOTSTEP,
 			)
 		footstep_count += 1
+
+
+func _on_pulse_finished() -> void:
+	_active_pulse_count = maxi(_active_pulse_count - 1, 0)

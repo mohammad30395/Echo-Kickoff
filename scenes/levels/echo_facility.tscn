@@ -64,10 +64,10 @@ position = Vector2(-1450, -1250)
 patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(-140, 0), Vector2(-140, 170), Vector2(0, 170)])
 initial_idle_duration = 1.2
 patrol_speed = 74.0
-investigate_speed = 108.0
-chase_speed = 148.0
-hearing_sensitivity = 1.05
-search_duration = 3.4
+investigate_speed = 112.0
+chase_speed = 152.0
+hearing_sensitivity = 1.0
+search_duration = 3.1
 detection_range = 112.0
 
 [node name="ListenerSouth" parent="." instance=ExtResource("6_listener")]
@@ -75,11 +75,11 @@ unique_name_in_owner = true
 position = Vector2(-1900, 1150)
 patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(0, -220), Vector2(140, -220), Vector2(140, 0)])
 initial_idle_duration = 1.6
-patrol_speed = 70.0
-investigate_speed = 104.0
-chase_speed = 144.0
-hearing_sensitivity = 1.1
-search_duration = 3.6
+patrol_speed = 72.0
+investigate_speed = 108.0
+chase_speed = 148.0
+hearing_sensitivity = 1.05
+search_duration = 3.2
 detection_range = 108.0
 
 [node name="HUDLayer" type="CanvasLayer" parent="."]

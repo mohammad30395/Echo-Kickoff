@@ -11,7 +11,7 @@ signal finished
 @export_range(0.0, 100.0, 1.0) var arc_height: float = 34.0
 
 @export_category("Impact")
-@export_range(32.0, 1000.0, 1.0) var noise_loudness: float = 420.0
+@export_range(32.0, 1000.0, 1.0) var noise_loudness: float = 410.0
 @export_range(0.1, 2.0, 0.05) var impact_visual_duration: float = 0.55
 @export_range(0.0, 160.0, 1.0) var weak_reveal_radius: float = 64.0
 @export_range(0.0, 0.4, 0.01) var weak_reveal_strength: float = 0.16
@@ -29,11 +29,17 @@ var last_noise_event: NoiseEvent
 var _travel_duration: float = 0.2
 var _elapsed: float = 0.0
 var _impact_elapsed: float = 0.0
+var _event_bus: Node
+var _accessibility: Node
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_to_group(&"active_sound_decoy")
+	if _event_bus == null:
+		_event_bus = get_node_or_null("/root/EventBus")
+	if _accessibility == null:
+		_accessibility = get_node_or_null("/root/AccessibilityManager")
 	set_process(false)
 
 
@@ -45,6 +51,14 @@ func configure(
 	noise_loudness = maxf(configured_loudness, 0.0)
 	weak_reveal_radius = maxf(configured_reveal_radius, 0.0)
 	weak_reveal_strength = clampf(configured_reveal_strength, 0.0, 0.4)
+
+
+func set_event_bus(event_bus: Node) -> void:
+	_event_bus = event_bus
+
+
+func set_accessibility_manager(accessibility_manager: Node) -> void:
+	_accessibility = accessibility_manager
 
 
 func launch(origin: Vector2, target: Vector2) -> void:
@@ -95,8 +109,7 @@ func _impact() -> void:
 	has_impacted = true
 	global_position = landing_position
 	_weakly_reveal_impact_area()
-	var event_bus := get_node_or_null("/root/EventBus")
-	if event_bus == null:
+	if _event_bus == null:
 		push_error("SoundDecoy requires the EventBus autoload.")
 		last_noise_event = NoiseEvent.new(
 			landing_position,
@@ -104,7 +117,7 @@ func _impact() -> void:
 			NoiseEvent.CATEGORY_SOUND_DECOY,
 		)
 	else:
-		last_noise_event = event_bus.call(
+		last_noise_event = _event_bus.call(
 			&"publish_noise",
 			landing_position,
 			noise_loudness,
@@ -125,14 +138,13 @@ func _weakly_reveal_impact_area() -> void:
 
 
 func _draw() -> void:
-	var accessibility := get_node_or_null("/root/AccessibilityManager")
 	var visible_flight_color := flight_color
 	var visible_impact_color := impact_color
 	var flash_multiplier := 1.0
-	if accessibility != null:
-		visible_flight_color = accessibility.call(&"get_warning_color", flight_color) as Color
-		visible_impact_color = accessibility.call(&"get_warning_color", impact_color) as Color
-		flash_multiplier = float(accessibility.call(&"get_flash_multiplier"))
+	if _accessibility != null:
+		visible_flight_color = _accessibility.call(&"get_warning_color", flight_color) as Color
+		visible_impact_color = _accessibility.call(&"get_warning_color", impact_color) as Color
+		flash_multiplier = float(_accessibility.call(&"get_flash_multiplier"))
 	if not has_impacted:
 		var visual_center := Vector2(0.0, -get_visual_height())
 		var diamond := PackedVector2Array([

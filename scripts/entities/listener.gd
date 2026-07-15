@@ -27,10 +27,10 @@ const SEARCH_DIRECTIONS := [
 @export_range(0.0, 4.0, 0.05) var patrol_wait_duration: float = 0.45
 
 @export_category("Movement")
-@export_range(10.0, 500.0, 1.0) var patrol_speed: float = 82.0
-@export_range(10.0, 500.0, 1.0) var investigate_speed: float = 112.0
-@export_range(10.0, 600.0, 1.0) var chase_speed: float = 154.0
-@export_range(10.0, 500.0, 1.0) var return_speed: float = 96.0
+@export_range(10.0, 500.0, 1.0) var patrol_speed: float = 78.0
+@export_range(10.0, 500.0, 1.0) var investigate_speed: float = 110.0
+@export_range(10.0, 600.0, 1.0) var chase_speed: float = 150.0
+@export_range(10.0, 500.0, 1.0) var return_speed: float = 94.0
 @export_range(10.0, 4000.0, 10.0) var acceleration: float = 900.0
 @export_range(2.0, 64.0, 1.0) var arrival_distance: float = 12.0
 
@@ -42,7 +42,7 @@ const SEARCH_DIRECTIONS := [
 
 @export_category("Search and Detection")
 @export_range(16.0, 240.0, 1.0) var search_radius: float = 72.0
-@export_range(0.2, 10.0, 0.1) var search_duration: float = 3.0
+@export_range(0.2, 10.0, 0.1) var search_duration: float = 3.2
 @export_range(16.0, 300.0, 1.0) var detection_range: float = 105.0
 @export_range(8.0, 80.0, 1.0) var contact_range: float = 34.0
 @export_range(0.05, 1.0, 0.05) var detection_check_interval: float = 0.15
@@ -100,6 +100,8 @@ var _best_target_distance: float = INF
 var _no_progress_timer: float = 0.0
 var _has_caught_player: bool = false
 var _event_bus: Node
+var _ray_query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.new()
+var _ray_exclusions: Array[RID] = []
 
 
 func _ready() -> void:
@@ -109,6 +111,10 @@ func _ready() -> void:
 	add_to_group(&"listener_ai")
 	_spawn_position = global_position
 	_move_target = global_position
+	_ray_exclusions = [get_rid()]
+	_ray_query.exclude = _ray_exclusions
+	_ray_query.collide_with_areas = false
+	_ray_query.collide_with_bodies = true
 	_find_player()
 	_event_bus = get_node_or_null("/root/EventBus")
 	if _event_bus != null:
@@ -237,7 +243,7 @@ func _noise_priority(noise_event: NoiseEvent, distance: float, effective_radius:
 	elif noise_event.category == NoiseEvent.CATEGORY_REACTOR_RELAY:
 		category_weight = 1.5
 	elif noise_event.category == NoiseEvent.CATEGORY_FOOTSTEP:
-		category_weight = 0.75
+		category_weight = 0.65
 	var remaining_reach := maxf(effective_radius - distance, 0.0)
 	return (noise_event.loudness * 0.7 + remaining_reach * 0.3) * category_weight
 
@@ -322,15 +328,10 @@ func _can_detect_player() -> bool:
 		return true
 	if distance > detection_range:
 		return false
-	var query := PhysicsRayQueryParameters2D.create(
-		global_position,
-		_target_player.global_position,
-		detection_collision_mask,
-		[get_rid()],
-	)
-	query.collide_with_areas = false
-	query.collide_with_bodies = true
-	var hit := get_world_2d().direct_space_state.intersect_ray(query)
+	_ray_query.from = global_position
+	_ray_query.to = _target_player.global_position
+	_ray_query.collision_mask = detection_collision_mask
+	var hit := get_world_2d().direct_space_state.intersect_ray(_ray_query)
 	return not hit.is_empty() and hit.get("collider") == _target_player
 
 
@@ -484,15 +485,10 @@ func _find_player() -> void:
 
 
 func _has_clear_route_to_target() -> bool:
-	var query := PhysicsRayQueryParameters2D.create(
-		global_position,
-		_move_target,
-		collision_mask,
-		[get_rid()],
-	)
-	query.collide_with_areas = false
-	query.collide_with_bodies = true
-	var hit := get_world_2d().direct_space_state.intersect_ray(query)
+	_ray_query.from = global_position
+	_ray_query.to = _move_target
+	_ray_query.collision_mask = collision_mask
+	var hit := get_world_2d().direct_space_state.intersect_ray(_ray_query)
 	if hit.is_empty():
 		return true
 	return _target_player != null and hit.get("collider") == _target_player

@@ -118,7 +118,15 @@ func _test_architecture_and_noise_hierarchy() -> void:
 	if probe != null:
 		_expect(probe.find_children("*", "Sprite2D", true, false).is_empty(), "SoundDecoy depends on image sprites.")
 		probe.free()
-	print("DECOY_ARCHITECTURE_OK | mouse aim, two charges, procedural visuals, and 72 < 420 < 480 < 600 hierarchy")
+	print(
+		"DECOY_ARCHITECTURE_OK | mouse aim, two charges, procedural visuals, and %.0f < %.0f < %.0f < %.0f hierarchy"
+		% [
+			pulse_controller.footstep_loudness,
+			decoy_controller.decoy_loudness,
+			pulse_controller.pulse_loudness,
+			relay_a.activation_loudness,
+		]
+	)
 
 
 func _test_wall_clamp_impact_pause_and_charges() -> void:
@@ -149,7 +157,7 @@ func _test_wall_clamp_impact_pause_and_charges() -> void:
 	paused = false
 	var first_noise: NoiseEvent = await first_decoy.impacted
 	_expect(first_noise.category == NoiseEvent.CATEGORY_SOUND_DECOY, "Impact emitted the wrong noise category.")
-	_expect(is_equal_approx(first_noise.loudness, 420.0), "Impact noise is not the configured 420 px loudness.")
+	_expect(is_equal_approx(first_noise.loudness, 410.0), "Impact noise is not the configured 410 px loudness.")
 	_expect(first_noise.position.distance_to(landing) < 0.5, "Impact noise did not originate at the validated landing.")
 	var strongest_reveal := 0.0
 	for node: Node in get_nodes_in_group(&"echo_revealable"):
