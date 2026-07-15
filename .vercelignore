@@ -3,11 +3,9 @@
 # Windows binaries, release ZIPs, or other ignored build artifacts.
 *
 !vercel.json
-!build/
-build/*
-!build/final/
-build/final/*
-!build/final/web/
+!build
+!build/final
+!build/final/web
 !build/final/web/**
 .vercel/
 .env*
