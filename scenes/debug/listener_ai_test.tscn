@@ -1,0 +1,91 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/listener_ai_test.gd" id="1_test"]
+[ext_resource type="Script" path="res://scripts/debug/listener_ai_test_visual.gd" id="2_visual"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/entities/listener.tscn" id="4_listener"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
+size = Vector2(1232, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical"]
+size = Vector2(32, 660)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle"]
+size = Vector2(100, 300)
+
+[node name="ListenerAITest" type="Node2D"]
+script = ExtResource("1_test")
+
+[node name="ArenaVisual" type="Node2D" parent="."]
+script = ExtResource("2_visual")
+
+[node name="Collision" type="Node2D" parent="."]
+
+[node name="TopWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(0, -346)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/TopWall"]
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="BottomWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(0, 346)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/BottomWall"]
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="LeftWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(-616, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/LeftWall"]
+shape = SubResource("RectangleShape2D_vertical")
+
+[node name="RightWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(616, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/RightWall"]
+shape = SubResource("RectangleShape2D_vertical")
+
+[node name="CenterObstacle" type="StaticBody2D" parent="Collision"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/CenterObstacle"]
+shape = SubResource("RectangleShape2D_obstacle")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+unique_name_in_owner = true
+position = Vector2(-300, 0)
+
+[node name="Listener" parent="." instance=ExtResource("4_listener")]
+unique_name_in_owner = true
+position = Vector2(300, 0)
+patrol_points = Array[Vector2]([Vector2(0, -220), Vector2(220, -220), Vector2(220, 220), Vector2(0, 220)])
+hearing_sensitivity = 1.25
+trigger_game_over_on_contact = false
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Panel" type="ColorRect" parent="HUDLayer"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 700.0
+offset_bottom = 122.0
+color = Color(0.008, 0.025, 0.04, 0.92)
+
+[node name="Title" type="Label" parent="HUDLayer/Panel"]
+offset_left = 16.0
+offset_top = 10.0
+offset_right = 660.0
+offset_bottom = 34.0
+theme_override_colors/font_color = Color(1, 0.52, 0.22, 1)
+theme_override_font_sizes/font_size = 17
+text = "LISTENER AI TEST // SOUND-DRIVEN FSM"
+
+[node name="Instructions" type="Label" parent="HUDLayer/Panel"]
+offset_left = 16.0
+offset_top = 40.0
+offset_right = 660.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.55, 0.76, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Move: WASD / Arrows  •  Pulse: Space / LMB  •  Listener debug: F3\nPulse is loud enough to cross the barrier; detection remains short-range and line-of-sight."

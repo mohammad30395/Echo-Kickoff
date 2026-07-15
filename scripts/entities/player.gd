@@ -23,6 +23,7 @@ var facing_direction: Vector2 = Vector2.RIGHT
 func _ready() -> void:
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_to_group(&"player")
 	facing_direction = _safe_normalized(default_facing_direction, Vector2.RIGHT)
 	player_camera.position_smoothing_enabled = true
 	player_camera.position_smoothing_speed = camera_smoothing_speed

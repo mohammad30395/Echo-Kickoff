@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/entities/listener.gd" id="1_listener"]
+[ext_resource type="Script" path="res://scripts/entities/listener_visual.gd" id="2_visual"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_listener"]
+radius = 16.0
+
+[node name="Listener" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1_listener")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_listener")
+
+[node name="Visual" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_visual")
+luminous_color = Color(0.86, 0.25, 0.12, 1)
+
+[node name="DebugLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 120
+offset_left = -58.0
+offset_top = -82.0
+offset_right = 58.0
+offset_bottom = -42.0
+theme_override_colors/font_color = Color(1, 0.68, 0.32, 1)
+theme_override_colors/font_outline_color = Color(0.01, 0.015, 0.025, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 12
+text = "IDLE\nheard: none"
+horizontal_alignment = 1

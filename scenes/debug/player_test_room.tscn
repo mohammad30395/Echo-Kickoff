@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/debug/player_test_room_visual.gd" id="1_visual"]
 [ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/debug/player_test_room.gd" id="3_room"]
 [ext_resource type="Script" path="res://scripts/visual/echo_reveal_primitive.gd" id="4_reveal"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pulse_cooldown_hud.tscn" id="5_pulse_hud"]
+[ext_resource type="PackedScene" path="res://scenes/entities/listener.tscn" id="6_listener"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(1632, 32)
@@ -138,6 +139,10 @@ shape = SubResource("RectangleShape2D_obstacle_horizontal")
 [node name="Player" parent="." instance=ExtResource("2_player")]
 unique_name_in_owner = true
 
+[node name="Listener" parent="." instance=ExtResource("6_listener")]
+position = Vector2(300, -80)
+patrol_points = Array[Vector2]([Vector2(100, -180), Vector2(300, -180), Vector2(300, 180), Vector2(100, 180)])
+
 [node name="HUDLayer" type="CanvasLayer" parent="."]
 layer = 100
 
@@ -186,4 +191,4 @@ offset_bottom = 82.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.48, 0.66, 0.7, 1)
 theme_override_font_sizes/font_size = 14
-text = "Move: WASD / Arrows   •   Pulse: Space / LMB   •   Reveal room: F1   •   Pause: Esc\nF2 toggles pulse/noise/target debug visuals. No enemies or objectives yet."
+text = "Move: WASD / Arrows  •  Pulse: Space / LMB  •  Pause: Esc  •  Room reveal: F1\nDebug: F2 pulse/noise/targets  •  F3 Listener state/hearing. No objectives yet."
