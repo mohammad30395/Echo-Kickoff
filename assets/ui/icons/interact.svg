@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Original Echo Kickoff interact icon. 64 x 64, transparent, 4 px stroke. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <g stroke-linecap="square" stroke-linejoin="bevel" stroke-width="4">
+    <path d="M20 14H10V50H20M44 14H54V50H44" stroke="#5BE7F2"/>
+    <path d="M32 21L43 32L32 43L21 32Z" stroke="#D9FAFF"/>
+    <path d="M32 27L37 32L32 37L27 32Z" fill="#D9FAFF" stroke="#D9FAFF"/>
+    <path d="M20 54H44" stroke="#5BE7F2" opacity="0.45"/>
+    <path d="M20 54H35" stroke="#FF6B35"/>
+  </g>
+</svg>

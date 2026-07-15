@@ -12,6 +12,7 @@ config_version=5
 config/name="Echo Kickoff"
 run/main_scene="res://scenes/boot.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://assets/branding/game-icon.png"
 
 [autoload]
 

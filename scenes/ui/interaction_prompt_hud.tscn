@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/interaction_prompt_hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/interact.svg" id="2_icon"]
 
 [node name="InteractionPromptHud" type="Control"]
 layout_mode = 3
@@ -28,12 +29,23 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.008, 0.025, 0.04, 0.94)
 
+[node name="InteractIcon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 11.0
+offset_right = 35.0
+offset_bottom = 33.0
+texture = ExtResource("2_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
 [node name="PromptLabel" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 16.0
+offset_left = 42.0
 offset_top = 10.0
 offset_right = -16.0
 offset_bottom = 40.0
@@ -41,7 +53,7 @@ grow_horizontal = 2
 theme_override_colors/font_color = Color(0.72, 1, 0.9, 1)
 theme_override_colors/font_outline_color = Color(0.005, 0.012, 0.02, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 16
 text = "HOLD [E] // FACILITY CONTROL"
 horizontal_alignment = 1
 

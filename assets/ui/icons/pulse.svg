@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Original Echo Kickoff pulse icon. 64 x 64, transparent, 4 px stroke. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <g stroke-linecap="square" stroke-linejoin="bevel" stroke-width="4">
+    <path d="M8 32A24 24 0 0 1 32 8M32 56A24 24 0 0 1 8 32M32 8A24 24 0 0 1 52 18M52 46A24 24 0 0 1 32 56" stroke="#5BE7F2" opacity="0.52"/>
+    <path d="M18 32A14 14 0 0 1 32 18M32 46A14 14 0 0 1 18 32M32 18A14 14 0 0 1 43 23M43 41A14 14 0 0 1 32 46" stroke="#D9FAFF"/>
+    <path d="M32 25L39 32L32 39L25 32Z" fill="#D9FAFF" stroke="#D9FAFF"/>
+    <path d="M49 25L57 22L54 30M49 39L57 42L54 34" stroke="#FF6B35"/>
+  </g>
+</svg>

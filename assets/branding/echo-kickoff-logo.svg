@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Echo Kickoff original geometric logo
+  Author: Echo Kickoff jam team / Codex-assisted construction
+  Method: hand-authored SVG paths; no external font, logo, symbol, or generator
+  Canvas: 640 x 160; transparent background
+  License basis: original project work
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="160" viewBox="0 0 640 160" fill="none">
+  <g stroke-linecap="square" stroke-linejoin="bevel">
+    <path d="M24 80A52 52 0 0 1 76 28M76 132A52 52 0 0 1 24 80M76 28A52 52 0 0 1 121 54M121 106A52 52 0 0 1 76 132"
+      stroke="#5BE7F2" stroke-width="4" opacity="0.42"/>
+    <path d="M40 80A36 36 0 0 1 76 44M76 116A36 36 0 0 1 40 80M76 44A36 36 0 0 1 105 59M105 101A36 36 0 0 1 76 116"
+      stroke="#5BE7F2" stroke-width="4" opacity="0.86"/>
+    <path d="M57 80A19 19 0 0 1 76 61M76 99A19 19 0 0 1 57 80M76 61A19 19 0 0 1 91 68M91 92A19 19 0 0 1 76 99"
+      stroke="#D9FAFF" stroke-width="4"/>
+    <path d="M76 69L87 80L76 91L65 80Z" fill="#D9FAFF"/>
+    <path d="M110 65L126 59L120 75M110 95L126 101L120 85" stroke="#FF6B35" stroke-width="4"/>
+
+    <!-- Geometric path wordmark: ECHO KICKOFF. No font dependency. -->
+    <path d="
+      M180 56H156V104H180 M156 80H176
+      M220 56H196V104H220
+      M236 56V104 M260 56V104 M236 80H260
+      M276 56H300V104H276V56
+      M332 56V104 M332 80L356 56 M332 80L356 104
+      M372 56H396 M384 56V104 M372 104H396
+      M428 56H404V104H428
+      M440 56V104 M440 80L464 56 M440 80L464 104
+      M480 56H504V104H480V56
+      M520 104V56H546 M520 80H542
+      M560 104V56H586 M560 80H582"
+      stroke="#D9FAFF" stroke-width="6"/>
+    <path d="M156 124H516M532 124H586" stroke="#5BE7F2" stroke-width="4" opacity="0.62"/>
+    <path d="M532 124H586" stroke="#FF6B35" stroke-width="4"/>
+  </g>
+</svg>

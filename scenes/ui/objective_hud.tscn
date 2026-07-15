@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/objective_hud.gd" id="1_hud"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/relay.svg" id="2_icon"]
 
 [node name="ObjectiveHud" type="Control"]
 custom_minimum_size = Vector2(340, 92)
@@ -15,6 +16,18 @@ offset_bottom = 112.0
 grow_horizontal = 0
 mouse_filter = 2
 script = ExtResource("1_hud")
+
+[node name="RelayWatermark" type="TextureRect" parent="."]
+modulate = Color(0.55, 0.95, 1, 0.28)
+layout_mode = 0
+offset_left = 294.0
+offset_top = 8.0
+offset_right = 326.0
+offset_bottom = 40.0
+texture = ExtResource("2_icon")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
 
 [node name="ObjectiveLabel" type="Label" parent="."]
 unique_name_in_owner = true

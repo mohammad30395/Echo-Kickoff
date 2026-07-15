@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Original Echo Kickoff reactor-relay icon. 64 x 64, transparent, 4 px stroke. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <g stroke-linecap="square" stroke-linejoin="bevel" stroke-width="4">
+    <path d="M32 6L54 19V45L32 58L10 45V19L32 6Z" stroke="#5BE7F2"/>
+    <path d="M20 23H44M18 32H46M20 41H44" stroke="#D9FAFF"/>
+    <path d="M32 25L39 32L32 39L25 32Z" fill="#D9FAFF" stroke="#D9FAFF"/>
+    <path d="M14 17L20 21M50 17L44 21" stroke="#FF6B35"/>
+  </g>
+</svg>

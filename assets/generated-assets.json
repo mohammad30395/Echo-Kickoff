@@ -1,0 +1,23 @@
+{
+  "assets": [
+    {
+      "height": 512,
+      "mode": "RGBA",
+      "path": "assets/branding/game-icon.png",
+      "sha256": "e17893d1e63c4245eda97935ea868de196690c10b90eecd436ac39cd7bfad339",
+      "transparent_background": true,
+      "width": 512
+    },
+    {
+      "height": 500,
+      "mode": "RGBA",
+      "path": "marketing/itch-cover-draft.png",
+      "sha256": "a3767e6b9724dc9afa08c882db8fb867e3cc53a3c1145a7ba3745dec0568721c",
+      "transparent_background": false,
+      "width": 630
+    }
+  ],
+  "generator": "tools/generate_assets.py",
+  "generator_version": 1,
+  "supersample": 4
+}

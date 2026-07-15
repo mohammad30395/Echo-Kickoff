@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Original Echo Kickoff sound-decoy icon. 64 x 64, transparent, 4 px stroke. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <g stroke-linecap="square" stroke-linejoin="bevel" stroke-width="4">
+    <circle cx="9" cy="32" r="2" fill="#F7C84B" stroke="#F7C84B"/>
+    <circle cx="18" cy="32" r="2" fill="#F7C84B" stroke="#F7C84B"/>
+    <path d="M32 19L45 32L32 45L19 32Z" stroke="#F7C84B"/>
+    <path d="M32 26L38 32L32 38L26 32Z" fill="#F7C84B" stroke="#F7C84B"/>
+    <path d="M44 18A20 20 0 0 1 54 32A20 20 0 0 1 44 46" stroke="#FF6B35"/>
+    <path d="M49 10A30 30 0 0 1 61 32A30 30 0 0 1 49 54" stroke="#FF6B35" opacity="0.52"/>
+  </g>
+</svg>
