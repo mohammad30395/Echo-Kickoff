@@ -1,0 +1,13 @@
+# Deploy only the final Godot Web export and Vercel routing config.
+# This prevents root-level Vercel deploys from uploading source files,
+# Windows binaries, release ZIPs, or other ignored build artifacts.
+*
+!vercel.json
+!build/
+build/*
+!build/final/
+build/final/*
+!build/final/web/
+!build/final/web/**
+.vercel/
+.env*
