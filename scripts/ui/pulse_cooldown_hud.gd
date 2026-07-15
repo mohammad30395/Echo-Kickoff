@@ -12,14 +12,23 @@ var _controller: PlayerPulseController
 var _readiness: float = 1.0
 var _remaining: float = 0.0
 var _danger_message_remaining: float = 0.0
+var _accessibility_manager: Node
 
 
 func _ready() -> void:
 	set_process(false)
+	_accessibility_manager = get_node_or_null("/root/AccessibilityManager")
+	if _accessibility_manager != null:
+		_accessibility_manager.connect(&"settings_changed", _on_accessibility_changed)
 	debug_label.visible = show_debug_hint
 	if not show_debug_hint:
 		offset_top = -102.0
 	_refresh()
+
+
+func _exit_tree() -> void:
+	if _accessibility_manager != null and _accessibility_manager.is_connected(&"settings_changed", _on_accessibility_changed):
+		_accessibility_manager.disconnect(&"settings_changed", _on_accessibility_changed)
 
 
 func _process(delta: float) -> void:
@@ -75,23 +84,43 @@ func _refresh() -> void:
 	cooldown_bar.value = _readiness
 	if _danger_message_remaining > 0.0:
 		status_label.text = "ECHO KICKOFF: REVELATION + DANGER"
-		status_label.modulate = Color(1.0, 0.46, 0.25, 1.0)
+		status_label.modulate = _warning_color(Color(1.0, 0.46, 0.25, 1.0))
 	elif _remaining > 0.001:
 		status_label.text = "RECHARGING  %.1fs" % _remaining
-		status_label.modulate = Color(1.0, 0.65, 0.28, 1.0)
+		status_label.modulate = _warning_color(Color(1.0, 0.65, 0.28, 1.0))
 	elif _controller != null:
 		status_label.text = "READY  •  SPACE / LEFT MOUSE"
-		status_label.modulate = Color(0.45, 0.96, 1.0, 1.0)
+		status_label.modulate = _echo_color(Color(0.45, 0.96, 1.0, 1.0))
 	else:
 		status_label.text = "PULSE OFFLINE"
 		status_label.modulate = Color(0.55, 0.6, 0.64, 1.0)
 	cooldown_bar.modulate = (
-		Color(0.45, 0.96, 1.0, 1.0)
+		_echo_color(Color(0.45, 0.96, 1.0, 1.0))
 		if _readiness >= 0.999
-		else Color(1.0, 0.55, 0.24, 1.0)
+		else _warning_color(Color(1.0, 0.55, 0.24, 1.0))
 	)
 	debug_label.text = (
 		"F2  DEBUG RADII / TARGETS: ON"
 		if _controller != null and _controller.debug_visuals
 		else "F2  DEBUG RADII / TARGETS: OFF"
 	)
+
+
+func _on_accessibility_changed(
+	_high_contrast_enabled: bool,
+	_reduced_flash_enabled: bool,
+	_screen_shake_enabled: bool,
+) -> void:
+	_refresh()
+
+
+func _echo_color(default_color: Color) -> Color:
+	if _accessibility_manager == null:
+		return default_color
+	return _accessibility_manager.call(&"get_echo_color", default_color) as Color
+
+
+func _warning_color(default_color: Color) -> Color:
+	if _accessibility_manager == null:
+		return default_color
+	return _accessibility_manager.call(&"get_warning_color", default_color) as Color

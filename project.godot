@@ -18,6 +18,7 @@ config/icon="res://assets/branding/game-icon.png"
 
 EventBus="*res://scripts/autoload/event_bus.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
+AccessibilityManager="*res://scripts/autoload/accessibility_manager.gd"
 GameManager="*res://scripts/autoload/game_manager.gd"
 
 [display]

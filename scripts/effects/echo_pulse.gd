@@ -123,21 +123,30 @@ func _reveal_reached_targets() -> void:
 func _draw() -> void:
 	if not is_active:
 		return
+	var accessibility := get_node_or_null("/root/AccessibilityManager")
+	var flash_multiplier := 1.0
+	var visible_reveal_color := reveal_color
+	var visible_danger_color := danger_color
+	if accessibility != null:
+		flash_multiplier = float(accessibility.call(&"get_flash_multiplier"))
+		visible_reveal_color = accessibility.call(&"get_echo_color", reveal_color) as Color
+		visible_danger_color = accessibility.call(&"get_warning_color", danger_color) as Color
 	var progress := get_progress()
-	var pulse_alpha := lerpf(1.0, 0.32, progress)
+	var pulse_alpha := lerpf(0.82, 0.28, progress) * flash_multiplier
 	if current_radius >= 1.0:
-		var glow := reveal_color
+		var glow := visible_reveal_color
 		glow.a = 0.14 * pulse_alpha
 		draw_arc(Vector2.ZERO, current_radius, 0.0, TAU, 96, glow, 9.0)
-		var core := reveal_color
+		var core := visible_reveal_color
 		core.a = pulse_alpha
 		draw_arc(Vector2.ZERO, current_radius, 0.0, TAU, 96, core, 2.5)
-		_draw_danger_arcs(current_radius + 6.0, pulse_alpha)
+		if not (accessibility != null and bool(accessibility.get("reduced_flash_enabled"))):
+			_draw_danger_arcs(current_radius + 6.0, pulse_alpha, visible_danger_color)
 
 	var warning_alpha := clampf(1.0 - progress * 2.2, 0.0, 1.0)
 	if warning_alpha > 0.0:
-		var warning := danger_color
-		warning.a = warning_alpha
+		var warning := visible_danger_color
+		warning.a = warning_alpha * flash_multiplier
 		draw_polyline(
 			PackedVector2Array([
 				Vector2(0.0, -12.0),
@@ -154,8 +163,8 @@ func _draw() -> void:
 		_draw_debug_visuals()
 
 
-func _draw_danger_arcs(radius: float, alpha: float) -> void:
-	var color := danger_color
+func _draw_danger_arcs(radius: float, alpha: float, source_color: Color) -> void:
+	var color := source_color
 	color.a = 0.78 * alpha
 	for index in range(8):
 		var start_angle := index * TAU / 8.0

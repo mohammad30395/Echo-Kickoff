@@ -125,6 +125,14 @@ func _weakly_reveal_impact_area() -> void:
 
 
 func _draw() -> void:
+	var accessibility := get_node_or_null("/root/AccessibilityManager")
+	var visible_flight_color := flight_color
+	var visible_impact_color := impact_color
+	var flash_multiplier := 1.0
+	if accessibility != null:
+		visible_flight_color = accessibility.call(&"get_warning_color", flight_color) as Color
+		visible_impact_color = accessibility.call(&"get_warning_color", impact_color) as Color
+		flash_multiplier = float(accessibility.call(&"get_flash_multiplier"))
 	if not has_impacted:
 		var visual_center := Vector2(0.0, -get_visual_height())
 		var diamond := PackedVector2Array([
@@ -133,16 +141,16 @@ func _draw() -> void:
 			visual_center + Vector2(0.0, 7.0),
 			visual_center + Vector2(-7.0, 0.0),
 		])
-		draw_colored_polygon(diamond, Color(flight_color, 0.42))
-		draw_polyline(diamond + PackedVector2Array([diamond[0]]), flight_color, 2.0)
-		draw_line(visual_center + Vector2(-3.0, 0.0), visual_center + Vector2(3.0, 0.0), flight_color, 1.5)
+		draw_colored_polygon(diamond, Color(visible_flight_color, 0.42))
+		draw_polyline(diamond + PackedVector2Array([diamond[0]]), visible_flight_color, 2.0)
+		draw_line(visual_center + Vector2(-3.0, 0.0), visual_center + Vector2(3.0, 0.0), visible_flight_color, 1.5)
 		return
 	var impact_progress := clampf(_impact_elapsed / impact_visual_duration, 0.0, 1.0)
-	var alpha := 1.0 - impact_progress
+	var alpha := (1.0 - impact_progress) * flash_multiplier
 	for radius_scale: float in [0.55, 1.0]:
-		var ring := impact_color
+		var ring := visible_impact_color
 		ring.a = alpha * (0.9 if radius_scale < 1.0 else 0.55)
 		draw_arc(Vector2.ZERO, lerpf(7.0, 48.0 * radius_scale, impact_progress), 0.0, TAU, 32, ring, 2.0)
-	var center_color := impact_color
+	var center_color := visible_impact_color
 	center_color.a = alpha
 	draw_circle(Vector2.ZERO, 4.0, center_color)

@@ -131,9 +131,16 @@ func _on_decoy_impact(noise_event: NoiseEvent) -> void:
 func _draw() -> void:
 	if not show_aim_indicator or remaining_charges <= 0 or not is_instance_valid(_player):
 		return
+	var accessibility := get_node_or_null("/root/AccessibilityManager")
 	var color := invalid_color
 	if aim_is_valid:
 		color = clamped_color if aim_was_wall_clamped else valid_color
+	if accessibility != null:
+		color = (
+			accessibility.call(&"get_warning_color", color) as Color
+			if aim_was_wall_clamped or not aim_is_valid
+			else accessibility.call(&"get_echo_color", color) as Color
+		)
 	var points := get_trajectory_points()
 	for index in range(1, points.size() - 1):
 		if index % 2 == 1:

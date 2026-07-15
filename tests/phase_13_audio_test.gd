@@ -168,7 +168,7 @@ func _test_independent_volume_controls() -> void:
 	_expect(paused and pause_overlay != null, "Playing round did not open the pause audio controls.")
 	if pause_overlay == null:
 		return
-	var panel := pause_overlay.get_node(^"Center/Content/AudioSettingsPanel") as AudioSettingsPanel
+	var panel := pause_overlay.find_child("AudioSettingsPanel", true, false) as AudioSettingsPanel
 	_expect(panel != null, "Pause Menu does not contain the reusable audio settings panel.")
 	if panel == null:
 		return

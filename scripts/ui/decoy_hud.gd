@@ -6,11 +6,20 @@ extends Control
 var controller: PlayerDecoyController
 var remaining_charges: int = 0
 var maximum_charges: int = 2
+var _accessibility_manager: Node
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_accessibility_manager = get_node_or_null("/root/AccessibilityManager")
+	if _accessibility_manager != null:
+		_accessibility_manager.connect(&"settings_changed", _on_accessibility_changed)
 	queue_redraw()
+
+
+func _exit_tree() -> void:
+	if _accessibility_manager != null and _accessibility_manager.is_connected(&"settings_changed", _on_accessibility_changed):
+		_accessibility_manager.disconnect(&"settings_changed", _on_accessibility_changed)
 
 
 func bind(decoy_controller: PlayerDecoyController) -> void:
@@ -41,10 +50,15 @@ func _refresh() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.008, 0.025, 0.04, 0.9), true)
+	var panel_color := Color(0.008, 0.025, 0.04, 0.9)
+	var active_color := Color(0.94, 0.72, 0.24, 1.0)
+	if _accessibility_manager != null:
+		panel_color = _accessibility_manager.call(&"get_panel_color", panel_color) as Color
+		active_color = _accessibility_manager.call(&"get_warning_color", active_color) as Color
+	draw_rect(Rect2(Vector2.ZERO, size), panel_color, true)
 	for index in range(maximum_charges):
 		var center := Vector2(24.0 + index * 30.0, 52.0)
-		var color := Color(0.94, 0.72, 0.24, 1.0) if index < remaining_charges else Color(0.38, 0.33, 0.24, 0.65)
+		var color := active_color if index < remaining_charges else Color(0.38, 0.33, 0.24, 0.65)
 		var diamond := PackedVector2Array([
 			center + Vector2(0.0, -8.0),
 			center + Vector2(8.0, 0.0),
@@ -54,3 +68,11 @@ func _draw() -> void:
 		if index < remaining_charges:
 			draw_colored_polygon(diamond, Color(color, 0.4))
 		draw_polyline(diamond + PackedVector2Array([diamond[0]]), color, 2.0)
+
+
+func _on_accessibility_changed(
+	_high_contrast_enabled: bool,
+	_reduced_flash_enabled: bool,
+	_screen_shake_enabled: bool,
+) -> void:
+	queue_redraw()

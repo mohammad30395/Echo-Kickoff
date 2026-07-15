@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/accessibility_settings_panel.gd" id="1_access"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.012, 0.04, 0.062, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.56, 0.62, 0.55)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+
+[node name="AccessibilitySettingsPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(340, 128)
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+script = ExtResource("1_access")
+
+[node name="Rows" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Heading" type="Label" parent="Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.9, 0.94, 1)
+theme_override_font_sizes/font_size = 12
+text = "ACCESSIBILITY"
+
+[node name="HighContrastBox" type="CheckBox" parent="Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "HIGH CONTRAST"
+
+[node name="ReducedFlashBox" type="CheckBox" parent="Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "REDUCED FLASH"
+
+[node name="ScreenShakeBox" type="CheckBox" parent="Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+theme_override_font_sizes/font_size = 14
+text = "SCREEN SHAKE"

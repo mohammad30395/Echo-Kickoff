@@ -1,9 +1,26 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="Script" path="res://scripts/ui/procedural_background.gd" id="2_background"]
 [ext_resource type="Texture2D" path="res://assets/branding/echo-kickoff-logo.svg" id="3_logo"]
 [ext_resource type="PackedScene" path="res://scenes/ui/audio_settings_panel.tscn" id="4_audio"]
+[ext_resource type="PackedScene" path="res://scenes/ui/accessibility_settings_panel.tscn" id="5_access"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_info"]
+bg_color = Color(0.012, 0.04, 0.062, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.78, 0.86, 0.55)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -43,9 +60,9 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Content" type="VBoxContainer" parent="Center"]
-custom_minimum_size = Vector2(560, 0)
+custom_minimum_size = Vector2(820, 0)
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 10
 
 [node name="Eyebrow" type="Label" parent="Center/Content"]
 layout_mode = 2
@@ -55,8 +72,9 @@ text = "IUT 12TH ICT FEST 2026 // KICKOFF"
 horizontal_alignment = 1
 
 [node name="Logo" type="TextureRect" parent="Center/Content"]
-custom_minimum_size = Vector2(560, 140)
+custom_minimum_size = Vector2(520, 112)
 layout_mode = 2
+size_flags_horizontal = 4
 texture = ExtResource("3_logo")
 expand_mode = 2
 stretch_mode = 5
@@ -70,21 +88,78 @@ text = "Every pulse reveals the way — and tells them where you are."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="Spacer" type="Control" parent="Center/Content"]
-custom_minimum_size = Vector2(0, 20)
-layout_mode = 2
-mouse_filter = 2
-
-[node name="NewGameButton" type="Button" parent="Center/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 56)
+[node name="ButtonRow" type="HBoxContainer" parent="Center/Content"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/separation = 12
+
+[node name="NewGameButton" type="Button" parent="Center/Content/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 50)
+layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "START // NEW GAME"
 
-[node name="AudioSettingsPanel" parent="Center/Content" instance=ExtResource("4_audio")]
+[node name="HowToPlayButton" type="Button" parent="Center/Content/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "HOW TO PLAY"
+
+[node name="CreditsButton" type="Button" parent="Center/Content/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "CREDITS"
+
+[node name="SettingsRow" type="HBoxContainer" parent="Center/Content"]
+layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/separation = 16
+
+[node name="AudioSettingsPanel" parent="Center/Content/SettingsRow" instance=ExtResource("4_audio")]
+layout_mode = 2
+
+[node name="AccessibilitySettingsPanel" parent="Center/Content/SettingsRow" instance=ExtResource("5_access")]
+layout_mode = 2
+
+[node name="InfoPanel" type="PanelContainer" parent="Center/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(560, 126)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_info")
+
+[node name="InfoContent" type="VBoxContainer" parent="Center/Content/InfoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="InfoTitle" type="Label" parent="Center/Content/InfoPanel/InfoContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "HOW TO PLAY"
+horizontal_alignment = 1
+
+[node name="InfoBody" type="Label" parent="Center/Content/InfoPanel/InfoContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.82, 0.86, 1)
+theme_override_font_sizes/font_size = 14
+text = "Move first: WASD or arrows."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CloseInfoButton" type="Button" parent="Center/Content/InfoPanel/InfoContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 14
+text = "BACK"
 
 [node name="Controls" type="Label" parent="Center/Content"]
 layout_mode = 2

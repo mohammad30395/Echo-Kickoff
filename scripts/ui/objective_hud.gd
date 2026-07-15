@@ -8,11 +8,20 @@ var active_relays: int = 0
 var required_relays: int = 3
 var extraction_ready: bool = false
 var mission_complete: bool = false
+var _accessibility_manager: Node
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_accessibility_manager = get_node_or_null("/root/AccessibilityManager")
+	if _accessibility_manager != null:
+		_accessibility_manager.connect(&"settings_changed", _on_accessibility_changed)
 	queue_redraw()
+
+
+func _exit_tree() -> void:
+	if _accessibility_manager != null and _accessibility_manager.is_connected(&"settings_changed", _on_accessibility_changed):
+		_accessibility_manager.disconnect(&"settings_changed", _on_accessibility_changed)
 
 
 func bind(mission_controller: MissionObjectiveController) -> void:
@@ -61,7 +70,10 @@ func _refresh() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.008, 0.025, 0.04, 0.92), true)
+	var panel_color := Color(0.008, 0.025, 0.04, 0.92)
+	if _accessibility_manager != null:
+		panel_color = _accessibility_manager.call(&"get_panel_color", panel_color) as Color
+	draw_rect(Rect2(Vector2.ZERO, size), panel_color, true)
 	var relay_spacing := 34.0
 	for index in range(required_relays):
 		var center := Vector2(24.0 + index * relay_spacing, 27.0)
@@ -78,6 +90,8 @@ func _draw_relay_icon(center: Vector2, active: bool) -> void:
 		var angle := -PI * 0.5 + TAU * index / 6.0
 		points.append(center + Vector2.from_angle(angle) * radius)
 	var color := Color(0.35, 1.0, 0.68, 1.0) if active else Color(0.28, 0.58, 0.64, 0.7)
+	if _accessibility_manager != null:
+		color = _accessibility_manager.call(&"get_echo_color", color) as Color
 	draw_polyline(points, color, 2.0)
 	if active:
 		draw_colored_polygon(
@@ -99,6 +113,12 @@ func _draw_extraction_icon(center: Vector2) -> void:
 		if extraction_ready
 		else Color(1.0, 0.42, 0.2, 0.85)
 	)
+	if _accessibility_manager != null:
+		color = (
+			_accessibility_manager.call(&"get_echo_color", color) as Color
+			if extraction_ready
+			else _accessibility_manager.call(&"get_warning_color", color) as Color
+		)
 	if extraction_ready:
 		for offset in [-6.0, 6.0]:
 			draw_polyline(
@@ -116,3 +136,11 @@ func _draw_extraction_icon(center: Vector2) -> void:
 		draw_line(center + Vector2(7.0, -6.0), center + Vector2(-7.0, 6.0), color, 2.0)
 	if mission_complete:
 		draw_circle(center, 16.0, color, false, 2.0)
+
+
+func _on_accessibility_changed(
+	_high_contrast_enabled: bool,
+	_reduced_flash_enabled: bool,
+	_screen_shake_enabled: bool,
+) -> void:
+	queue_redraw()

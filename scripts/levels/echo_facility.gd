@@ -3,11 +3,24 @@ extends Node2D
 
 signal onboarding_stage_changed(stage: int, message: String)
 signal listener_alerted(listener: Listener)
+signal tutorial_step_completed(step_id: StringName)
 
 const LEVEL_BOUNDS := Rect2(-3400.0, -1700.0, 6600.0, 3400.0)
 const START_POSITION := Vector2(-3150.0, 0.0)
 const MOVEMENT_LEARN_DISTANCE := 76.0
-const MESSAGE_DURATION := 4.2
+const SHAKE_OFFSETS: Array[Vector2] = [
+	Vector2(4.0, -2.0),
+	Vector2(-3.0, 3.0),
+	Vector2(2.0, 2.0),
+	Vector2.ZERO,
+]
+
+const TUTORIAL_MOVE: StringName = &"move"
+const TUTORIAL_PULSE: StringName = &"pulse"
+const TUTORIAL_DANGER: StringName = &"danger"
+const TUTORIAL_INTERACT: StringName = &"interact"
+const TUTORIAL_DECOY: StringName = &"decoy"
+const TUTORIAL_EXTRACTION: StringName = &"extraction"
 
 @onready var orientation_sector: OrientationSector = %OrientationSector
 @onready var laboratory_sector: LaboratorySector = %LaboratorySector
@@ -29,9 +42,12 @@ const MESSAGE_DURATION := 4.2
 var onboarding_stage: int = 0
 var listener_was_alerted: bool = false
 var elapsed_run_time: float = 0.0
-var _message_remaining: float = 0.0
+var current_tutorial_step: StringName = &""
+var _tutorial_completed: Dictionary[StringName, bool] = {}
+var _shake_tween: Tween
 var _pulse_controller: PlayerPulseController
 var _decoy_controller: PlayerDecoyController
+var _interaction_controller: PlayerInteractionController
 
 
 func _ready() -> void:
@@ -44,29 +60,32 @@ func _ready() -> void:
 	for active_listener: Listener in get_listeners():
 		active_listener.allow_debug_input = false
 		active_listener.set_debug_enabled(false)
-	var interaction_controller := player.get_node(^"%InteractionController") as PlayerInteractionController
+	_interaction_controller = player.get_node(^"%InteractionController") as PlayerInteractionController
 	pulse_hud.bind(_pulse_controller)
 	objective_hud.bind(mission_controller)
-	interaction_prompt_hud.bind(interaction_controller)
+	interaction_prompt_hud.bind(_interaction_controller)
 	decoy_hud.bind(_decoy_controller)
 	_pulse_controller.pulse_started.connect(_on_pulse_started)
+	_decoy_controller.decoy_thrown.connect(_on_decoy_thrown)
+	_interaction_controller.focus_changed.connect(_on_interaction_focus_changed)
+	_interaction_controller.interaction_completed.connect(_on_interaction_completed)
 	for active_listener: Listener in get_listeners():
 		active_listener.noise_target_changed.connect(
 			_on_listener_noise_target_changed.bind(active_listener),
 		)
 	mission_controller.objective_changed.connect(_on_objective_changed)
 	mission_controller.extraction_state_changed.connect(_on_extraction_state_changed)
-	_set_onboarding_message(0, "MOVE // WASD OR ARROW KEYS", 0.0)
+	_show_tutorial_step(TUTORIAL_MOVE, 0, "MOVE // WASD OR ARROW KEYS")
 
 
 func _process(delta: float) -> void:
 	elapsed_run_time += maxf(delta, 0.0)
-	if onboarding_stage == 0 and player.global_position.distance_to(START_POSITION) >= MOVEMENT_LEARN_DISTANCE:
-		_set_onboarding_message(1, "ECHO // SPACE OR LEFT MOUSE", 0.0)
-	if _message_remaining > 0.0:
-		_message_remaining = move_toward(_message_remaining, 0.0, maxf(delta, 0.0))
-		if is_zero_approx(_message_remaining):
-			onboarding_hud.clear_message()
+	if (
+		not is_tutorial_completed(TUTORIAL_MOVE)
+		and player.global_position.distance_to(START_POSITION) >= MOVEMENT_LEARN_DISTANCE
+	):
+		_complete_tutorial_step(TUTORIAL_MOVE)
+		_show_tutorial_step(TUTORIAL_PULSE, 1, "PULSE // SPACE OR LEFT MOUSE")
 
 
 func get_sectors() -> Array[FacilitySector]:
@@ -128,11 +147,13 @@ func _configure_player_camera() -> void:
 
 
 func _on_pulse_started(_pulse: EchoPulse, _noise_event: NoiseEvent) -> void:
-	if onboarding_stage <= 1:
-		_set_onboarding_message(
+	_request_screen_shake(1.0, 0.14)
+	if not is_tutorial_completed(TUTORIAL_PULSE):
+		_complete_tutorial_step(TUTORIAL_PULSE)
+		_show_tutorial_step(
+			TUTORIAL_DANGER,
 			2,
-			"ECHO REVEALS THE FACILITY // ECHO ALSO TRAVELS",
-			MESSAGE_DURATION,
+			"PULSE REVEALS // PULSE ALSO CALLS LISTENERS",
 		)
 
 
@@ -143,11 +164,13 @@ func _on_listener_noise_target_changed(
 ) -> void:
 	if category == NoiseEvent.CATEGORY_SOUND_DECOY:
 		listener_was_alerted = true
-		_set_onboarding_message(
-			3,
-			"LISTENER DIVERTED // MOVE WHILE IT INVESTIGATES",
-			MESSAGE_DURATION,
-		)
+		if not is_tutorial_completed(TUTORIAL_DECOY):
+			_complete_tutorial_step(TUTORIAL_DECOY)
+			_show_tutorial_step(
+				TUTORIAL_INTERACT,
+				4,
+				"HOLD E AT RELAYS // KEEP MOVING AFTER",
+			)
 		listener_alerted.emit(active_listener)
 		return
 	if listener_was_alerted or category not in [
@@ -156,11 +179,10 @@ func _on_listener_noise_target_changed(
 	]:
 		return
 	listener_was_alerted = true
-	_set_onboarding_message(
-		3,
-		"LISTENER ALERTED // BREAK LINE OF SIGHT",
-		MESSAGE_DURATION,
-	)
+	if not is_tutorial_completed(TUTORIAL_DANGER):
+		_complete_tutorial_step(TUTORIAL_DANGER)
+	if not is_tutorial_completed(TUTORIAL_DECOY):
+		_show_tutorial_step(TUTORIAL_DECOY, 3, "DECOY // Q OR RIGHT MOUSE DIVERTS DANGER")
 	listener_alerted.emit(active_listener)
 
 
@@ -168,21 +190,94 @@ func _on_objective_changed(active_relays: int, required_relays: int) -> void:
 	if active_relays <= 0:
 		return
 	if active_relays >= required_relays:
-		_set_onboarding_message(5, "EXTRACTION POWERED // RETURN TO ENTRY", MESSAGE_DURATION)
+		_show_tutorial_step(TUTORIAL_EXTRACTION, 5, "EXTRACTION POWERED // RETURN TO ENTRY")
 		return
 	if active_relays == 1:
-		_set_onboarding_message(4, "RELAY ONLINE // SIDE ROUTES CREATE DISTANCE", MESSAGE_DURATION)
+		_show_tutorial_step(TUTORIAL_INTERACT, 4, "RELAY ONLINE // SIDE ROUTES CREATE DISTANCE")
 	else:
-		_set_onboarding_message(4, "ONE RELAY REMAINS // SAVE A DECOY FOR WITHDRAWAL", MESSAGE_DURATION)
+		_show_tutorial_step(TUTORIAL_INTERACT, 4, "ONE RELAY REMAINS // SAVE A DECOY")
 
 
 func _on_extraction_state_changed(unlocked: bool) -> void:
 	if unlocked:
-		_set_onboarding_message(5, "EXTRACTION POWERED // RETURN TO ENTRY", MESSAGE_DURATION)
+		_show_tutorial_step(TUTORIAL_EXTRACTION, 5, "EXTRACTION POWERED // RETURN TO ENTRY")
 
 
-func _set_onboarding_message(stage: int, message: String, duration: float) -> void:
+func is_tutorial_completed(step_id: StringName) -> bool:
+	return _tutorial_completed.has(step_id)
+
+
+func get_completed_tutorial_steps() -> Array[StringName]:
+	var steps: Array[StringName] = []
+	for step_id: StringName in _tutorial_completed:
+		steps.append(step_id)
+	return steps
+
+
+func _on_decoy_thrown(_decoy: SoundDecoy, _landing_position: Vector2) -> void:
+	if not is_tutorial_completed(TUTORIAL_DECOY):
+		_complete_tutorial_step(TUTORIAL_DECOY)
+		_show_tutorial_step(TUTORIAL_INTERACT, 4, "HOLD E AT RELAYS // WATCH FOR LISTENERS")
+
+
+func _on_interaction_focus_changed(interactable: FacilityInteractable) -> void:
+	if (
+		interactable != null
+		and not is_tutorial_completed(TUTORIAL_INTERACT)
+		and is_tutorial_completed(TUTORIAL_PULSE)
+	):
+		_show_tutorial_step(TUTORIAL_INTERACT, 4, "HOLD E // RESTORE RELAYS OR EXTRACTION")
+
+
+func _on_interaction_completed(_interactable: FacilityInteractable) -> void:
+	if not is_tutorial_completed(TUTORIAL_INTERACT):
+		_complete_tutorial_step(TUTORIAL_INTERACT)
+
+
+func _show_tutorial_step(step_id: StringName, stage: int, message: String) -> void:
+	if is_tutorial_completed(step_id):
+		return
+	current_tutorial_step = step_id
 	onboarding_stage = maxi(onboarding_stage, stage)
-	_message_remaining = maxf(duration, 0.0)
 	onboarding_hud.show_message(message)
 	onboarding_stage_changed.emit(onboarding_stage, message)
+
+
+func _complete_tutorial_step(step_id: StringName) -> void:
+	if is_tutorial_completed(step_id):
+		return
+	_tutorial_completed[step_id] = true
+	tutorial_step_completed.emit(step_id)
+	if current_tutorial_step == step_id:
+		current_tutorial_step = &""
+		onboarding_hud.clear_message()
+
+
+func _request_screen_shake(strength: float, duration: float) -> void:
+	var accessibility := get_node_or_null("/root/AccessibilityManager")
+	var shake_multiplier := 1.0
+	if accessibility != null:
+		shake_multiplier = float(accessibility.call(&"get_shake_multiplier"))
+	if _shake_tween != null and _shake_tween.is_valid():
+		_shake_tween.kill()
+	if shake_multiplier <= 0.0:
+		_reset_camera_offset()
+		return
+	var camera := player.get_node(^"%Camera2D") as Camera2D
+	_shake_tween = create_tween()
+	_shake_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	var step_duration := maxf(duration, 0.01) / float(SHAKE_OFFSETS.size())
+	for offset: Vector2 in SHAKE_OFFSETS:
+		_shake_tween.tween_property(
+			camera,
+			"offset",
+			offset * strength * shake_multiplier,
+			step_duration,
+		)
+	_shake_tween.finished.connect(_reset_camera_offset, CONNECT_ONE_SHOT)
+
+
+func _reset_camera_offset() -> void:
+	if is_instance_valid(player):
+		var camera := player.get_node(^"%Camera2D") as Camera2D
+		camera.offset = Vector2.ZERO

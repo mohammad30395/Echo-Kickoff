@@ -75,15 +75,21 @@ func _draw() -> void:
 
 
 func _draw_player_caught() -> void:
+	var accessibility := get_node_or_null("/root/AccessibilityManager")
+	var flash_multiplier := 1.0
+	var cut_color := Color(1.0, 0.25, 0.28, 0.82)
+	if accessibility != null:
+		flash_multiplier = float(accessibility.call(&"get_flash_multiplier"))
+		cut_color = accessibility.call(&"get_warning_color", cut_color) as Color
 	var center := size * 0.5
-	var flash := 0.24 + death_progress * 0.42
+	var flash := (0.18 + death_progress * 0.32) * flash_multiplier
 	draw_rect(Rect2(Vector2.ZERO, size), Color(0.12, 0.005, 0.015, flash), true)
 	for index in range(3):
 		var ring_progress := fposmod(death_progress + float(index) * 0.24, 1.0)
 		var radius := lerpf(36.0, maxf(size.x, size.y) * 0.58, ring_progress)
-		var ring_color := Color(1.0, 0.16, 0.2, (1.0 - ring_progress) * 0.72)
+		var ring_color := cut_color
+		ring_color.a = (1.0 - ring_progress) * 0.58 * flash_multiplier
 		draw_arc(center, radius, 0.0, TAU, 80, ring_color, 3.0)
-	var cut_color := Color(1.0, 0.25, 0.28, 0.82)
 	var cut_half_width := minf(size.x * 0.28, 330.0)
 	var spread := lerpf(8.0, 44.0, death_progress)
 	draw_line(center + Vector2(-cut_half_width, -spread), center + Vector2(cut_half_width, spread), cut_color, 4.0)
