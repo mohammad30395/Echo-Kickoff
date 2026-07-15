@@ -44,4 +44,7 @@ func get_line_of_sight_exclusions() -> Array[RID]:
 func _perform_activation(actor: Node2D) -> void:
 	door_visual.set_door_state(true, true)
 	blocker_shape.set_deferred(&"disabled", true)
+	var audio_manager := get_node_or_null("/root/AudioManager")
+	if audio_manager != null:
+		audio_manager.call(&"play_cue", &"door_open")
 	door_opened.emit(self, actor)

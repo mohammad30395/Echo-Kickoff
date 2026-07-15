@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="Script" path="res://scripts/ui/procedural_background.gd" id="2_background"]
 [ext_resource type="Texture2D" path="res://assets/branding/echo-kickoff-logo.svg" id="3_logo"]
+[ext_resource type="PackedScene" path="res://scenes/ui/audio_settings_panel.tscn" id="4_audio"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -80,11 +81,14 @@ custom_minimum_size = Vector2(320, 56)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 20
-text = "NEW GAME"
+text = "START // NEW GAME"
+
+[node name="AudioSettingsPanel" parent="Center/Content" instance=ExtResource("4_audio")]
+size_flags_horizontal = 4
 
 [node name="Controls" type="Label" parent="Center/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.48, 0.54, 1)
 theme_override_font_sizes/font_size = 14
-text = "Mouse or Arrow Keys + Enter"
+text = "Start enables browser audio • Tab selects mix controls"
 horizontal_alignment = 1

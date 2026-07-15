@@ -13,7 +13,7 @@ Source evidence should be retained locally with the project archive when applica
 
 ## Current inventory
 
-At Phase 12 there are **no third-party image, audio, font, model, video, or other asset files**. The inventory consists of original jam-authored runtime drawing, five original path-only SVGs, and two exact-size original PNGs produced by the repository's deterministic generator. No downloaded reference, stock element, external font, model, sample, photograph, or generative-image service was used.
+At Phase 13 there are **no third-party image, audio, font, model, video, or other asset files**. The inventory consists of original jam-authored runtime drawing, five original path-only SVGs, two exact-size original PNGs produced by the repository's deterministic visual generator, and ten original mono PCM16 WAV cues produced by the repository's deterministic audio generator. No downloaded reference, stock element, external font, model, sample, photograph, recorded third-party sound, or generative-image/audio service was used.
 
 | ID | Repository path | Type | Creator/source | Created/acquired | Rights basis | Modifications | Status |
 |---|---|---|---|---|---|---|---|
@@ -29,6 +29,12 @@ At Phase 12 there are **no third-party image, audio, font, model, video, or othe
 | VIS-010 | `scripts/levels/facility_sector.gd`, `scripts/levels/orientation_sector.gd`, `scripts/levels/laboratory_sector.gd`, `scripts/levels/extraction_sector.gd`, `scripts/levels/echo_facility.gd`, `scenes/levels/echo_facility.tscn`, `scenes/levels/sectors/orientation_sector.tscn`, `scenes/levels/sectors/laboratory_sector.tscn`, `scenes/levels/sectors/extraction_sector.tscn` | Runtime procedural final facility content and reusable sector vocabulary | Jam-authored GDScript and authored Godot scenes | 2026-07-15 | Original work; built-in Godot rectangles, lines, circles, collision shapes, and existing reveal primitives | Orientation, main Laboratory, and Extraction signatures; compact room motifs; walls, props, hazard marks, safe observation pockets, and authored route topology | Approved |
 | VIS-011 | `assets/branding/echo-kickoff-logo.svg`, `assets/ui/icons/pulse.svg`, `assets/ui/icons/interact.svg`, `assets/ui/icons/decoy.svg`, `assets/ui/icons/relay.svg` | Transparent path-only SVG logo and semantic UI icon set | Jam-authored SVG geometry; designed and written directly in this repository | 2026-07-15 | Original work; no font, embedded image, filter, script, external link, copied logo, or protected character | 640x160 geometric wordmark/echo mark; four 64x64 icons using a shared 4 px line weight and the established cyan/ink/orange/gold palette | Approved |
 | VIS-012 | `assets/branding/game-icon.png`, `marketing/itch-cover-draft.png`, `tools/generate_assets.py`, `assets/generated-assets.json` | Exact-size generated PNG branding set plus reproducible source and manifest | Jam-authored deterministic Pillow drawing primitives; no random, network, font, external image, or generative-image input | 2026-07-15 | Original work; generator and SHA-256 provenance retained in repository | 512x512 RGBA game icon with transparent surround; 630x500 RGBA intentionally opaque itch cover draft; 4x supersampling and Lanczos downsampling | Approved |
+| AUD-001 | `assets/audio/echo_pulse.wav`, `assets/audio/echo_pulse.wav.import` | Main Echo Pulse sound | Jam-authored deterministic mathematical synthesis in `tools/generate_audio_assets.py`; recorded in `assets/audio/generated-audio.json` | 2026-07-15 | Original project audio; no source sample, third-party license, or attribution dependency | Mono PCM16 WAV, 24 kHz, 0.860 s, peak -7.00 dBFS, broad click plus descending tonal echo | Approved |
+| AUD-002 | `assets/audio/footstep.wav`, `assets/audio/footstep.wav.import` | Quiet player footstep | Jam-authored deterministic mathematical synthesis in `tools/generate_audio_assets.py`; recorded in `assets/audio/generated-audio.json` | 2026-07-15 | Original project audio; no source sample, third-party license, or attribution dependency | Mono PCM16 WAV, 24 kHz, 0.140 s, peak -18.00 dBFS, quiet low thud plus grit | Approved |
+| AUD-003 | `assets/audio/listener_movement.wav`, `assets/audio/listener_alert.wav`, matching `.import` files | Listener movement and alert cues | Jam-authored deterministic mathematical synthesis in `tools/generate_audio_assets.py`; recorded in `assets/audio/generated-audio.json` | 2026-07-15 | Original project audio; no source sample, third-party license, or attribution dependency | Movement: 0.250 s, peak -14.00 dBFS, dry scrape plus low joint tone. Alert: 0.720 s, peak -7.00 dBFS, rising gated warning interval. Both mono PCM16 WAV at 24 kHz | Approved |
+| AUD-004 | `assets/audio/decoy_impact.wav`, `assets/audio/relay_activation.wav`, `assets/audio/door_open.wav`, matching `.import` files | Interaction and objective cues | Jam-authored deterministic mathematical synthesis in `tools/generate_audio_assets.py`; recorded in `assets/audio/generated-audio.json` | 2026-07-15 | Original project audio; no source sample, third-party license, or attribution dependency | Decoy impact: 0.380 s, peak -8.00 dBFS. Relay activation: 1.420 s, peak -6.00 dBFS. Door open: 0.680 s, peak -10.00 dBFS. All mono PCM16 WAV at 24 kHz | Approved |
+| AUD-005 | `assets/audio/player_caught.wav`, `assets/audio/victory_extraction.wav`, matching `.import` files | Failure and victory cues | Jam-authored deterministic mathematical synthesis in `tools/generate_audio_assets.py`; recorded in `assets/audio/generated-audio.json` | 2026-07-15 | Original project audio; no source sample, third-party license, or attribution dependency | Caught: 0.500 s, peak -7.00 dBFS, restrained low impact. Victory/extraction: 1.820 s, peak -8.00 dBFS, ascending harmonic beacon. Both mono PCM16 WAV at 24 kHz | Approved |
+| AUD-006 | `assets/audio/industrial_ambience.wav`, `assets/audio/industrial_ambience.wav.import` | Low industrial ambience loop | Jam-authored deterministic mathematical synthesis in `tools/generate_audio_assets.py`; recorded in `assets/audio/generated-audio.json` | 2026-07-15 | Original project audio; no source sample, third-party license, or attribution dependency | Mono PCM16 WAV, 24 kHz, 6.000 s, peak -20.00 dBFS, seamless low industrial hum imported as forward loop on the Ambience bus | Approved |
 
 ## Planned procedural/team-created assets
 
@@ -41,11 +47,11 @@ These entries define intent only. Replace each with exact paths and evidence whe
 | P-VIS-03 | Facility walls/props | Runtime primitives or original shapes authored during jam | Fulfilled for the final facility by VIS-002, VIS-003, VIS-007, and the reusable authored sector content in VIS-010. |
 | P-VIS-04 | Listener silhouettes | Original procedural shapes authored during jam | Fulfilled by VIS-005 in Phase 6; original broken-wave geometry was reviewed as non-franchise procedural work. |
 | P-VIS-05 | Relay/extraction/UI icons | Original geometric shapes authored during jam | Runtime state shapes were fulfilled by VIS-006 in Phase 7; the reusable pulse/interact/decoy/relay SVG symbols were fulfilled by VIS-011 in Phase 12. States still differ by geometry and text as well as color. |
-| P-AUD-01 | Pulse sound | Runtime synthesis or team-created recording/synthesis | Record creator/tool/settings and exported file path if baked. |
-| P-AUD-02 | Footsteps | Runtime synthesis or team-created Foley | Record raw source ownership and edits if recorded. |
-| P-AUD-03 | Listener cues | Team-created synthesis | Record creator/tool/settings; normalize and safety-check volume. |
-| P-AUD-04 | Relay/extraction/failure cues | Team-created synthesis | Record creator/tool/settings and files. |
-| P-AUD-05 | Industrial ambience | Runtime layers or team-created synthesis | No third-party samples unless separately approved and logged. |
+| P-AUD-01 | Pulse sound | Runtime synthesis or team-created recording/synthesis | Fulfilled by AUD-001 in Phase 13 as a baked original WAV with generator and SHA-256 provenance. |
+| P-AUD-02 | Footsteps | Runtime synthesis or team-created Foley | Fulfilled by AUD-002 in Phase 13 as a baked original WAV with generator and SHA-256 provenance. |
+| P-AUD-03 | Listener cues | Team-created synthesis | Fulfilled by AUD-003 in Phase 13 as baked original WAVs with safe peak levels and distinctive signatures. |
+| P-AUD-04 | Relay/extraction/failure cues | Team-created synthesis | Fulfilled by AUD-004 and AUD-005 in Phase 13 as baked original WAVs with generator and SHA-256 provenance. |
+| P-AUD-05 | Industrial ambience | Runtime layers or team-created synthesis | Fulfilled by AUD-006 in Phase 13 as a baked original looping WAV; no third-party sample was used. |
 | P-FONT-01 | UI font | Godot/default fallback or original approved choice | Avoid adding a font file unless rights and redistribution are verified. |
 
 ## Asset entry template
@@ -68,6 +74,18 @@ Additional notes for generated assets must identify the generator/tool, the prom
 - Review result: no recognizable protected character, copied game material, copyrighted logo, photographic background, NSFW content, or itch.io-incompatible material is present. **Approved.**
 
 This is the Phase 12 asset-production approval, not the final submission sign-off. The final checklist below remains open until the finished build, credits, archive, Windows hardware run, and submission package are reviewed together.
+
+## Phase 13 audio-production review
+
+- Creator/process: original audio authored for Echo Kickoff on 2026-07-15. WAVs were generated by fixed mathematical synthesis in `tools/generate_audio_assets.py`; no runtime procedural audio is used by production gameplay.
+- Inputs: no downloaded sound, sample pack, recorded third-party source, AI audio service, external instrument preset, old project asset, template game cue, or copyrighted game audio.
+- Rights: original jam work intended for redistribution with this project. No attribution dependency or external license applies to AUD-001 through AUD-006.
+- Reproduction: `python3 tools/generate_audio_assets.py --check` verifies the committed WAVs and `assets/audio/generated-audio.json`.
+- Exact source record: `assets/audio/generated-audio.json` stores path, bus, channel count, sample rate, duration, peak/RMS levels, loop flag, frequency signature, and SHA-256 for every committed audio file.
+- Format policy: all cues are mono PCM16 WAV at 24 kHz. The ambience file is imported as a forward loop. Runtime export excludes the provenance JSON but includes the imported audio streams.
+- Review result: no recognizable protected material, copied game sample, copyrighted recording, NSFW audio, or itch.io-incompatible material is present. **Approved.**
+
+This is the Phase 13 audio-production approval, not the final submission sign-off. The final checklist below remains open until the finished build, credits, archive, Windows hardware run, and submission package are reviewed together.
 
 ## Pre-submission asset audit
 

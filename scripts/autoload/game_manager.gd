@@ -206,7 +206,7 @@ func _transition_from_boot() -> void:
 func _start_new_round(is_restart: bool) -> void:
 	_transition_in_progress = true
 	_set_round_state(RoundState.RESTARTING if is_restart else RoundState.TRANSITIONING)
-	AudioManager.stop_round_audio()
+	AudioManager.stop_all_audio()
 	await _fade_out()
 	if not await _load_scene(GAME_WORLD_SCENE, ScreenState.GAME_WORLD):
 		_recover_transition_failure()
@@ -253,7 +253,7 @@ func _run_victory_flow() -> void:
 func _transition_to_main_menu() -> void:
 	_transition_in_progress = true
 	_set_round_state(RoundState.TRANSITIONING)
-	AudioManager.stop_round_audio()
+	AudioManager.stop_all_audio()
 	await _fade_out()
 	if not await _load_scene(MAIN_MENU_SCENE, ScreenState.MAIN_MENU):
 		_recover_transition_failure()

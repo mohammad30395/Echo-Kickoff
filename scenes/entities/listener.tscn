@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/entities/listener.gd" id="1_listener"]
 [ext_resource type="Script" path="res://scripts/entities/listener_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scripts/entities/listener_audio.gd" id="3_audio"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_listener"]
 radius = 16.0
@@ -19,6 +20,9 @@ shape = SubResource("CircleShape2D_listener")
 unique_name_in_owner = true
 script = ExtResource("2_visual")
 luminous_color = Color(0.86, 0.25, 0.12, 1)
+
+[node name="Audio" type="Node" parent="."]
+script = ExtResource("3_audio")
 
 [node name="DebugLabel" type="Label" parent="."]
 unique_name_in_owner = true

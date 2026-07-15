@@ -119,12 +119,14 @@ func _bind_round() -> bool:
 
 
 func _test_unique_audio_and_pause_safety() -> void:
+	var baseline_round_audio := audio_manager.call(&"get_round_audio_player_count") as int
+	_expect(baseline_round_audio == 1, "Playing round does not contain exactly one Phase 13 ambience loop.")
 	var generator := AudioStreamGenerator.new()
 	generator.mix_rate = 22050.0
 	var first_player := audio_manager.call(&"play_unique_round_audio", &"phase_10_probe", generator) as AudioStreamPlayer
 	var second_player := audio_manager.call(&"play_unique_round_audio", &"phase_10_probe", generator) as AudioStreamPlayer
 	_expect(first_player != null and first_player == second_player, "Repeated round cue created a second AudioStreamPlayer.")
-	_expect(audio_manager.call(&"get_round_audio_player_count") == 1, "Unique round-audio registry does not contain exactly one probe.")
+	_expect(audio_manager.call(&"get_round_audio_player_count") == baseline_round_audio + 1, "Unique round-audio registry did not add exactly one probe beside ambience.")
 
 	var pulse := pulse_controller.try_emit_pulse()
 	var decoy := decoy_controller.try_throw_at(player.global_position + Vector2(240.0, 0.0))
@@ -240,7 +242,7 @@ func _test_caught_feedback_and_clean_restart() -> void:
 		_expect(pulse_controller.pulse_count == 0 and is_zero_approx(pulse_controller.cooldown_remaining), "Restart retained pulse count/cooldown.")
 		_expect(listener.get_state_name() == &"IDLE" and listener.last_heard_category == &"none" and not listener.has_caught_player(), "Restart retained Listener state, hearing memory, or caught flag.")
 		_expect(get_nodes_in_group(&"active_echo_pulse").is_empty() and get_nodes_in_group(&"active_sound_decoy").is_empty(), "Restart retained transient pulse/decoy nodes.")
-		_expect(audio_manager.call(&"get_round_audio_player_count") == 0, "Restart retained round audio players.")
+		_expect(audio_manager.call(&"get_round_audio_player_count") == 1, "Restart did not replace round audio with exactly one fresh ambience loop.")
 	print("ROUND_RESTART_OK | caught feedback, duplicate guards, clean level reload, and objective/decoy/enemy/audio reset")
 
 

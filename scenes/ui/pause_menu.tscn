@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause"]
+[ext_resource type="PackedScene" path="res://scenes/ui/audio_settings_panel.tscn" id="2_audio"]
 
 [node name="PauseMenu" type="Control"]
 layout_mode = 3
@@ -29,7 +30,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Content" type="VBoxContainer" parent="Center"]
-custom_minimum_size = Vector2(360, 0)
+custom_minimum_size = Vector2(440, 0)
 layout_mode = 2
 theme_override_constants/separation = 18
 
@@ -56,8 +57,11 @@ size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 18
 text = "MAIN MENU"
 
+[node name="AudioSettingsPanel" parent="Center/Content" instance=ExtResource("2_audio")]
+size_flags_horizontal = 4
+
 [node name="Hint" type="Label" parent="Center/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.5, 0.55, 1)
-text = "Esc returns to menu • Enter resumes • Mouse navigation"
+text = "Esc returns to menu • Tab selects audio • Enter resumes"
 horizontal_alignment = 1

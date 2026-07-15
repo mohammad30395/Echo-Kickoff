@@ -9,4 +9,5 @@ func _ready() -> void:
 
 
 func _on_new_game_pressed() -> void:
+	AudioManager.confirm_user_gesture()
 	EventBus.new_game_requested.emit()

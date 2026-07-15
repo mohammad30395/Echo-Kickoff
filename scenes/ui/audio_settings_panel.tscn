@@ -1,0 +1,108 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/audio_settings_panel.gd" id="1_audio"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.012, 0.04, 0.062, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.56, 0.62, 0.55)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+
+[node name="AudioSettingsPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(420, 128)
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+script = ExtResource("1_audio")
+
+[node name="Rows" type="GridContainer" parent="."]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 5
+columns = 3
+
+[node name="Heading" type="Label" parent="Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.9, 0.94, 1)
+theme_override_font_sizes/font_size = 12
+text = "AUDIO MIX"
+
+[node name="HeadingSpacer" type="Control" parent="Rows"]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HeadingHint" type="Label" parent="Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.32, 0.48, 0.54, 1)
+theme_override_font_sizes/font_size = 11
+text = "0 = MUTE"
+horizontal_alignment = 2
+
+[node name="MasterLabel" type="Label" parent="Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.74, 0.9, 0.92, 1)
+text = "MASTER"
+
+[node name="MasterSlider" type="HSlider" parent="Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 20)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.85
+
+[node name="MasterValue" type="Label" parent="Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+text = "85%"
+horizontal_alignment = 2
+
+[node name="EffectsLabel" type="Label" parent="Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.74, 0.9, 0.92, 1)
+text = "EFFECTS"
+
+[node name="EffectsSlider" type="HSlider" parent="Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 20)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.82
+
+[node name="EffectsValue" type="Label" parent="Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+text = "82%"
+horizontal_alignment = 2
+
+[node name="AmbienceLabel" type="Label" parent="Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.74, 0.9, 0.92, 1)
+text = "AMBIENCE"
+
+[node name="AmbienceSlider" type="HSlider" parent="Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 20)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.58
+
+[node name="AmbienceValue" type="Label" parent="Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+text = "58%"
+horizontal_alignment = 2
