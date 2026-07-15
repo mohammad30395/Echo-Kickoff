@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/entities/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/entities/player_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scripts/entities/player_pulse_controller.gd" id="3_pulse_controller"]
 [ext_resource type="Script" path="res://scripts/interactions/player_interaction_controller.gd" id="4_interaction"]
+[ext_resource type="Script" path="res://scripts/entities/player_decoy_controller.gd" id="5_decoy_controller"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 15.0
@@ -36,6 +37,11 @@ limit_bottom = 500
 [node name="PulseController" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("3_pulse_controller")
+
+[node name="DecoyController" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 15
+script = ExtResource("5_decoy_controller")
 
 [node name="InteractionController" type="Area2D" parent="."]
 unique_name_in_owner = true

@@ -13,7 +13,7 @@ Source evidence should be retained locally with the project archive when applica
 
 ## Current inventory
 
-At Phase 8 there are **no imported image, audio, font, model, video, or other third-party asset files**. The visual inventory below is generated at runtime by original jam-authored GDScript and built-in Godot drawing primitives.
+At Phase 9 there are **no imported image, audio, font, model, video, or other third-party asset files**. The visual inventory below is generated at runtime by original jam-authored GDScript and built-in Godot drawing primitives.
 
 | ID | Repository path | Type | Creator/source | Created/acquired | Rights basis | Modifications | Status |
 |---|---|---|---|---|---|---|---|
@@ -24,6 +24,7 @@ At Phase 8 there are **no imported image, audio, font, model, video, or other th
 | VIS-005 | `scripts/entities/listener_visual.gd`, `scenes/entities/listener.tscn`, `scripts/debug/listener_ai_test_visual.gd`, `scenes/debug/listener_ai_test.tscn` | Runtime procedural Listener and AI test arena | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot polygons, polylines, arcs, circles, rectangles, and labels | Broken-wave silhouette, non-color-only alert marks, optional hearing/target diagnostics, obstacle arena, and patrol markers | Approved |
 | VIS-006 | `scripts/interactions/reactor_relay_visual.gd`, `scripts/interactions/facility_door_visual.gd`, `scripts/interactions/extraction_terminal_visual.gd`, `scenes/interactions/reactor_relay.tscn`, `scenes/interactions/facility_door.tscn`, `scenes/interactions/extraction_terminal.tscn`, `scripts/ui/interaction_prompt_hud.gd`, `scripts/ui/objective_hud.gd`, `scenes/ui/interaction_prompt_hud.tscn`, `scenes/ui/objective_hud.tscn`, `scripts/debug/interaction_test_visual.gd`, `scenes/debug/interaction_test.tscn` | Runtime procedural facility interactions, mission UI, and test arena | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot polygons, polylines, rectangles, circles, labels, and ProgressBar | Hex/coil relay states, lock/open door states, locked/powered extraction chevrons, three-node objective HUD, hold prompt, and line-of-sight test room | Approved |
 | VIS-007 | `scripts/levels/sector_00_visual.gd`, `scripts/levels/sector_00_test.gd`, `scenes/levels/sector_00_test.tscn`, `scripts/ui/onboarding_hud.gd`, `scenes/ui/onboarding_hud.tscn` | Runtime procedural vertical-slice facility and onboarding UI | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot rectangles, lines, circles, polygons, labels, and existing reveal primitives | Near-black authored facility floor, entry beacon, fixed wall/prop/hazard layout, three relay landmarks, and progressive movement/pulse/alert messaging | Approved |
+| VIS-008 | `scripts/effects/sound_decoy.gd`, `scenes/effects/sound_decoy.tscn`, `scripts/entities/player_decoy_controller.gd`, `scripts/ui/decoy_hud.gd`, `scenes/ui/decoy_hud.tscn` | Runtime procedural sound-decoy effect, aiming indicator, and charge HUD | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot polygons, polylines, arcs, circles, rectangles, and labels | Gold dotted trajectory and target reticle, orange wall-clamped state, airborne diamond, impact rings, and two-charge shape/text HUD | Approved |
 
 ## Planned procedural/team-created assets
 

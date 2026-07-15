@@ -47,6 +47,7 @@ const HAZARD_RECTS: Array[Rect2] = [
 @onready var objective_hud: ObjectiveHud = %ObjectiveHud
 @onready var interaction_prompt_hud: InteractionPromptHud = %InteractionPromptHud
 @onready var onboarding_hud: OnboardingHud = %OnboardingHud
+@onready var decoy_hud: DecoyHud = %DecoyHud
 @onready var revealables: Node2D = %Revealables
 @onready var collision_geometry: Node2D = %CollisionGeometry
 
@@ -55,6 +56,7 @@ var listener_was_alerted: bool = false
 var elapsed_run_time: float = 0.0
 var _message_remaining: float = 0.0
 var _pulse_controller: PlayerPulseController
+var _decoy_controller: PlayerDecoyController
 
 
 func _ready() -> void:
@@ -62,6 +64,7 @@ func _ready() -> void:
 	_build_authored_geometry()
 	_configure_player_camera()
 	_pulse_controller = player.get_node(^"%PulseController") as PlayerPulseController
+	_decoy_controller = player.get_node(^"%DecoyController") as PlayerDecoyController
 	_pulse_controller.allow_debug_input = false
 	_pulse_controller.set_debug_visuals(false)
 	listener.allow_debug_input = false
@@ -70,6 +73,7 @@ func _ready() -> void:
 	pulse_hud.bind(_pulse_controller)
 	objective_hud.bind(mission_controller)
 	interaction_prompt_hud.bind(interaction_controller)
+	decoy_hud.bind(_decoy_controller)
 	_pulse_controller.pulse_started.connect(_on_pulse_started)
 	listener.noise_target_changed.connect(_on_listener_noise_target_changed)
 	mission_controller.objective_changed.connect(_on_objective_changed)
@@ -171,6 +175,15 @@ func _on_pulse_started(_pulse: EchoPulse, _noise_event: NoiseEvent) -> void:
 
 
 func _on_listener_noise_target_changed(_position: Vector2, category: StringName) -> void:
+	if category == NoiseEvent.CATEGORY_SOUND_DECOY:
+		listener_was_alerted = true
+		_set_onboarding_message(
+			3,
+			"LISTENER DIVERTED // MOVE WHILE IT INVESTIGATES",
+			MESSAGE_DURATION,
+		)
+		listener_alerted.emit()
+		return
 	if listener_was_alerted or category not in [
 		NoiseEvent.CATEGORY_ECHO_PULSE,
 		NoiseEvent.CATEGORY_REACTOR_RELAY,
