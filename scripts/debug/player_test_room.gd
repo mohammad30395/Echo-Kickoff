@@ -11,6 +11,11 @@ func _ready() -> void:
 	_pulse_controller = player.get_node(^"%PulseController") as PlayerPulseController
 	var pulse_hud := %PulseCooldownHud as PulseCooldownHud
 	pulse_hud.bind(_pulse_controller)
+	var interaction_controller := player.get_node(^"%InteractionController") as PlayerInteractionController
+	var prompt_hud := %InteractionPromptHud as InteractionPromptHud
+	prompt_hud.bind(interaction_controller)
+	var objective_hud := %ObjectiveHud as ObjectiveHud
+	objective_hud.bind(%MissionController as MissionObjectiveController)
 	if OS.get_cmdline_user_args().has("--reveal-test-room"):
 		call_deferred(&"reveal_test_room")
 	if OS.get_cmdline_user_args().has("--emit-test-pulse"):

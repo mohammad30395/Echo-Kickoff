@@ -1,11 +1,15 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/entities/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/entities/player_visual.gd" id="2_visual"]
 [ext_resource type="Script" path="res://scripts/entities/player_pulse_controller.gd" id="3_pulse_controller"]
+[ext_resource type="Script" path="res://scripts/interactions/player_interaction_controller.gd" id="4_interaction"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 15.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction_range"]
+radius = 92.0
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 1
@@ -32,3 +36,12 @@ limit_bottom = 500
 [node name="PulseController" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("3_pulse_controller")
+
+[node name="InteractionController" type="Area2D" parent="."]
+unique_name_in_owner = true
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("4_interaction")
+
+[node name="InteractionRange" type="CollisionShape2D" parent="InteractionController"]
+shape = SubResource("CircleShape2D_interaction_range")

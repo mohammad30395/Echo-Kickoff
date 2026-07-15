@@ -2,7 +2,7 @@
 
 Echo Kickoff is a Godot 4 GameJam project for the IUT 12th ICT FEST 2026 GameJam. The locked concept is a 2D top-down stealth-horror game where every echo pulse reveals the dark facility and alerts sound-sensitive Listeners.
 
-Phase 5 contains the technical baseline, core application flow, reusable top-down player, darkness/reveal system, expanding Echo Pulse, unified pulse/footstep noise events, and cooldown HUD. Enemies, relays, extraction, and other objective systems have not been implemented.
+Phase 7 contains the technical baseline, application flow, reusable top-down player, darkness/reveal system, expanding Echo Pulse, unified noise events, sound-driven Listener AI, and a complete three-relay-to-extraction objective loop. The current Game World remains a test graybox rather than the final authored level.
 
 ## Requirements
 
@@ -82,6 +82,24 @@ godot --headless --path . --script tests/phase_05_echo_pulse_test.gd
 
 A successful pulse/noise test writes `PHASE_05_ECHO_PULSE_TEST_OK`.
 
+Validate Listener patrol, hearing, investigation, search, chase, obstacle recovery, pause/contact behavior, and Game Over integration with:
+
+```bash
+godot --headless --path . --script tests/phase_06_listener_test.gd
+```
+
+Validate wall-safe hold interactions, relay noise, objective HUD updates, locked doors, extraction gating, Victory routing, reset, and responsive layout with:
+
+```bash
+godot --headless --path . --script tests/phase_07_interaction_test.gd
+```
+
+Run the dedicated interaction room directly:
+
+```bash
+godot --path . --scene res://scenes/debug/interaction_test.tscn
+```
+
 ## Application flow
 
 ```text
@@ -115,8 +133,9 @@ Configured input actions:
 | `restart` | R |
 | `debug_reveal` | F1 |
 | `debug_pulse_visuals` | F2 |
+| `debug_listener_ai` | F3 |
 
-In the test room, Space or left mouse emits the Echo Pulse, F1 reveals the complete room, and F2 toggles pulse-radius, noise-radius, and reveal-target diagnostics. Debug visuals are disabled by default.
+In the test room, hold E near a relay or extraction terminal, Space or left mouse emits the Echo Pulse, F1 reveals the complete room, F2 toggles pulse diagnostics, and F3 toggles Listener diagnostics. Debug visuals are disabled by default.
 
 ## Export
 

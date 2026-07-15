@@ -229,6 +229,8 @@ func _noise_priority(noise_event: NoiseEvent, distance: float, effective_radius:
 	var category_weight := 1.0
 	if noise_event.category == NoiseEvent.CATEGORY_ECHO_PULSE:
 		category_weight = 1.35
+	elif noise_event.category == NoiseEvent.CATEGORY_REACTOR_RELAY:
+		category_weight = 1.5
 	elif noise_event.category == NoiseEvent.CATEGORY_FOOTSTEP:
 		category_weight = 0.75
 	var remaining_reach := maxf(effective_radius - distance, 0.0)

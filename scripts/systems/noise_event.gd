@@ -3,6 +3,7 @@ extends RefCounted
 
 const CATEGORY_ECHO_PULSE: StringName = &"echo_pulse"
 const CATEGORY_FOOTSTEP: StringName = &"footstep"
+const CATEGORY_REACTOR_RELAY: StringName = &"reactor_relay"
 
 var position: Vector2
 var loudness: float

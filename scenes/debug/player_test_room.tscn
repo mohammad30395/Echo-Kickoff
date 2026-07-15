@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/debug/player_test_room_visual.gd" id="1_visual"]
 [ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2_player"]
@@ -6,6 +6,11 @@
 [ext_resource type="Script" path="res://scripts/visual/echo_reveal_primitive.gd" id="4_reveal"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pulse_cooldown_hud.tscn" id="5_pulse_hud"]
 [ext_resource type="PackedScene" path="res://scenes/entities/listener.tscn" id="6_listener"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/reactor_relay.tscn" id="7_relay"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/extraction_terminal.tscn" id="8_extraction"]
+[ext_resource type="Script" path="res://scripts/systems/mission_objective_controller.gd" id="9_mission"]
+[ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt_hud.tscn" id="10_prompt"]
+[ext_resource type="PackedScene" path="res://scenes/ui/objective_hud.tscn" id="11_objective"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(1632, 32)
@@ -139,6 +144,25 @@ shape = SubResource("RectangleShape2D_obstacle_horizontal")
 [node name="Player" parent="." instance=ExtResource("2_player")]
 unique_name_in_owner = true
 
+[node name="MissionController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_mission")
+
+[node name="RelayA" parent="." instance=ExtResource("7_relay")]
+position = Vector2(-560, -340)
+relay_id = &"A"
+
+[node name="RelayB" parent="." instance=ExtResource("7_relay")]
+position = Vector2(560, -300)
+relay_id = &"B"
+
+[node name="RelayC" parent="." instance=ExtResource("7_relay")]
+position = Vector2(570, 320)
+relay_id = &"C"
+
+[node name="ExtractionTerminal" parent="." instance=ExtResource("8_extraction")]
+position = Vector2(-620, 300)
+
 [node name="Listener" parent="." instance=ExtResource("6_listener")]
 position = Vector2(300, -80)
 patrol_points = Array[Vector2]([Vector2(100, -180), Vector2(300, -180), Vector2(300, 180), Vector2(100, 180)])
@@ -157,6 +181,12 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="PulseCooldownHud" parent="HUDLayer/HUD" instance=ExtResource("5_pulse_hud")]
+
+[node name="ObjectiveHud" parent="HUDLayer/HUD" instance=ExtResource("11_objective")]
+unique_name_in_owner = true
+
+[node name="InteractionPromptHud" parent="HUDLayer/HUD" instance=ExtResource("10_prompt")]
+unique_name_in_owner = true
 
 [node name="Panel" type="ColorRect" parent="HUDLayer/HUD"]
 layout_mode = 0
@@ -191,4 +221,4 @@ offset_bottom = 82.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.48, 0.66, 0.7, 1)
 theme_override_font_sizes/font_size = 14
-text = "Move: WASD / Arrows  •  Pulse: Space / LMB  •  Pause: Esc  •  Room reveal: F1\nDebug: F2 pulse/noise/targets  •  F3 Listener state/hearing. No objectives yet."
+text = "Move: WASD / Arrows  •  Hold E: interact  •  Pulse: Space / LMB  •  Pause: Esc\nActivate three relays, then extract. F1 reveal  •  F2 pulse debug  •  F3 Listener debug."

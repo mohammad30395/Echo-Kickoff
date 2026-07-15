@@ -13,7 +13,7 @@ Source evidence should be retained locally with the project archive when applica
 
 ## Current inventory
 
-At Phase 6 there are **no imported image, audio, font, model, video, or other third-party asset files**. The visual inventory below is generated at runtime by original jam-authored GDScript and built-in Godot drawing primitives.
+At Phase 7 there are **no imported image, audio, font, model, video, or other third-party asset files**. The visual inventory below is generated at runtime by original jam-authored GDScript and built-in Godot drawing primitives.
 
 | ID | Repository path | Type | Creator/source | Created/acquired | Rights basis | Modifications | Status |
 |---|---|---|---|---|---|---|---|
@@ -22,6 +22,7 @@ At Phase 6 there are **no imported image, audio, font, model, video, or other th
 | VIS-003 | `scripts/visual/echo_revealable.gd`, `scripts/visual/echo_reveal_primitive.gd` | Runtime darkness/reveal primitives | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot CanvasItem drawing | Revealable walls, boundaries, doors, props, terminals, hazards, and enemy placeholder shape | Approved |
 | VIS-004 | `scripts/effects/echo_pulse.gd`, `scenes/effects/echo_pulse.tscn`, `scripts/ui/pulse_cooldown_hud.gd`, `scenes/ui/pulse_cooldown_hud.tscn` | Runtime Echo Pulse and cooldown UI | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot arcs, lines, polygons, labels, and ProgressBar | Cyan reveal wave, orange danger accents, optional diagnostics, and cooldown status | Approved |
 | VIS-005 | `scripts/entities/listener_visual.gd`, `scenes/entities/listener.tscn`, `scripts/debug/listener_ai_test_visual.gd`, `scenes/debug/listener_ai_test.tscn` | Runtime procedural Listener and AI test arena | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot polygons, polylines, arcs, circles, rectangles, and labels | Broken-wave silhouette, non-color-only alert marks, optional hearing/target diagnostics, obstacle arena, and patrol markers | Approved |
+| VIS-006 | `scripts/interactions/reactor_relay_visual.gd`, `scripts/interactions/facility_door_visual.gd`, `scripts/interactions/extraction_terminal_visual.gd`, `scenes/interactions/reactor_relay.tscn`, `scenes/interactions/facility_door.tscn`, `scenes/interactions/extraction_terminal.tscn`, `scripts/ui/interaction_prompt_hud.gd`, `scripts/ui/objective_hud.gd`, `scenes/ui/interaction_prompt_hud.tscn`, `scenes/ui/objective_hud.tscn`, `scripts/debug/interaction_test_visual.gd`, `scenes/debug/interaction_test.tscn` | Runtime procedural facility interactions, mission UI, and test arena | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot polygons, polylines, rectangles, circles, labels, and ProgressBar | Hex/coil relay states, lock/open door states, locked/powered extraction chevrons, three-node objective HUD, hold prompt, and line-of-sight test room | Approved |
 
 ## Planned procedural/team-created assets
 
@@ -33,7 +34,7 @@ These entries define intent only. Replace each with exact paths and evidence whe
 | P-VIS-02 | Echo pulse ring and afterimages | Runtime lines/polygons/particles, Compatibility-safe | Fulfilled by VIS-003 and VIS-004; reduced-flash option remains planned for M09. |
 | P-VIS-03 | Facility walls/props | Runtime primitives or original shapes authored during jam | Procedural foundation fulfilled by VIS-002 and VIS-003; final authored level arrangement remains planned. |
 | P-VIS-04 | Listener silhouettes | Original procedural shapes authored during jam | Fulfilled by VIS-005 in Phase 6; original broken-wave geometry was reviewed as non-franchise procedural work. |
-| P-VIS-05 | Relay/extraction/UI icons | Original geometric shapes authored during jam | Verify shape-based, non-color-only states. |
+| P-VIS-05 | Relay/extraction/UI icons | Original geometric shapes authored during jam | Fulfilled by VIS-006 in Phase 7; inactive/active, locked/powered, and incomplete/complete states differ by geometry and text as well as color. |
 | P-AUD-01 | Pulse sound | Runtime synthesis or team-created recording/synthesis | Record creator/tool/settings and exported file path if baked. |
 | P-AUD-02 | Footsteps | Runtime synthesis or team-created Foley | Record raw source ownership and edits if recorded. |
 | P-AUD-03 | Listener cues | Team-created synthesis | Record creator/tool/settings; normalize and safety-check volume. |

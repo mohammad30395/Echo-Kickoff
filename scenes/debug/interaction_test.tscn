@@ -1,0 +1,134 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/interaction_test.gd" id="1_test"]
+[ext_resource type="Script" path="res://scripts/debug/interaction_test_visual.gd" id="2_visual"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/reactor_relay.tscn" id="4_relay"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/facility_door.tscn" id="5_door"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/extraction_terminal.tscn" id="6_extraction"]
+[ext_resource type="Script" path="res://scripts/systems/mission_objective_controller.gd" id="7_mission"]
+[ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt_hud.tscn" id="8_prompt"]
+[ext_resource type="PackedScene" path="res://scenes/ui/objective_hud.tscn" id="9_objective"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
+size = Vector2(1232, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical"]
+size = Vector2(32, 660)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_los_wall"]
+size = Vector2(24, 140)
+
+[node name="InteractionTest" type="Node2D"]
+script = ExtResource("1_test")
+
+[node name="ArenaVisual" type="Node2D" parent="."]
+script = ExtResource("2_visual")
+
+[node name="Collision" type="Node2D" parent="."]
+
+[node name="TopWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(0, -346)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/TopWall"]
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="BottomWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(0, 346)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/BottomWall"]
+shape = SubResource("RectangleShape2D_horizontal")
+
+[node name="LeftWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(-616, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/LeftWall"]
+shape = SubResource("RectangleShape2D_vertical")
+
+[node name="RightWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(616, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/RightWall"]
+shape = SubResource("RectangleShape2D_vertical")
+
+[node name="LineOfSightWall" type="StaticBody2D" parent="Collision"]
+position = Vector2(0, -180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision/LineOfSightWall"]
+shape = SubResource("RectangleShape2D_los_wall")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+unique_name_in_owner = true
+position = Vector2(-260, 0)
+
+[node name="MissionController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("7_mission")
+trigger_victory_on_completion = false
+
+[node name="RelayA" parent="." instance=ExtResource("4_relay")]
+unique_name_in_owner = true
+position = Vector2(-340, 0)
+relay_id = &"A"
+
+[node name="RelayB" parent="." instance=ExtResource("4_relay")]
+unique_name_in_owner = true
+position = Vector2(55, -180)
+relay_id = &"B"
+
+[node name="RelayC" parent="." instance=ExtResource("4_relay")]
+unique_name_in_owner = true
+position = Vector2(340, 40)
+relay_id = &"C"
+
+[node name="FacilityDoor" parent="." instance=ExtResource("5_door")]
+unique_name_in_owner = true
+position = Vector2(110, 230)
+
+[node name="ExtractionTerminal" parent="." instance=ExtResource("6_extraction")]
+unique_name_in_owner = true
+position = Vector2(-340, 220)
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="HUD" type="Control" parent="HUDLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ObjectiveHud" parent="HUDLayer/HUD" instance=ExtResource("9_objective")]
+unique_name_in_owner = true
+
+[node name="InteractionPromptHud" parent="HUDLayer/HUD" instance=ExtResource("8_prompt")]
+unique_name_in_owner = true
+
+[node name="InfoPanel" type="ColorRect" parent="HUDLayer/HUD"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 570.0
+offset_bottom = 110.0
+mouse_filter = 2
+color = Color(0.008, 0.025, 0.04, 0.92)
+
+[node name="Title" type="Label" parent="HUDLayer/HUD/InfoPanel"]
+offset_left = 16.0
+offset_top = 10.0
+offset_right = 530.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(0.4, 0.94, 0.82, 1)
+theme_override_font_sizes/font_size = 17
+text = "INTERACTION + OBJECTIVE TEST // M06"
+
+[node name="Instructions" type="Label" parent="HUDLayer/HUD/InfoPanel"]
+offset_left = 16.0
+offset_top = 40.0
+offset_right = 530.0
+offset_bottom = 78.0
+theme_override_colors/font_color = Color(0.52, 0.72, 0.75, 1)
+theme_override_font_sizes/font_size = 13
+text = "Move: WASD / Arrows  •  Hold E: interact  •  Pulse: Space / LMB\nActivate A/B/C, then extract. F1 reveals the procedural test room."

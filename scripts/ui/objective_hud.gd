@@ -1,0 +1,118 @@
+class_name ObjectiveHud
+extends Control
+
+@onready var objective_label: Label = %ObjectiveLabel
+
+var mission: MissionObjectiveController
+var active_relays: int = 0
+var required_relays: int = 3
+var extraction_ready: bool = false
+var mission_complete: bool = false
+
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	queue_redraw()
+
+
+func bind(mission_controller: MissionObjectiveController) -> void:
+	if mission != null:
+		if mission.objective_changed.is_connected(_on_objective_changed):
+			mission.objective_changed.disconnect(_on_objective_changed)
+		if mission.extraction_state_changed.is_connected(_on_extraction_state_changed):
+			mission.extraction_state_changed.disconnect(_on_extraction_state_changed)
+		if mission.mission_completed.is_connected(_on_mission_completed):
+			mission.mission_completed.disconnect(_on_mission_completed)
+	mission = mission_controller
+	if mission == null:
+		return
+	mission.objective_changed.connect(_on_objective_changed)
+	mission.extraction_state_changed.connect(_on_extraction_state_changed)
+	mission.mission_completed.connect(_on_mission_completed)
+	active_relays = mission.active_relay_count
+	required_relays = mission.required_relay_count
+	extraction_ready = mission.extraction_unlocked
+	mission_complete = mission.is_completed
+	_refresh()
+
+
+func _on_objective_changed(next_active: int, next_required: int) -> void:
+	active_relays = next_active
+	required_relays = next_required
+	if mission != null:
+		mission_complete = mission.is_completed
+	_refresh()
+
+
+func _on_extraction_state_changed(unlocked: bool) -> void:
+	extraction_ready = unlocked
+	_refresh()
+
+
+func _on_mission_completed() -> void:
+	mission_complete = true
+	_refresh()
+
+
+func _refresh() -> void:
+	if mission != null:
+		objective_label.text = mission.get_objective_text()
+	queue_redraw()
+
+
+func _draw() -> void:
+	draw_rect(Rect2(Vector2.ZERO, size), Color(0.008, 0.025, 0.04, 0.92), true)
+	var relay_spacing := 34.0
+	for index in range(required_relays):
+		var center := Vector2(24.0 + index * relay_spacing, 27.0)
+		var active := index < active_relays
+		_draw_relay_icon(center, active)
+	var extraction_center := Vector2(24.0 + required_relays * relay_spacing + 22.0, 27.0)
+	_draw_extraction_icon(extraction_center)
+
+
+func _draw_relay_icon(center: Vector2, active: bool) -> void:
+	var radius := 12.0
+	var points := PackedVector2Array()
+	for index in range(7):
+		var angle := -PI * 0.5 + TAU * index / 6.0
+		points.append(center + Vector2.from_angle(angle) * radius)
+	var color := Color(0.35, 1.0, 0.68, 1.0) if active else Color(0.28, 0.58, 0.64, 0.7)
+	draw_polyline(points, color, 2.0)
+	if active:
+		draw_colored_polygon(
+			PackedVector2Array([
+				center + Vector2(0.0, -6.0),
+				center + Vector2(6.0, 0.0),
+				center + Vector2(0.0, 6.0),
+				center + Vector2(-6.0, 0.0),
+			]),
+			color,
+		)
+	else:
+		draw_circle(center, 3.0, color, false, 1.5)
+
+
+func _draw_extraction_icon(center: Vector2) -> void:
+	var color := (
+		Color(0.4, 1.0, 0.75, 1.0)
+		if extraction_ready
+		else Color(1.0, 0.42, 0.2, 0.85)
+	)
+	if extraction_ready:
+		for offset in [-6.0, 6.0]:
+			draw_polyline(
+				PackedVector2Array([
+					center + Vector2(offset - 5.0, -8.0),
+					center + Vector2(offset + 3.0, 0.0),
+					center + Vector2(offset - 5.0, 8.0),
+				]),
+				color,
+				2.5,
+			)
+	else:
+		draw_rect(Rect2(center - Vector2(11.0, 9.0), Vector2(22.0, 18.0)), color, false, 2.0)
+		draw_line(center + Vector2(-7.0, -6.0), center + Vector2(7.0, 6.0), color, 2.0)
+		draw_line(center + Vector2(7.0, -6.0), center + Vector2(-7.0, 6.0), color, 2.0)
+	if mission_complete:
+		draw_circle(center, 16.0, color, false, 2.0)
