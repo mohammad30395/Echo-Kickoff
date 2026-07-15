@@ -2,7 +2,7 @@
 
 Echo Kickoff is a Godot 4 GameJam project for the IUT 12th ICT FEST 2026 GameJam. The locked concept is a 2D top-down stealth-horror game where every echo pulse reveals the dark facility and alerts sound-sensitive Listeners.
 
-Phase 4 contains the technical baseline, core application flow, reusable top-down player controller, and the darkness/echo-revealable visual foundation. The actual expanding echo pulse, enemies, relays, extraction, and other gameplay systems have not been implemented.
+Phase 5 contains the technical baseline, core application flow, reusable top-down player, darkness/reveal system, expanding Echo Pulse, unified pulse/footstep noise events, and cooldown HUD. Enemies, relays, extraction, and other objective systems have not been implemented.
 
 ## Requirements
 
@@ -74,6 +74,14 @@ godot --headless --path . --script tests/phase_04_reveal_test.gd
 
 A successful reveal-system test writes `PHASE_04_REVEAL_TEST_OK`.
 
+Validate pulse input, expansion, reveal falloff, noise data, footsteps, cooldown, pause, debug visuals, scene reload, and Game Over restart with:
+
+```bash
+godot --headless --path . --script tests/phase_05_echo_pulse_test.gd
+```
+
+A successful pulse/noise test writes `PHASE_05_ECHO_PULSE_TEST_OK`.
+
 ## Application flow
 
 ```text
@@ -105,8 +113,10 @@ Configured input actions:
 | `throw_decoy` | Q, Right Mouse Button |
 | `pause` | Escape |
 | `restart` | R |
+| `debug_reveal` | F1 |
+| `debug_pulse_visuals` | F2 |
 
-These actions are configured for later gameplay phases; the boot scene does not act on them.
+In the test room, Space or left mouse emits the Echo Pulse, F1 reveals the complete room, and F2 toggles pulse-radius, noise-radius, and reveal-target diagnostics. Debug visuals are disabled by default.
 
 ## Export
 

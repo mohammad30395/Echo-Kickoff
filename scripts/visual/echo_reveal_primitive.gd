@@ -40,6 +40,21 @@ func _draw() -> void:
 			_draw_enemy_placeholder()
 
 
+func get_reveal_distance_from(origin: Vector2) -> float:
+	var local_origin := to_local(origin)
+	var bounds := _centered_rect(primitive_size)
+	if primitive_kind == PrimitiveKind.FLOOR_BOUNDARY and bounds.has_point(local_origin):
+		return minf(
+			minf(local_origin.x - bounds.position.x, bounds.end.x - local_origin.x),
+			minf(local_origin.y - bounds.position.y, bounds.end.y - local_origin.y),
+		)
+	var closest_point := Vector2(
+		clampf(local_origin.x, bounds.position.x, bounds.end.x),
+		clampf(local_origin.y, bounds.position.y, bounds.end.y),
+	)
+	return local_origin.distance_to(closest_point)
+
+
 func _draw_wall() -> void:
 	var wall_rect := _centered_rect(primitive_size)
 	_draw_luminous_rect(wall_rect, true)

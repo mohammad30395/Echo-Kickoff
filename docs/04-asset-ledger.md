@@ -13,13 +13,14 @@ Source evidence should be retained locally with the project archive when applica
 
 ## Current inventory
 
-At Phase 4 there are **no imported image, audio, font, model, video, or other third-party asset files**. The visual inventory below is generated at runtime by original jam-authored GDScript and built-in Godot drawing primitives.
+At Phase 5 there are **no imported image, audio, font, model, video, or other third-party asset files**. The visual inventory below is generated at runtime by original jam-authored GDScript and built-in Godot drawing primitives.
 
 | ID | Repository path | Type | Creator/source | Created/acquired | Rights basis | Modifications | Status |
 |---|---|---|---|---|---|---|---|
 | VIS-001 | `scripts/entities/player_visual.gd`, `scenes/entities/player.tscn` | Runtime procedural player marker | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot circles and polygon | Cyan circular body and directional triangle | Approved |
 | VIS-002 | `scripts/debug/player_test_room_visual.gd`, `scenes/debug/player_test_room.tscn` | Runtime procedural graybox room | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot controls and rectangle | Near-black backdrop, collision graybox, and debug HUD | Approved |
 | VIS-003 | `scripts/visual/echo_revealable.gd`, `scripts/visual/echo_reveal_primitive.gd` | Runtime darkness/reveal primitives | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot CanvasItem drawing | Revealable walls, boundaries, doors, props, terminals, hazards, and enemy placeholder shape | Approved |
+| VIS-004 | `scripts/effects/echo_pulse.gd`, `scenes/effects/echo_pulse.tscn`, `scripts/ui/pulse_cooldown_hud.gd`, `scenes/ui/pulse_cooldown_hud.tscn` | Runtime Echo Pulse and cooldown UI | Jam-authored GDScript | 2026-07-15 | Original work; built-in Godot arcs, lines, polygons, labels, and ProgressBar | Cyan reveal wave, orange danger accents, optional diagnostics, and cooldown status | Approved |
 
 ## Planned procedural/team-created assets
 
@@ -28,7 +29,7 @@ These entries define intent only. Replace each with exact paths and evidence whe
 | Planned ID | Asset | Intended method | Release condition |
 |---|---|---|---|
 | P-VIS-01 | Player marker | Runtime Godot draw primitives authored during jam | Fulfilled by VIS-001 in Phase 3. |
-| P-VIS-02 | Echo pulse ring and afterimages | Runtime lines/polygons/particles, Compatibility-safe | Verify Web and Windows rendering and reduced-flash option. |
+| P-VIS-02 | Echo pulse ring and afterimages | Runtime lines/polygons/particles, Compatibility-safe | Fulfilled by VIS-003 and VIS-004; reduced-flash option remains planned for M09. |
 | P-VIS-03 | Facility walls/props | Runtime primitives or original shapes authored during jam | Procedural foundation fulfilled by VIS-002 and VIS-003; final authored level arrangement remains planned. |
 | P-VIS-04 | Listener silhouettes | Original procedural shapes authored during jam | Confirm no resemblance traced from an existing franchise. |
 | P-VIS-05 | Relay/extraction/UI icons | Original geometric shapes authored during jam | Verify shape-based, non-color-only states. |

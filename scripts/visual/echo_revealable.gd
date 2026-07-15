@@ -67,6 +67,10 @@ func get_reveal_strength() -> float:
 	return reveal_strength
 
 
+func get_reveal_distance_from(origin: Vector2) -> float:
+	return global_position.distance_to(origin)
+
+
 func get_fill_color(base_color: Color) -> Color:
 	var result := base_color
 	result.a *= lerpf(darkness_visibility * 0.5, revealed_fill_alpha, reveal_strength)

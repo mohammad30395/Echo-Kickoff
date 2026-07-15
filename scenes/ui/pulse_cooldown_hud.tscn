@@ -1,0 +1,88 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pulse_cooldown_hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.025, 0.07, 0.085, 0.92)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.35, 0.94, 1, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="PulseCooldownHud" type="Control"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -126.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.025, 0.04, 0.9)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 10.0
+offset_right = 306.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(0.65, 0.86, 0.9, 1)
+theme_override_font_sizes/font_size = 13
+text = "ECHO PULSE // INFORMATION HAS A COST"
+
+[node name="CooldownBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 14.0
+offset_top = 36.0
+offset_right = 306.0
+offset_bottom = 50.0
+theme_override_styles/background = SubResource("StyleBoxFlat_background")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+max_value = 1.0
+value = 1.0
+show_percentage = false
+
+[node name="StatusLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 14.0
+offset_top = 57.0
+offset_right = 306.0
+offset_bottom = 78.0
+theme_override_font_sizes/font_size = 13
+text = "READY  •  SPACE / LEFT MOUSE"
+
+[node name="DebugLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 14.0
+offset_top = 80.0
+offset_right = 306.0
+offset_bottom = 99.0
+theme_override_colors/font_color = Color(0.38, 0.52, 0.56, 1)
+theme_override_font_sizes/font_size = 11
+text = "F2  DEBUG RADII / TARGETS: OFF"
