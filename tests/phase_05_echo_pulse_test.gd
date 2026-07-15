@@ -284,6 +284,18 @@ func _settle(frame_count: int = 3) -> void:
 	for _frame_index in range(frame_count):
 		await process_frame
 		await physics_frame
+	await _wait_for_application_transition()
+
+
+func _wait_for_application_transition(timeout_milliseconds: int = 3000) -> void:
+	var game_manager := root.get_node_or_null("GameManager")
+	var deadline := Time.get_ticks_msec() + timeout_milliseconds
+	while (
+		game_manager != null
+		and bool(game_manager.call(&"is_transitioning"))
+		and Time.get_ticks_msec() < deadline
+	):
+		await process_frame
 
 
 func _expect(condition: bool, message: String) -> void:

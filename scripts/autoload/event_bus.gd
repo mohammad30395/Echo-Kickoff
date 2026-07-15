@@ -9,6 +9,8 @@ signal restart_requested
 signal game_over_requested
 signal victory_requested
 signal app_state_changed(previous_state: StringName, current_state: StringName)
+signal round_state_changed(previous_state: StringName, current_state: StringName)
+signal round_started(round_id: int)
 signal noise_emitted(noise_event: NoiseEvent)
 
 

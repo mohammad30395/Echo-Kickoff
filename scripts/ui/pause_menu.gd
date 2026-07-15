@@ -14,7 +14,7 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"pause"):
 		get_viewport().set_input_as_handled()
-		EventBus.resume_requested.emit()
+		EventBus.main_menu_requested.emit()
 
 
 func _on_resume_pressed() -> void:

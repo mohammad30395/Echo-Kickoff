@@ -80,5 +80,5 @@ text = "MAIN MENU"
 [node name="Hint" type="Label" parent="Center/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.42, 0.32, 0.34, 1)
-text = "R restarts • Mouse or keyboard navigation"
+text = "R restarts • Esc returns to menu • Mouse or keyboard"
 horizontal_alignment = 1

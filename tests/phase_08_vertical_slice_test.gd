@@ -338,11 +338,14 @@ func _hold_interact_until(interactable: FacilityInteractable) -> bool:
 
 func _wait_for_scene(scene_name: StringName, timeout_seconds: float) -> bool:
 	var frames := int(ceil(timeout_seconds * 60.0 / Engine.time_scale))
+	var transition_busy := false
 	for _index in range(frames):
-		if current_scene != null and current_scene.name == scene_name:
+		transition_busy = game_manager != null and bool(game_manager.call(&"is_transitioning"))
+		if current_scene != null and current_scene.name == scene_name and not transition_busy:
 			return true
 		await physics_frame
-	return current_scene != null and current_scene.name == scene_name
+	transition_busy = game_manager != null and bool(game_manager.call(&"is_transitioning"))
+	return current_scene != null and current_scene.name == scene_name and not transition_busy
 
 
 func _belongs_to_sector(node: Node) -> bool:
@@ -363,6 +366,14 @@ func _settle(frame_count: int) -> void:
 	for _index in range(frame_count):
 		await process_frame
 		await physics_frame
+	var local_game_manager := root.get_node_or_null("GameManager")
+	var deadline := Time.get_ticks_msec() + 3000
+	while (
+		local_game_manager != null
+		and bool(local_game_manager.call(&"is_transitioning"))
+		and Time.get_ticks_msec() < deadline
+	):
+		await process_frame
 
 
 func _release_movement() -> void:

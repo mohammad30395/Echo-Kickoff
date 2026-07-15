@@ -298,6 +298,14 @@ func _settle(frame_count: int) -> void:
 	for _index in range(frame_count):
 		await process_frame
 		await physics_frame
+	var local_game_manager := root.get_node_or_null("GameManager")
+	var deadline := Time.get_ticks_msec() + 3000
+	while (
+		local_game_manager != null
+		and bool(local_game_manager.call(&"is_transitioning"))
+		and Time.get_ticks_msec() < deadline
+	):
+		await process_frame
 
 
 func _release_movement() -> void:

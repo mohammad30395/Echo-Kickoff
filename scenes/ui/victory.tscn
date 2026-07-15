@@ -72,5 +72,5 @@ text = "MAIN MENU"
 [node name="Hint" type="Label" parent="Center/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.5, 0.42, 1)
-text = "Mouse or keyboard navigation"
+text = "Esc returns to menu • Mouse or keyboard navigation"
 horizontal_alignment = 1

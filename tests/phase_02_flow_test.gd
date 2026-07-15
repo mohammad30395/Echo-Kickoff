@@ -34,7 +34,7 @@ func _run() -> void:
 	_expect_pause_path("Game World -> Pause")
 
 	_expect_button_ready(_get_pause_overlay(), ^"%ResumeButton", "Pause Resume")
-	_send_action(&"pause")
+	_press_button(_get_pause_overlay(), ^"%ResumeButton", "Pause Resume")
 	await _settle()
 	_expect_path(&"game_world", &"GameWorld", "Pause -> Resume -> Game World")
 
@@ -89,6 +89,15 @@ func _finish() -> void:
 
 func _settle(frame_count: int = 3) -> void:
 	for _frame_index in range(frame_count):
+		await process_frame
+	var transition_deadline := Time.get_ticks_msec() + 3000
+	while (
+		game_manager != null
+		and bool(game_manager.call(&"is_transitioning"))
+		and Time.get_ticks_msec() < transition_deadline
+	):
+		await process_frame
+	for _frame_index in range(2):
 		await process_frame
 
 

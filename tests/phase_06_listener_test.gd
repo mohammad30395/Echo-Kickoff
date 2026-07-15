@@ -246,7 +246,7 @@ func _test_game_over_integration() -> void:
 	game_player.global_position = game_listener.global_position
 	game_listener.set_target_player(game_player)
 	var reached_game_over := false
-	for _frame_index in range(40):
+	for _frame_index in range(120):
 		await physics_frame
 		if current_scene != null and current_scene.name == &"GameOver":
 			reached_game_over = true
@@ -299,6 +299,14 @@ func _settle(frame_count: int = 3) -> void:
 	for _frame_index in range(frame_count):
 		await process_frame
 		await physics_frame
+	var game_manager := root.get_node_or_null("GameManager")
+	var deadline := Time.get_ticks_msec() + 3000
+	while (
+		game_manager != null
+		and bool(game_manager.call(&"is_transitioning"))
+		and Time.get_ticks_msec() < deadline
+	):
+		await process_frame
 
 
 func _has_key(action: StringName, expected_key: Key) -> bool:
