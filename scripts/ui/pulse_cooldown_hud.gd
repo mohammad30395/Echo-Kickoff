@@ -2,6 +2,7 @@ class_name PulseCooldownHud
 extends Control
 
 @export_range(0.1, 2.0, 0.05) var danger_message_duration: float = 0.65
+@export var show_debug_hint: bool = true
 
 @onready var cooldown_bar: ProgressBar = %CooldownBar
 @onready var status_label: Label = %StatusLabel
@@ -15,6 +16,9 @@ var _danger_message_remaining: float = 0.0
 
 func _ready() -> void:
 	set_process(false)
+	debug_label.visible = show_debug_hint
+	if not show_debug_hint:
+		offset_top = -102.0
 	_refresh()
 
 

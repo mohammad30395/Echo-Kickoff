@@ -20,6 +20,7 @@ const ECHO_PULSE_SCENE := preload("res://scenes/effects/echo_pulse.tscn")
 
 @export_category("Debug")
 @export var debug_visuals: bool = false
+@export var allow_debug_input: bool = true
 
 var cooldown_remaining: float = 0.0
 var pulse_count: int = 0
@@ -49,7 +50,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"echo_pulse"):
 		try_emit_pulse()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed(&"debug_pulse_visuals"):
+	elif allow_debug_input and event.is_action_pressed(&"debug_pulse_visuals"):
 		set_debug_visuals(not debug_visuals)
 		get_viewport().set_input_as_handled()
 

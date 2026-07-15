@@ -1,0 +1,89 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/sector_00_test.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/levels/sector_00_visual.gd" id="2_visual"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/entities/listener.tscn" id="4_listener"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/reactor_relay.tscn" id="5_relay"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/extraction_terminal.tscn" id="6_extraction"]
+[ext_resource type="Script" path="res://scripts/systems/mission_objective_controller.gd" id="7_mission"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pulse_cooldown_hud.tscn" id="8_pulse_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/objective_hud.tscn" id="9_objective_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt_hud.tscn" id="10_prompt_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/onboarding_hud.tscn" id="11_onboarding_hud"]
+
+[node name="Sector_00_Test" type="Node2D"]
+script = ExtResource("1_level")
+
+[node name="FacilityFloor" type="Node2D" parent="."]
+script = ExtResource("2_visual")
+
+[node name="Revealables" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="CollisionGeometry" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+unique_name_in_owner = true
+
+[node name="MissionController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("7_mission")
+
+[node name="RelayA" parent="." instance=ExtResource("5_relay")]
+unique_name_in_owner = true
+position = Vector2(-780, -430)
+relay_id = &"A"
+
+[node name="RelayB" parent="." instance=ExtResource("5_relay")]
+unique_name_in_owner = true
+position = Vector2(760, -420)
+relay_id = &"B"
+
+[node name="RelayC" parent="." instance=ExtResource("5_relay")]
+unique_name_in_owner = true
+position = Vector2(790, 400)
+relay_id = &"C"
+
+[node name="ExtractionTerminal" parent="." instance=ExtResource("6_extraction")]
+unique_name_in_owner = true
+position = Vector2(-900, 260)
+
+[node name="Listener" parent="." instance=ExtResource("4_listener")]
+unique_name_in_owner = true
+position = Vector2(-1070, -550)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(20, 0), Vector2(20, -20), Vector2(0, -20)])
+initial_idle_duration = 1.2
+patrol_speed = 72.0
+investigate_speed = 108.0
+chase_speed = 148.0
+hearing_sensitivity = 1.0
+search_duration = 3.4
+detection_range = 112.0
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="HUD" type="Control" parent="HUDLayer"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PulseCooldownHud" parent="HUDLayer/HUD" instance=ExtResource("8_pulse_hud")]
+unique_name_in_owner = true
+show_debug_hint = false
+
+[node name="ObjectiveHud" parent="HUDLayer/HUD" instance=ExtResource("9_objective_hud")]
+unique_name_in_owner = true
+
+[node name="InteractionPromptHud" parent="HUDLayer/HUD" instance=ExtResource("10_prompt_hud")]
+unique_name_in_owner = true
+
+[node name="OnboardingHud" parent="HUDLayer/HUD" instance=ExtResource("11_onboarding_hud")]
+unique_name_in_owner = true

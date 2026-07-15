@@ -1,0 +1,46 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/onboarding_hud.gd" id="1_hud"]
+
+[node name="OnboardingHud" type="Control"]
+custom_minimum_size = Vector2(560, 58)
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 360.0
+offset_top = 20.0
+offset_right = -360.0
+offset_bottom = 78.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.025, 0.04, 0.92)
+
+[node name="MessageLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 8.0
+offset_right = -18.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.62, 0.94, 0.96, 1)
+theme_override_colors/font_outline_color = Color(0.005, 0.012, 0.02, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 15
+text = "MOVE // WASD OR ARROW KEYS"
+horizontal_alignment = 1
+vertical_alignment = 1

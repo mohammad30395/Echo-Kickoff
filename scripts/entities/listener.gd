@@ -44,7 +44,7 @@ const SEARCH_DIRECTIONS := [
 @export_range(16.0, 240.0, 1.0) var search_radius: float = 72.0
 @export_range(0.2, 10.0, 0.1) var search_duration: float = 3.0
 @export_range(16.0, 300.0, 1.0) var detection_range: float = 105.0
-@export_range(8.0, 80.0, 1.0) var contact_range: float = 25.0
+@export_range(8.0, 80.0, 1.0) var contact_range: float = 34.0
 @export_range(0.05, 1.0, 0.05) var detection_check_interval: float = 0.15
 @export_range(0.05, 1.0, 0.05) var chase_retarget_interval: float = 0.18
 @export_range(0.1, 5.0, 0.1) var chase_memory_duration: float = 1.2
@@ -62,6 +62,7 @@ const SEARCH_DIRECTIONS := [
 
 @export_category("Debug")
 @export var debug_enabled: bool = false
+@export var allow_debug_input: bool = true
 @export_range(32.0, 1000.0, 1.0) var debug_reference_loudness: float = 480.0
 
 @onready var listener_visual: ListenerVisual = %Visual
@@ -543,7 +544,7 @@ func _catch_player() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"debug_listener_ai"):
+	if allow_debug_input and event.is_action_pressed(&"debug_listener_ai"):
 		set_debug_enabled(not debug_enabled)
 
 
