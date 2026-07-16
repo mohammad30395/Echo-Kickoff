@@ -233,3 +233,17 @@ PHASE_15_RELEASE_CANDIDATE_TEST_OK
 ## Decision
 
 PASS — Echo Kickoff is a release candidate for Web submission. The build remains Godot 4, GDScript-only, Compatibility-rendered, single-threaded on Web, free of GDExtension/C#/external JS dependencies, and playable without external software beyond a browser.
+
+## Post-revision integration addendum — 2026-07-17
+
+Result: **PASS**
+
+The environment-art, ambient/local visibility, optional movement-aid, HUD, accessibility, and tutorial revisions completed after the original Phase 15 measurements have now been validated together. No gameplay feature or balance value changed. The original Phase 15 balance table and 842.4-second modeled route remain authoritative.
+
+Fresh integration verification produced matching 538,028-byte Web and Windows PCKs with SHA-256 `ba6b0b92bf36c6806abf71f4a1b94444b47085fd2817cddb1dcdcdc3ba3f6cc8`. Web export completed in 3.49 seconds with 876.1 MiB peak RSS; Windows export completed in 2.63 seconds with 941.1 MiB peak RSS. The Web build remains single-threaded, contains no worker artifact, and the release PCK excludes debug/test resource paths.
+
+Chromium validated ambient/local visibility, active Echo and danger feedback, decoy count change, pause/resume, high contrast, the optional movement aid, outside-pad mouse isolation, keyboard coexistence, focus, and exact 1280×720 → 1024×768 resizing. Its 180-frame ambient and active-Echo samples both averaged 16.61 ms, with zero subscribed page/runtime/network errors. Firefox BiDi validated live menu-to-game movement and Echo input against the same export with zero subscribed browser errors.
+
+All 20 current Godot headless tests passed, including Phase 01–15 plus the visual, visibility, joystick/HUD, and tutorial revision suites. Existing non-breaking tradeoffs remain: Windows hardware launch is pending, the Godot Web WASM is approximately 39.5 MB, and Firefox emits the previously documented generated-engine-path warnings.
+
+The complete evidence, scope cuts, external submission gates, and remaining polish items are recorded in `docs/post-revision-integration-report.md`. Release-candidate status remains **PASS**.
