@@ -1,21 +1,23 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/decoy_hud.gd" id="1_hud"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/decoy.svg" id="2_icon"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud_frame.tscn" id="3_frame"]
 
 [node name="DecoyHud" type="Control"]
-custom_minimum_size = Vector2(300, 82)
-layout_mode = 3
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
+custom_minimum_size = Vector2(280, 76)
+layout_mode = 0
 offset_left = 20.0
-offset_top = -102.0
-offset_right = 320.0
-offset_bottom = -20.0
-grow_vertical = 0
+offset_top = 98.0
+offset_right = 300.0
+offset_bottom = 174.0
 mouse_filter = 2
 script = ExtResource("1_hud")
+
+[node name="Frame" parent="." instance=ExtResource("3_frame")]
+layout_mode = 1
+accent_color = Color(0.94, 0.72, 0.24, 0.9)
+use_warning_palette = true
 
 [node name="DecoyIcon" type="TextureRect" parent="."]
 layout_mode = 0
@@ -32,20 +34,31 @@ mouse_filter = 2
 layout_mode = 0
 offset_left = 43.0
 offset_top = 10.0
-offset_right = 286.0
+offset_right = 190.0
 offset_bottom = 31.0
 theme_override_colors/font_color = Color(0.9, 0.72, 0.32, 1)
 theme_override_font_sizes/font_size = 12
-text = "SOUND DECOY // Q / RIGHT MOUSE"
+text = "DECOY // TARGETED LURE"
 
 [node name="CountLabel" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 84.0
 offset_top = 41.0
-offset_right = 286.0
+offset_right = 266.0
 offset_bottom = 67.0
 theme_override_colors/font_color = Color(0.88, 0.82, 0.62, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 12
 text = "CHARGES 2/2"
 vertical_alignment = 1
+
+[node name="InputHint" type="Label" parent="."]
+layout_mode = 0
+offset_left = 190.0
+offset_top = 45.0
+offset_right = 266.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(0.62, 0.54, 0.34, 1)
+theme_override_font_sizes/font_size = 10
+text = "Q / RMB"
+horizontal_alignment = 2

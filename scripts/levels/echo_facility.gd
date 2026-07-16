@@ -38,6 +38,8 @@ const TUTORIAL_EXTRACTION: StringName = &"extraction"
 @onready var interaction_prompt_hud: InteractionPromptHud = %InteractionPromptHud
 @onready var onboarding_hud: OnboardingHud = %OnboardingHud
 @onready var decoy_hud: DecoyHud = %DecoyHud
+@onready var threat_status_hud: ThreatStatusHud = %ThreatStatusHud
+@onready var movement_aid: MovementAid = %MovementAid
 
 var onboarding_stage: int = 0
 var listener_was_alerted: bool = false
@@ -65,6 +67,8 @@ func _ready() -> void:
 	objective_hud.bind(mission_controller)
 	interaction_prompt_hud.bind(_interaction_controller)
 	decoy_hud.bind(_decoy_controller)
+	threat_status_hud.bind(get_listeners())
+	movement_aid.bind(player)
 	_pulse_controller.pulse_started.connect(_on_pulse_started)
 	_decoy_controller.decoy_thrown.connect(_on_decoy_thrown)
 	_interaction_controller.focus_changed.connect(_on_interaction_focus_changed)

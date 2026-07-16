@@ -5,10 +5,12 @@ signal settings_changed(
 	reduced_flash_enabled: bool,
 	screen_shake_enabled: bool,
 )
+signal movement_aid_changed(enabled: bool)
 
 var high_contrast_enabled: bool = false
 var reduced_flash_enabled: bool = false
 var screen_shake_enabled: bool = true
+var movement_aid_enabled: bool = false
 
 
 func _ready() -> void:
@@ -36,6 +38,13 @@ func set_screen_shake(enabled: bool) -> void:
 	_emit_settings_changed()
 
 
+func set_movement_aid(enabled: bool) -> void:
+	if movement_aid_enabled == enabled:
+		return
+	movement_aid_enabled = enabled
+	movement_aid_changed.emit(movement_aid_enabled)
+
+
 func get_flash_multiplier() -> float:
 	return 0.36 if reduced_flash_enabled else 1.0
 
@@ -61,10 +70,14 @@ func get_text_color(default_color: Color) -> Color:
 
 
 func reset_to_defaults() -> void:
+	var movement_setting_changed := movement_aid_enabled
 	high_contrast_enabled = false
 	reduced_flash_enabled = false
 	screen_shake_enabled = true
+	movement_aid_enabled = false
 	_emit_settings_changed()
+	if movement_setting_changed:
+		movement_aid_changed.emit(false)
 
 
 func _emit_settings_changed() -> void:

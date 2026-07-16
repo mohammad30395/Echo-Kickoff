@@ -7,6 +7,8 @@ extends Control
 @onready var cooldown_bar: ProgressBar = %CooldownBar
 @onready var status_label: Label = %StatusLabel
 @onready var debug_label: Label = %DebugLabel
+@onready var readiness_label: Label = %ReadinessLabel
+@onready var frame: HudFrame = %Frame
 
 var _controller: PlayerPulseController
 var _readiness: float = 1.0
@@ -22,7 +24,7 @@ func _ready() -> void:
 		_accessibility_manager.connect(&"settings_changed", _on_accessibility_changed)
 	debug_label.visible = show_debug_hint
 	if not show_debug_hint:
-		offset_top = -102.0
+		offset_top = -112.0
 	_refresh()
 
 
@@ -82,18 +84,27 @@ func _refresh() -> void:
 	if not is_node_ready():
 		return
 	cooldown_bar.value = _readiness
+	readiness_label.text = "%d%%" % roundi(_readiness * 100.0)
 	if _danger_message_remaining > 0.0:
-		status_label.text = "ECHO KICKOFF: REVELATION + DANGER"
+		status_label.text = "REVELATION + DANGER // LISTENERS ALERT"
 		status_label.modulate = _warning_color(Color(1.0, 0.46, 0.25, 1.0))
+		frame.set_accent_color(Color(1.0, 0.38, 0.2, 0.96))
+		frame.set_warning_palette(true)
 	elif _remaining > 0.001:
-		status_label.text = "RECHARGING  %.1fs" % _remaining
+		status_label.text = "RECHARGING // %.1fs" % _remaining
 		status_label.modulate = _warning_color(Color(1.0, 0.65, 0.28, 1.0))
+		frame.set_accent_color(Color(1.0, 0.58, 0.24, 0.9))
+		frame.set_warning_palette(true)
 	elif _controller != null:
-		status_label.text = "READY  •  SPACE / LEFT MOUSE"
+		status_label.text = "READY // SPACE OR LEFT MOUSE"
 		status_label.modulate = _echo_color(Color(0.45, 0.96, 1.0, 1.0))
+		frame.set_accent_color(Color(0.32, 0.88, 0.96, 0.9))
+		frame.set_warning_palette(false)
 	else:
 		status_label.text = "PULSE OFFLINE"
 		status_label.modulate = Color(0.55, 0.6, 0.64, 1.0)
+		frame.set_accent_color(Color(0.42, 0.48, 0.5, 0.7))
+		frame.set_warning_palette(false)
 	cooldown_bar.modulate = (
 		_echo_color(Color(0.45, 0.96, 1.0, 1.0))
 		if _readiness >= 0.999

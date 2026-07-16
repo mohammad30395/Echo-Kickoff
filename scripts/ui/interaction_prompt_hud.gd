@@ -3,6 +3,7 @@ extends Control
 
 @onready var prompt_label: Label = %PromptLabel
 @onready var progress_bar: ProgressBar = %ProgressBar
+@onready var frame: HudFrame = %Frame
 
 var controller: PlayerInteractionController
 var _accessibility_manager: Node
@@ -42,6 +43,10 @@ func _on_prompt_changed(text: String, progress: float, available: bool) -> void:
 		if available
 		else _accessible_color(Color(1.0, 0.56, 0.3, 1.0), false)
 	)
+	frame.set_accent_color(
+		Color(0.34, 0.94, 0.74, 0.94) if available else Color(1.0, 0.48, 0.22, 0.94)
+	)
+	frame.set_warning_palette(not available)
 
 
 func _on_accessibility_changed(

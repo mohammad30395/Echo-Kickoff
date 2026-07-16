@@ -18,6 +18,7 @@ extends CharacterBody2D
 @onready var player_camera: Camera2D = %Camera2D
 
 var facing_direction: Vector2 = Vector2.RIGHT
+var movement_aid_vector: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -31,12 +32,13 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var input_direction := Input.get_vector(
+	var keyboard_direction := Input.get_vector(
 		&"move_left",
 		&"move_right",
 		&"move_up",
 		&"move_down",
 	)
+	var input_direction := (keyboard_direction + movement_aid_vector).limit_length(1.0)
 	velocity = calculate_next_velocity(velocity, input_direction, delta)
 	move_and_slide()
 	_update_facing_direction()
@@ -51,6 +53,14 @@ func calculate_next_velocity(
 	var target_velocity := clamped_input * max_speed
 	var response_rate := deceleration if clamped_input.length_squared() <= 0.0001 else acceleration
 	return current_velocity.move_toward(target_velocity, response_rate * maxf(delta, 0.0))
+
+
+func set_movement_aid_vector(direction: Vector2) -> void:
+	movement_aid_vector = direction.limit_length(1.0)
+
+
+func clear_movement_aid_vector() -> void:
+	movement_aid_vector = Vector2.ZERO
 
 
 func _update_facing_direction() -> void:

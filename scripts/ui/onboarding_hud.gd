@@ -2,6 +2,7 @@ class_name OnboardingHud
 extends Control
 
 @onready var message_label: Label = %MessageLabel
+@onready var step_label: Label = %StepLabel
 
 var message: String = ""
 var _accessibility_manager: Node
@@ -23,7 +24,18 @@ func _exit_tree() -> void:
 
 func show_message(next_message: String) -> void:
 	message = next_message
-	message_label.text = message
+	var parts := message.split(" // ", true, 1)
+	var heading := parts[0] if not parts.is_empty() else "GUIDE"
+	var heading_words := heading.split(" ", false)
+	step_label.text = heading_words[0] if not heading_words.is_empty() else "GUIDE"
+	var heading_detail := heading.trim_prefix(step_label.text).strip_edges()
+	var instruction := parts[1] if parts.size() > 1 else ""
+	if heading_detail.is_empty():
+		message_label.text = instruction if not instruction.is_empty() else message
+	elif instruction.is_empty():
+		message_label.text = heading_detail
+	else:
+		message_label.text = "%s // %s" % [heading_detail, instruction]
 	visible = not message.is_empty()
 	_apply_accessibility()
 

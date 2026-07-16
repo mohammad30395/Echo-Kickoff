@@ -50,12 +50,9 @@ func _refresh() -> void:
 
 
 func _draw() -> void:
-	var panel_color := Color(0.008, 0.025, 0.04, 0.9)
 	var active_color := Color(0.94, 0.72, 0.24, 1.0)
 	if _accessibility_manager != null:
-		panel_color = _accessibility_manager.call(&"get_panel_color", panel_color) as Color
 		active_color = _accessibility_manager.call(&"get_warning_color", active_color) as Color
-	draw_rect(Rect2(Vector2.ZERO, size), panel_color, true)
 	for index in range(maximum_charges):
 		var center := Vector2(24.0 + index * 30.0, 52.0)
 		var color := active_color if index < remaining_charges else Color(0.38, 0.33, 0.24, 0.65)

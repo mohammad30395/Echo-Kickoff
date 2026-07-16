@@ -60,7 +60,7 @@ func _test_main_menu_help_credits_and_settings() -> void:
 	await process_frame
 	_expect(info_panel.visible and info_title.text == "HOW TO PLAY", "How to Play panel did not open.")
 	_expect(info_body.text.split("\n").size() <= 5, "How to Play uses too many text lines.")
-	_expect(info_body.text.contains("Move first") and info_body.text.contains("Every pulse also calls"), "How to Play does not teach the required loop.")
+	_expect(info_body.text.contains("Move:") and info_body.text.contains("Every pulse also calls"), "How to Play does not teach the required loop.")
 	credits.pressed.emit()
 	await process_frame
 	_expect(info_panel.visible and info_title.text == "CREDITS", "Credits panel did not open.")
@@ -74,14 +74,17 @@ func _test_main_menu_help_credits_and_settings() -> void:
 		var high_contrast := access_panel.get_node(^"%HighContrastBox") as CheckBox
 		var reduced_flash := access_panel.get_node(^"%ReducedFlashBox") as CheckBox
 		var screen_shake := access_panel.get_node(^"%ScreenShakeBox") as CheckBox
+		var movement_aid := access_panel.get_node(^"%MovementAidBox") as CheckBox
 		high_contrast.button_pressed = true
 		reduced_flash.button_pressed = true
 		screen_shake.button_pressed = false
+		movement_aid.button_pressed = true
 		await process_frame
 		_expect(bool(accessibility_manager.get("high_contrast_enabled")), "High contrast checkbox did not update settings.")
 		_expect(bool(accessibility_manager.get("reduced_flash_enabled")), "Reduced flash checkbox did not update settings.")
 		_expect(not bool(accessibility_manager.get("screen_shake_enabled")), "Screen-shake checkbox did not update settings.")
-		_expect(high_contrast.focus_mode != Control.FOCUS_NONE and reduced_flash.focus_mode != Control.FOCUS_NONE and screen_shake.focus_mode != Control.FOCUS_NONE, "Accessibility checkboxes are not keyboard-focusable.")
+		_expect(bool(accessibility_manager.get("movement_aid_enabled")), "Movement-aid checkbox did not update settings.")
+		_expect(high_contrast.focus_mode != Control.FOCUS_NONE and reduced_flash.focus_mode != Control.FOCUS_NONE and screen_shake.focus_mode != Control.FOCUS_NONE and movement_aid.focus_mode != Control.FOCUS_NONE, "Accessibility checkboxes are not keyboard-focusable.")
 	menu.queue_free()
 	await process_frame
 	print("UX_MENU_OK | Start, How to Play, Credits, audio/accessibility settings, keyboard focus")
