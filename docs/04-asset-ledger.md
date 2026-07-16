@@ -1,6 +1,7 @@
 # Echo Kickoff — Asset Ledger
 
-Updated: 2026-07-15  
+Updated: 2026-07-17
+
 Policy: **Original procedural or team-created assets only for the jam build. No copyrighted third-party game assets.**
 
 ## Approval rules
@@ -14,6 +15,8 @@ Source evidence should be retained locally with the project archive when applica
 ## Current inventory
 
 At Phase 13 there are **no third-party image, audio, font, model, video, or other asset files**. The inventory consists of original jam-authored runtime drawing, five original path-only SVGs, two exact-size original PNGs produced by the repository's deterministic visual generator, and ten original mono PCM16 WAV cues produced by the repository's deterministic audio generator. No downloaded reference, stock element, external font, model, sample, photograph, recorded third-party sound, or generative-image/audio service was used.
+
+The 2026-07-17 visual-direction revision adds no asset file and changes no approval status. Ambient visibility, player-local visibility, richer structural layering, and any optional on-screen movement aid are currently design requirements only. Their future implementation must reuse original runtime drawing or be entered here before release use.
 
 | ID | Repository path | Type | Creator/source | Created/acquired | Rights basis | Modifications | Status |
 |---|---|---|---|---|---|---|---|
@@ -53,6 +56,17 @@ These entries define intent only. Replace each with exact paths and evidence whe
 | P-AUD-04 | Relay/extraction/failure cues | Team-created synthesis | Fulfilled by AUD-004 and AUD-005 in Phase 13 as baked original WAVs with generator and SHA-256 provenance. |
 | P-AUD-05 | Industrial ambience | Runtime layers or team-created synthesis | Fulfilled by AUD-006 in Phase 13 as a baked original looping WAV; no third-party sample was used. |
 | P-FONT-01 | UI font | Godot/default fallback or original approved choice | Avoid adding a font file unless rights and redistribution are verified. |
+| P-VIS-06 | Ambient world and player-local visibility layers | Jam-authored Compatibility-safe CanvasItem drawing, bounded per-object falloff, or another original procedural method | Must keep immediate floor/wall edges readable without exposing long-range information; must remain visually weaker and smaller than Echo; no new asset file is approved by this planned row. |
+| P-VIS-07 | Polished structural/floor layering | Existing procedural geometry extended with original fills, edge bands, room motifs, hazard patterns, and controlled neon accents | Must follow the revised role palette, remain non-franchise, and avoid unapproved texture/shader dependencies. |
+| P-UI-01 | Optional movement pad / joystick-like aid | Original Godot Control and draw primitives using existing movement actions | Conditional only; must be hideable, non-blocking for mouse aim and keyboard input, browser-safe, and removed if it harms usability. No raster asset is required or approved. |
+
+## Visual-revision asset rules
+
+- The locked palette is a project-authored design system, not a third-party asset: player cyan/white; Echo cyan-blue; danger and blocked systems orange-red; relay gold or bright cyan; extraction green-cyan; structures dark blue-gray.
+- Future polish should extend existing `draw_*`, Polygon2D, Line2D, Control, and original SVG vocabulary before introducing new files.
+- Any new icon, texture, shader, font, raster, or audio file still requires an exact Approved inventory row before release use.
+- An implementation-only change to colors or procedural drawing code must update the relevant existing VIS row's modifications and review evidence; planned rows do not retroactively approve code or assets.
+- Passive local light and active Echo must have different range, intensity, timing, and semantic purpose. Recoloring one effect is not sufficient evidence of compliance.
 
 ## Asset entry template
 

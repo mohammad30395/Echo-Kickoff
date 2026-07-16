@@ -7,7 +7,7 @@ These rules govern all automated or assisted changes in this repository during t
 Before making a change, inspect:
 
 1. Git status and recent history.
-2. The six files in `docs/`.
+2. All current design/compliance documents and every phase audit/report in `docs/`.
 3. Existing project conventions and nearby code once the Godot project exists.
 4. The asset ledger for any non-code file.
 
@@ -16,6 +16,8 @@ Never overwrite or discard unrelated user changes. If the worktree is dirty, sep
 ## Phase boundary
 
 Phase 0 is documentation only. Do not create `project.godot`, scenes, scripts, imports, export presets, art, audio, or gameplay until the user explicitly starts the implementation phase.
+
+The 2026-07-17 visual-comfort revision is also documentation-first. Do not implement ambient visibility, local player light, HUD changes, or an on-screen movement aid until the user explicitly requests the implementation phase.
 
 ## Locked stack
 
@@ -38,6 +40,28 @@ Do not add addons, packages, generated binaries, or external services without ex
 - Prefer authored, compact content over procedural level generation.
 - Fix or simplify a failing must-have before adding polish.
 - Do not silently reinterpret the concept, add game modes, or increase content count.
+- Treat `docs/visual-revision-notes.md` and the revised GDD as authoritative over older audit descriptions of an almost-black or nearly invisible baseline. Older audits remain historical evidence, not the current visual target.
+
+## Visual-comfort lock
+
+- Preserve stealth-horror through limited information, contrast, sound risk, and enemy pressure—not through total visual deprivation.
+- The facility must retain a subtle ambient floor/structure layer at all times.
+- The player must always have a small, silent local visibility radius that exposes immediate floor and collision edges.
+- Passive local light must never publish noise, alert Listeners, reveal the full route, or provide the strong enemy/objective information of Echo Pulse.
+- Echo Pulse remains the strongest and longest-range reveal. Its luminous response must be visibly distinct from passive local visibility and it must retain the existing danger event.
+- Use the role palette defined in the GDD: cyan/white player, cyan-blue Echo/information, orange-red danger and blocked systems, gold/bright-cyan relays, green-cyan extraction, and dark blue-gray structures.
+- Do not encode state by color alone. Pair role colors with silhouette, icon, label, brightness, motion, or pattern.
+- Prefer layered procedural fills, outlines, floor zones, motifs, and bounded local effects over empty black fields or skeletal outlines.
+- Avoid full-screen shader loops and Compatibility-unsafe rendering paths. Validate every visual change in Web and Windows exports.
+
+## Optional on-screen movement aid policy
+
+- Keyboard and mouse remain the complete required controls and the default desktop experience.
+- An on-screen movement pad or joystick-like aid is optional and must be user-hideable or disabled by default.
+- The aid may mirror existing movement actions only; it must not introduce a new movement model, mobile target, or gameplay advantage.
+- It must not capture mouse aim outside its own bounds, steal browser focus, overlap HUD/prompts, or remain active while paused/hidden.
+- Prefer a clean directional pad/visual aid. Use drag-based joystick behavior only if focused browser tests prove it reliable.
+- If any input, resizing, safe-area, or discoverability regression remains, cut the aid without affecting acceptance.
 
 ## Godot engineering rules
 
@@ -78,6 +102,8 @@ Do not add addons, packages, generated binaries, or external services without ex
 - Avoid rapid flashing and high-amplitude jump-scare audio.
 - Keep reduced shake/flash options functional whenever those effects exist.
 - Maintain readable controls, interaction prompts, and state indicators at 1280×720.
+- Maintain immediate wall/collision readability without requiring the player to flash or pulse repeatedly.
+- Ensure pulse readiness, objective progress, decoy count, interaction state, and Listener danger have icon plus text/shape feedback where practical.
 - Horror remains non-graphic and non-NSFW.
 
 ## Verification required for every change

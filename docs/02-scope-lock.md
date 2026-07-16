@@ -1,11 +1,13 @@
 # Echo Kickoff — Scope Lock
 
 Locked on: **2026-07-15**  
+Visual-comfort revision authorized: **2026-07-17**
+
 Internal submission target: **2026-07-19 17:00 Asia/Dhaka**, subject to any earlier organizer notice
 
 ## Product sentence
 
-Build one 6–10 minute 2D top-down stealth-horror level in which a radial echo pulse temporarily reveals a dark facility while alerting Listeners, then let the player activate three relays and extract.
+Build one compact 2D top-down stealth-horror facility with readable ambient and player-local visibility, while a radial Echo Pulse remains the primary long-range reveal and simultaneously alerts Listeners; activate three relays and extract.
 
 Anything that does not strengthen or stabilize that sentence is not must-have work.
 
@@ -13,6 +15,8 @@ Anything that does not strengthen or stabilize that sentence is not must-have wo
 
 - Godot 4, GDScript, Compatibility renderer.
 - Keyboard and mouse PC play.
+- The world must never be completely unreadable: immediate collision edges require a silent local visibility baseline, while long-range information remains pulse-dependent.
+- Dark sci-fi neon role colors, shape cues, and readable HUD hierarchy are part of the locked presentation direction.
 - Windows and Web exports tested; at least one compliant working submission build is mandatory.
 - New work only from this jam repository.
 - Original procedural or team-created assets only; every asset is logged.
@@ -33,7 +37,7 @@ Priority order is strict. A later row cannot displace an earlier incomplete row.
 | M06 | Objective loop | Three relay interactions, accurate progress UI, locked then powered extraction, win state. |
 | M07 | Complete level | Central hub plus three branches, 2–3 Listeners, loops/evasion space, onboarding. |
 | M08 | Full game flow | Start/help, pause, failure, fast restart, victory, quit where platform permits. |
-| M09 | Presentation/accessibility | Procedural visuals/audio, readable state cues, volume controls, reduced shake/flash. |
+| M09 | Presentation/accessibility | Layered dark sci-fi neon visuals/audio, ambient and player-local readability, role-based color plus shape cues, volume controls, reduced shake/flash. |
 | M10 | Export QA/submission | Repeated Windows/Web smoke tests, asset audit, itch.io upload/retest, archive/freeze. |
 
 ## Stretch backlog
@@ -47,6 +51,20 @@ Stretch work is locked until M01–M10 pass in exported builds:
 5. Extra props, particles, and relay-specific ambience.
 6. Post-win replay modifier.
 
+## Authorized visual-comfort revision backlog
+
+This revision is an explicit change to the former near-total-darkness direction. It does not authorize implementation in the documentation pass. When implementation is separately requested, work in this order:
+
+| ID | Deliverable | Done when |
+|---|---|---|
+| V01 | Ambient readability baseline | Floors, structural masses, and immediate wall edges remain subtly readable without a pulse; the world is still tense and low-light. |
+| V02 | Player-local visibility | A silent soft radius around the player exposes nearby collision/pathing, never emits noise, and is materially smaller/weaker than Echo. |
+| V03 | Neon hierarchy and world polish | Player, Echo, danger, relay, extraction, walls, and hazards use the locked role palette plus non-color cues; facility layers feel composed rather than skeletal. |
+| V04 | HUD readability | Local visibility, pulse readiness, objective progress, decoy count, interaction state, and danger state are readable inside browser-safe bounds. |
+| V05 | Regression/export QA | Keyboard/mouse-only completion, muted/high-contrast/reduced-flash checks, browser resizing, Web/Windows export, and performance budgets pass. |
+
+An optional on-screen movement aid is a **conditional polish item**, not a release requirement. Prefer a simple movement pad/directional aid. A drag joystick may ship only if it is toggleable, does not interfere with mouse aim or keyboard input, and passes browser-safe layout tests. Cut it immediately if those conditions fail.
+
 Stretch work is removed immediately if it introduces an export regression, accessibility regression, new asset uncertainty, or more than 60 minutes of unresolved debugging.
 
 ## Explicit cut-list
@@ -56,6 +74,7 @@ Stretch work is removed immediately if it introduces an export regression, acces
 - Save/load, cloud data, analytics, accounts, online features, multiplayer, leaderboards.
 - Advanced dynamic lighting, 3D, destructible environments, ragdolls.
 - Mobile/VR/console ports, controller polish, macOS/Linux packaging.
+- Mobile/touch support. An optional desktop-browser movement aid does not create a mobile target.
 - Voice acting, licensed soundtrack, asset packs, recognizable franchise material.
 - Complex acoustic simulation, ray-traced hearing, coordinated enemy squads.
 - Toolchain or dependency changes outside the locked technical stack.
@@ -76,6 +95,8 @@ This is a survival schedule, not an estimate of how long every feature could ide
 
 ## Change-control rule
 
+The 2026-07-17 user-authorized visual-comfort revision is the documented exception to the original near-total-darkness presentation. It changes readability and presentation only: the core pulse/noise tradeoff, mission, level count, enemy count, technical stack, and platform targets remain locked.
+
 A scope addition is permitted only when all of the following are true:
 
 1. M01–M10 already pass in both exported targets.
@@ -93,8 +114,11 @@ Otherwise record the idea after the jam; do not implement it.
 - If multiple Listeners cause navigation instability, ship two reliable Listeners rather than three unstable ones.
 - If runtime audio synthesis is inconsistent on Web, use small original pre-rendered sounds documented in the ledger.
 - If special effects differ between render targets, use simple CanvasItem lines/polygons with identical gameplay readability.
+- If a local-light effect requires an expensive or incompatible full-screen shader, replace it with bounded CanvasItem drawing, per-object distance falloff, or another Compatibility-safe approach.
+- If ambient visibility makes Echo optional, lower passive range/contrast or reduce passive information detail before reducing Echo utility.
+- If the optional joystick or movement pad interferes with mouse aim, keyboard input, HUD safe areas, or browser focus, remove it; keyboard/mouse remains complete.
 - If the final level is too large, reduce branch length rather than removing a relay or the extraction return.
 
 ## Definition of done
 
-“Implemented” means it works in the editor. “Done” means it also works in exported Windows and Web builds, has no unapproved assets, has visible and audible feedback, survives restart, and passes its relevant acceptance criteria in `docs/01-game-design-document.md`.
+“Implemented” means it works in the editor. “Done” means it also works in exported Windows and Web builds, has no unapproved assets, has visible and audible feedback, survives restart, and passes its relevant acceptance criteria in `docs/01-game-design-document.md`. For the visual revision, Done also requires readable nearby collision without Echo, clear separation between passive local light and active long-range reveal, and no loss of keyboard/mouse-only play.
