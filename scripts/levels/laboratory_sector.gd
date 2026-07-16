@@ -6,7 +6,8 @@ func _configure_sector() -> void:
 	sector_id = &"laboratory"
 	signature = SectorSignature.LABORATORY
 	sector_rect = Rect2(-2500.0, -1700.0, 5000.0, 3400.0)
-	floor_color = Color(0.003, 0.01, 0.017, 1.0)
+	floor_color = Color(0.028, 0.062, 0.102, 1.0)
+	floor_panel_color = Color(0.045, 0.105, 0.16, 1.0)
 	wall_rects = [
 		Rect2(-2500.0, -1700.0, 5000.0, 32.0),
 		Rect2(-2500.0, 1668.0, 5000.0, 32.0),

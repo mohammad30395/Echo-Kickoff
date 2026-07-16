@@ -12,8 +12,8 @@ signal pulse_finished
 @export_range(0.0, 1.0, 0.01) var minimum_reveal_strength: float = 0.12
 
 @export_category("Visuals")
-@export var reveal_color: Color = Color(0.35, 0.96, 1.0, 1.0)
-@export var danger_color: Color = Color(1.0, 0.36, 0.18, 1.0)
+@export var reveal_color: Color = Color(0.28, 0.84, 1.0, 1.0)
+@export var danger_color: Color = Color(1.0, 0.3, 0.14, 1.0)
 @export var debug_visuals: bool = false
 
 var current_radius: float = 0.0

@@ -6,7 +6,8 @@ func _configure_sector() -> void:
 	sector_id = &"orientation"
 	signature = SectorSignature.ORIENTATION
 	sector_rect = Rect2(-800.0, -550.0, 1600.0, 1100.0)
-	floor_color = Color(0.004, 0.012, 0.019, 1.0)
+	floor_color = Color(0.035, 0.075, 0.12, 1.0)
+	floor_panel_color = Color(0.05, 0.115, 0.17, 1.0)
 	wall_rects = [
 		Rect2(-800.0, -550.0, 1600.0, 32.0),
 		Rect2(-800.0, 518.0, 200.0, 32.0),

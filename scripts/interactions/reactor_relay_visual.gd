@@ -1,8 +1,8 @@
 class_name ReactorRelayVisual
 extends EchoRevealable
 
-@export var inactive_color: Color = Color(0.2, 0.72, 0.78, 1.0)
-@export var active_color: Color = Color(0.35, 1.0, 0.62, 1.0)
+@export var inactive_color: Color = Color(1.0, 0.72, 0.24, 1.0)
+@export var active_color: Color = Color(0.35, 0.95, 1.0, 1.0)
 
 var is_active: bool = false
 
@@ -18,6 +18,8 @@ func set_active(active: bool) -> void:
 
 
 func _draw() -> void:
+	draw_circle(Vector2(0.0, 7.0), 39.0, get_fill_color(Color(0.01, 0.03, 0.05, 1.0)), true)
+	draw_arc(Vector2(0.0, 7.0), 39.0, -PI, 0.0, 28, get_outline_color(0.26), 3.0)
 	var outer := PackedVector2Array([
 		Vector2(0.0, -34.0),
 		Vector2(29.0, -17.0),
@@ -29,10 +31,13 @@ func _draw() -> void:
 	])
 	draw_colored_polygon(
 		PackedVector2Array(outer.slice(0, 6)),
-		get_fill_color(Color(0.035, 0.16, 0.18, 1.0)),
+		get_fill_color(Color(0.08, 0.14, 0.18, 1.0)),
 	)
 	draw_polyline(outer, get_outline_color(0.18), 8.0)
 	draw_polyline(outer, get_outline_color(), get_outline_width())
+	for side: float in [-1.0, 1.0]:
+		draw_rect(Rect2(Vector2(side * 34.0 - 4.0, -17.0), Vector2(8.0, 34.0)), get_fill_color(Color(0.1, 0.17, 0.21, 1.0)), true)
+		draw_line(Vector2(side * 34.0, -15.0), Vector2(side * 34.0, 15.0), get_outline_color(0.58), 2.0)
 	if is_active:
 		for radius in [19.0, 12.0]:
 			draw_arc(Vector2.ZERO, radius, -2.65, 2.65, 28, get_outline_color(), 2.4)
@@ -49,3 +54,8 @@ func _draw() -> void:
 		for offset in [-12.0, 0.0, 12.0]:
 			draw_line(Vector2(-15.0, offset), Vector2(15.0, offset), get_outline_color(), 2.0)
 		draw_circle(Vector2.ZERO, 5.0, get_outline_color(0.35), false, 2.0)
+	var base := PackedVector2Array([
+		Vector2(-34.0, 34.0), Vector2(34.0, 34.0), Vector2(27.0, 43.0), Vector2(-27.0, 43.0), Vector2(-34.0, 34.0),
+	])
+	draw_colored_polygon(PackedVector2Array(base.slice(0, 4)), get_fill_color(Color(0.08, 0.13, 0.17, 1.0)))
+	draw_polyline(base, get_outline_color(0.7), 2.0)

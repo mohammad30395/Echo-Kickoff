@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/echo_facility.gd" id="1_level"]
 [ext_resource type="PackedScene" path="res://scenes/levels/sectors/orientation_sector.tscn" id="2_orientation"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt_hud.tscn" id="12_prompt_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/onboarding_hud.tscn" id="13_onboarding_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/decoy_hud.tscn" id="14_decoy_hud"]
+[ext_resource type="Script" path="res://scripts/visual/local_visibility_controller.gd" id="15_local_visibility"]
 
 [node name="EchoFacility" type="Node2D"]
 script = ExtResource("1_level")
@@ -38,6 +39,10 @@ unique_name_in_owner = true
 [node name="MissionController" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("9_mission")
+
+[node name="LocalVisibility" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("15_local_visibility")
 
 [node name="RelayA" parent="." instance=ExtResource("7_relay")]
 unique_name_in_owner = true

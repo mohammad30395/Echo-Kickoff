@@ -40,7 +40,13 @@ func _collect_revealables() -> void:
 func _test_architecture_and_darkness() -> void:
 	for revealable: EchoRevealable in revealables:
 		_expect(is_zero_approx(revealable.get_reveal_strength()), "%s did not start dark." % revealable.name)
-		_expect(revealable.get_outline_color().a <= 0.02, "%s is too readable without reveal." % revealable.name)
+		if revealable.receives_local_visibility:
+			_expect(
+				revealable.get_outline_color().a >= 0.05 and revealable.get_outline_color().a <= 0.13,
+				"%s is outside the restrained ambient readability range." % revealable.name,
+			)
+		else:
+			_expect(revealable.get_outline_color().a <= 0.02, "%s should remain concealed without Echo." % revealable.name)
 		_expect(not revealable.is_processing(), "%s processes continuously while dark." % revealable.name)
 		_expect(revealable.reveal_duration >= 0.0, "%s has an invalid reveal duration." % revealable.name)
 		_expect(revealable.fade_speed > 0.0, "%s has an invalid fade speed." % revealable.name)
@@ -49,7 +55,7 @@ func _test_architecture_and_darkness() -> void:
 	_expect(player_visual != null, "Player visual is missing.")
 	if player_visual != null:
 		_expect(player_visual.core_color.a >= 0.8, "Player is not visible enough in darkness.")
-	print("REVEAL_TEST_OK | dark baseline and visible player")
+	print("REVEAL_TEST_OK | restrained ambient baseline and visible player")
 
 
 func _test_primitive_coverage() -> void:

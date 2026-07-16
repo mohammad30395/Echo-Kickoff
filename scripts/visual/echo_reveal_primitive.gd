@@ -19,7 +19,7 @@ enum PrimitiveKind {
 	set(value):
 		primitive_size = value.max(Vector2.ONE)
 		queue_redraw()
-@export var fill_color: Color = Color(0.04, 0.3, 0.36, 1.0)
+@export var fill_color: Color = Color(0.08, 0.22, 0.32, 1.0)
 
 
 func _draw() -> void:
@@ -57,27 +57,41 @@ func get_reveal_distance_from(origin: Vector2) -> float:
 
 func _draw_wall() -> void:
 	var wall_rect := _centered_rect(primitive_size)
+	var shadow := wall_rect.grow(4.0)
+	draw_rect(shadow, get_fill_color(Color(0.01, 0.025, 0.045, 1.0)), true)
 	_draw_luminous_rect(wall_rect, true)
+	var inset := wall_rect.grow(-5.0)
+	draw_rect(inset, get_fill_color(Color(0.1, 0.25, 0.36, 1.0)), true)
+	draw_rect(inset, get_outline_color(0.36), false, 1.0)
 	var axis_start: Vector2
 	var axis_end: Vector2
 	if primitive_size.x >= primitive_size.y:
-		axis_start = Vector2(wall_rect.position.x + 8.0, 0.0)
-		axis_end = Vector2(wall_rect.end.x - 8.0, 0.0)
+		axis_start = Vector2(wall_rect.position.x + 10.0, wall_rect.position.y + 3.0)
+		axis_end = Vector2(wall_rect.end.x - 10.0, wall_rect.position.y + 3.0)
 	else:
-		axis_start = Vector2(0.0, wall_rect.position.y + 8.0)
-		axis_end = Vector2(0.0, wall_rect.end.y - 8.0)
-	draw_line(axis_start, axis_end, get_outline_color(0.42), get_outline_width())
+		axis_start = Vector2(wall_rect.position.x + 3.0, wall_rect.position.y + 10.0)
+		axis_end = Vector2(wall_rect.position.x + 3.0, wall_rect.end.y - 10.0)
+	draw_line(axis_start, axis_end, get_outline_color(0.72), get_outline_width())
+	_draw_wall_seams(wall_rect)
 
 
 func _draw_floor_boundary() -> void:
 	var boundary := _centered_rect(primitive_size)
-	draw_rect(boundary, get_outline_color(0.12), false, 8.0)
+	draw_rect(boundary, get_fill_color(Color(0.025, 0.075, 0.11, 1.0)), true)
+	draw_rect(boundary, get_outline_color(0.12), false, 10.0)
 	draw_rect(boundary, get_outline_color(), false, get_outline_width())
+	var inset := boundary.grow(-8.0)
+	draw_rect(inset, get_outline_color(0.34), false, 1.0)
+	_draw_corner_brackets(boundary, 18.0)
 
 
 func _draw_door() -> void:
 	var frame := _centered_rect(primitive_size)
+	draw_rect(frame.grow(5.0), get_fill_color(Color(0.01, 0.025, 0.045, 1.0)), true)
 	_draw_luminous_rect(frame, true)
+	var panel := frame.grow(-6.0)
+	draw_rect(panel, get_fill_color(Color(0.08, 0.18, 0.26, 1.0)), true)
+	draw_rect(panel, get_outline_color(0.38), false, 1.0)
 	var split_x := primitive_size.x * 0.5
 	draw_line(
 		Vector2(0.0, frame.position.y + 5.0),
@@ -98,28 +112,46 @@ func _draw_door() -> void:
 			get_outline_color(),
 			get_outline_width(),
 		)
+	var status_size := Vector2(minf(16.0, primitive_size.x * 0.18), 5.0)
+	for direction: float in [-1.0, 1.0]:
+		var status_rect := Rect2(
+			Vector2(direction * split_x * 0.54 - status_size.x * 0.5, frame.position.y + 5.0),
+			status_size,
+		)
+		draw_rect(status_rect, get_outline_color(0.82), true)
 
 
 func _draw_prop() -> void:
 	var prop_rect := _centered_rect(primitive_size)
+	draw_rect(prop_rect.grow(3.0), get_fill_color(Color(0.01, 0.025, 0.04, 1.0)), true)
 	_draw_luminous_rect(prop_rect, true)
-	draw_line(prop_rect.position, prop_rect.end, get_outline_color(0.7), get_outline_width())
-	draw_line(
-		Vector2(prop_rect.end.x, prop_rect.position.y),
-		Vector2(prop_rect.position.x, prop_rect.end.y),
-		get_outline_color(0.7),
-		get_outline_width(),
-	)
+	var inset := prop_rect.grow(-5.0)
+	draw_rect(inset, get_fill_color(Color(0.08, 0.18, 0.24, 1.0)), true)
+	draw_rect(inset, get_outline_color(0.34), false, 1.0)
+	var brace_color := get_outline_color(0.54)
+	draw_line(inset.position, inset.end, brace_color, 1.5)
+	draw_line(Vector2(inset.end.x, inset.position.y), Vector2(inset.position.x, inset.end.y), brace_color, 1.5)
+	for corner: Vector2 in [inset.position, Vector2(inset.end.x, inset.position.y), inset.end, Vector2(inset.position.x, inset.end.y)]:
+		draw_circle(corner, 2.0, get_outline_color(0.72))
 
 
 func _draw_terminal() -> void:
 	var block := _centered_rect(primitive_size)
+	draw_rect(block.grow(4.0), get_fill_color(Color(0.01, 0.025, 0.045, 1.0)), true)
 	_draw_luminous_rect(block, true)
 	var margin := minf(primitive_size.x, primitive_size.y) * 0.16
 	var screen := block.grow(-margin)
 	screen.size.y *= 0.52
-	draw_rect(screen, get_fill_color(Color(0.08, 0.65, 0.7, 1.0)), true)
+	draw_rect(screen, get_fill_color(Color(0.05, 0.38, 0.48, 1.0)), true)
 	draw_rect(screen, get_outline_color(), false, get_outline_width())
+	for line_index in range(3):
+		var line_y := screen.position.y + 7.0 + float(line_index) * 6.0
+		draw_line(
+			Vector2(screen.position.x + 6.0, line_y),
+			Vector2(screen.end.x - 6.0 - float(line_index) * 5.0, line_y),
+			get_outline_color(0.62),
+			1.0,
+		)
 	var button_y := block.end.y - margin * 0.75
 	for index in range(3):
 		var button_x := lerpf(block.position.x + margin, block.end.x - margin, float(index) / 2.0)
@@ -128,7 +160,7 @@ func _draw_terminal() -> void:
 
 func _draw_hazard() -> void:
 	var marker := _centered_rect(primitive_size)
-	draw_rect(marker, get_fill_color(Color(0.38, 0.22, 0.03, 1.0)), true)
+	draw_rect(marker, get_fill_color(Color(0.38, 0.09, 0.025, 1.0)), true)
 	draw_rect(marker, get_outline_color(0.12), false, 7.0)
 	draw_rect(marker, get_outline_color(), false, get_outline_width())
 	var stripe_spacing := 18.0
@@ -158,6 +190,45 @@ func _draw_luminous_rect(rect: Rect2, include_fill: bool) -> void:
 		draw_rect(rect, get_fill_color(fill_color), true)
 	draw_rect(rect, get_outline_color(0.12), false, 8.0)
 	draw_rect(rect, get_outline_color(), false, get_outline_width())
+
+
+func _draw_wall_seams(rect: Rect2) -> void:
+	var long_axis := maxf(primitive_size.x, primitive_size.y)
+	if long_axis < 96.0:
+		return
+	var segment_count := maxi(2, int(long_axis / 96.0))
+	for index in range(1, segment_count):
+		var ratio := float(index) / float(segment_count)
+		if primitive_size.x >= primitive_size.y:
+			var seam_x := lerpf(rect.position.x, rect.end.x, ratio)
+			draw_line(
+				Vector2(seam_x, rect.position.y + 5.0),
+				Vector2(seam_x, rect.end.y - 5.0),
+				get_outline_color(0.26),
+				1.0,
+			)
+		else:
+			var seam_y := lerpf(rect.position.y, rect.end.y, ratio)
+			draw_line(
+				Vector2(rect.position.x + 5.0, seam_y),
+				Vector2(rect.end.x - 5.0, seam_y),
+				get_outline_color(0.26),
+				1.0,
+			)
+
+
+func _draw_corner_brackets(rect: Rect2, length: float) -> void:
+	var color := get_outline_color(0.7)
+	var corners := [
+		[rect.position, Vector2.RIGHT, Vector2.DOWN],
+		[Vector2(rect.end.x, rect.position.y), Vector2.LEFT, Vector2.DOWN],
+		[rect.end, Vector2.LEFT, Vector2.UP],
+		[Vector2(rect.position.x, rect.end.y), Vector2.RIGHT, Vector2.UP],
+	]
+	for corner_data: Array in corners:
+		var corner: Vector2 = corner_data[0]
+		draw_line(corner, corner + corner_data[1] * length, color, 2.0)
+		draw_line(corner, corner + corner_data[2] * length, color, 2.0)
 
 
 func _centered_rect(size: Vector2) -> Rect2:

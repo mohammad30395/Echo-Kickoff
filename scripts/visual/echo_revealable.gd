@@ -8,7 +8,10 @@ signal reveal_changed(strength: float)
 @export_range(0.05, 4.0, 0.05) var fade_speed: float = 0.4
 
 @export_category("Darkness")
-@export_range(0.0, 0.1, 0.001) var darkness_visibility: float = 0.012
+@export_range(0.0, 0.25, 0.005) var darkness_visibility: float = 0.08
+@export_range(0.0, 1.0, 0.01) var ambient_fill_alpha: float = 0.42
+@export_range(0.0, 1.0, 0.01) var local_visibility_cap: float = 0.32
+@export var receives_local_visibility: bool = true
 @export_range(0.0, 1.0, 0.01) var revealed_fill_alpha: float = 0.24
 @export var luminous_color: Color = Color(0.28, 0.95, 1.0, 1.0)
 
@@ -22,6 +25,7 @@ var reveal_strength: float = 0.0:
 		queue_redraw()
 
 var _hold_remaining: float = 0.0
+var _local_visibility_strength: float = 0.0
 
 
 func _ready() -> void:
@@ -67,22 +71,43 @@ func get_reveal_strength() -> float:
 	return reveal_strength
 
 
+func set_local_visibility(strength: float) -> void:
+	var next_strength := clampf(strength, 0.0, 1.0) if receives_local_visibility else 0.0
+	if absf(_local_visibility_strength - next_strength) < 0.01:
+		return
+	_local_visibility_strength = next_strength
+	queue_redraw()
+
+
+func get_local_visibility_strength() -> float:
+	return _local_visibility_strength
+
+
+func get_effective_visibility_strength() -> float:
+	return maxf(reveal_strength, _local_visibility_strength * local_visibility_cap)
+
+
 func get_reveal_distance_from(origin: Vector2) -> float:
 	return global_position.distance_to(origin)
 
 
 func get_fill_color(base_color: Color) -> Color:
-	var result := base_color
-	result.a *= lerpf(darkness_visibility * 0.5, revealed_fill_alpha, reveal_strength)
+	var visible_strength := get_effective_visibility_strength()
+	var result := base_color.lerp(luminous_color, visible_strength * 0.22)
+	result.a = base_color.a * lerpf(
+		darkness_visibility * ambient_fill_alpha,
+		revealed_fill_alpha,
+		visible_strength,
+	)
 	return result
 
 
 func get_outline_color(alpha_scale: float = 1.0) -> Color:
 	var result := luminous_color
-	var visible_strength := pow(reveal_strength, 0.7)
+	var visible_strength := pow(get_effective_visibility_strength(), 0.7)
 	result.a *= lerpf(darkness_visibility, 1.0, visible_strength) * alpha_scale
 	return result
 
 
 func get_outline_width() -> float:
-	return lerpf(1.0, 3.0, reveal_strength)
+	return lerpf(1.0, 3.0, get_effective_visibility_strength())

@@ -20,6 +20,9 @@ shape = SubResource("CircleShape2D_listener")
 unique_name_in_owner = true
 script = ExtResource("2_visual")
 luminous_color = Color(0.86, 0.25, 0.12, 1)
+darkness_visibility = 0.012
+ambient_fill_alpha = 0.2
+receives_local_visibility = false
 
 [node name="Audio" type="Node" parent="."]
 script = ExtResource("3_audio")

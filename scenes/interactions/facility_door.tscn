@@ -31,4 +31,6 @@ shape = SubResource("RectangleShape2D_blocker")
 [node name="Visual" type="Node2D" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_visual")
-luminous_color = Color(0.95, 0.36, 0.18, 1)
+luminous_color = Color(1, 0.3, 0.16, 1)
+darkness_visibility = 0.11
+local_visibility_cap = 0.42

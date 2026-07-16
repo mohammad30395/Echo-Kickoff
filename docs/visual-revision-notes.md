@@ -4,7 +4,7 @@ Date: **2026-07-17**
 
 Scope: **Documentation-only visual comfort, usability, and judge-facing presentation revision**
 
-Implementation status: **NOT STARTED**
+Implementation status: **IMPLEMENTED AND VALIDATED — 2026-07-17**
 
 ## Reason for revision
 
@@ -107,3 +107,7 @@ This revision does not change:
 - UI hierarchy and danger-state expectations: documented.
 - Scope, technical constraints, accessibility, provenance, and performance protections: preserved.
 - Gameplay implementation: intentionally not changed in this revision.
+
+## Implementation follow-through
+
+The later 2026-07-17 procedural visual pass fulfilled the ambient world, player-local visibility, structural layering, and role-palette requirements without changing the locked gameplay. Validation evidence and measured Web performance are recorded in `docs/visual-pass-audit.md`.

@@ -9,8 +9,11 @@ enum SectorSignature {
 
 @export var sector_id: StringName = &"sector"
 @export var signature: SectorSignature = SectorSignature.LABORATORY
-@export var floor_color: Color = Color(0.004, 0.011, 0.018, 1.0)
-@export var grid_color: Color = Color(0.08, 0.24, 0.27, 0.045)
+@export var floor_color: Color = Color(0.035, 0.075, 0.12, 1.0)
+@export var floor_panel_color: Color = Color(0.055, 0.12, 0.18, 1.0)
+@export var grid_color: Color = Color(0.12, 0.44, 0.52, 0.12)
+@export var major_grid_color: Color = Color(0.18, 0.62, 0.7, 0.18)
+@export var lane_color: Color = Color(0.25, 0.78, 0.84, 0.22)
 @export_range(48.0, 160.0, 8.0) var grid_spacing: float = 80.0
 
 var sector_rect: Rect2
@@ -105,7 +108,9 @@ func _add_revealable_block(
 	visual.primitive_size = block_rect.size
 	visual.reveal_duration = 1.0
 	visual.fade_speed = 0.34
-	visual.darkness_visibility = 0.01
+	visual.darkness_visibility = 0.09
+	visual.ambient_fill_alpha = 0.56
+	_configure_visual_role(visual, primitive_kind)
 	revealables.add_child(visual)
 	if not with_collision:
 		return
@@ -124,18 +129,31 @@ func _add_revealable_block(
 
 func _draw() -> void:
 	draw_rect(sector_rect, floor_color, true)
+	draw_rect(sector_rect.grow(-12.0), floor_panel_color, false, 2.0)
+	draw_rect(sector_rect.grow(-24.0), Color(0.1, 0.38, 0.46, 0.1), false, 1.0)
 	var x := sector_rect.position.x
+	var column := 0
 	while x <= sector_rect.end.x:
-		draw_line(Vector2(x, sector_rect.position.y), Vector2(x, sector_rect.end.y), grid_color, 1.0)
+		var line_color := major_grid_color if column % 4 == 0 else grid_color
+		var line_width := 1.5 if column % 4 == 0 else 1.0
+		draw_line(Vector2(x, sector_rect.position.y), Vector2(x, sector_rect.end.y), line_color, line_width)
 		x += grid_spacing
+		column += 1
 	var y := sector_rect.position.y
+	var row := 0
 	while y <= sector_rect.end.y:
-		draw_line(Vector2(sector_rect.position.x, y), Vector2(sector_rect.end.x, y), grid_color, 1.0)
+		var line_color := major_grid_color if row % 4 == 0 else grid_color
+		var line_width := 1.5 if row % 4 == 0 else 1.0
+		draw_line(Vector2(sector_rect.position.x, y), Vector2(sector_rect.end.x, y), line_color, line_width)
 		y += grid_spacing
+		row += 1
 
-	var motif_color := Color(0.18, 0.58, 0.62, 0.055)
+	var motif_color := Color(0.24, 0.74, 0.8, 0.2)
 	for center: Vector2 in room_centers:
-		draw_circle(center, 54.0, motif_color, false, 2.0)
+		_draw_room_platform(center, motif_color)
+	for connection: Vector2 in connection_points:
+		_draw_lane_marker(connection)
+	_draw_sector_corner_marks(motif_color)
 	match signature:
 		SectorSignature.ORIENTATION:
 			_draw_orientation_signature(motif_color)
@@ -177,3 +195,60 @@ func _draw_extraction_signature(color: Color) -> void:
 			color,
 			3.0,
 		)
+
+
+func _configure_visual_role(visual: EchoRevealPrimitive, primitive_kind: int) -> void:
+	match primitive_kind:
+		EchoRevealPrimitive.PrimitiveKind.WALL:
+			visual.fill_color = Color(0.07, 0.18, 0.28, 1.0)
+			visual.luminous_color = Color(0.28, 0.82, 0.92, 1.0)
+		EchoRevealPrimitive.PrimitiveKind.PROP:
+			visual.fill_color = Color(0.08, 0.16, 0.22, 1.0)
+			visual.luminous_color = Color(0.32, 0.66, 0.72, 1.0)
+		EchoRevealPrimitive.PrimitiveKind.HAZARD:
+			visual.fill_color = Color(0.34, 0.08, 0.02, 1.0)
+			visual.luminous_color = Color(1.0, 0.32, 0.12, 1.0)
+			visual.local_visibility_cap = 0.42
+
+
+func _draw_room_platform(center: Vector2, color: Color) -> void:
+	draw_circle(center, 68.0, Color(0.03, 0.09, 0.14, 0.58), true)
+	draw_circle(center, 68.0, color, false, 2.0)
+	draw_circle(center, 54.0, Color(color.r, color.g, color.b, color.a * 0.55), false, 1.0)
+	for angle_index in range(8):
+		var direction := Vector2.RIGHT.rotated(float(angle_index) * TAU / 8.0)
+		draw_line(center + direction * 58.0, center + direction * 68.0, color, 2.0)
+	draw_line(center + Vector2(-18.0, 0.0), center + Vector2(18.0, 0.0), color, 1.0)
+	draw_line(center + Vector2(0.0, -18.0), center + Vector2(0.0, 18.0), color, 1.0)
+
+
+func _draw_lane_marker(center: Vector2) -> void:
+	var marker_color := lane_color
+	for offset in [-36.0, -12.0, 12.0, 36.0]:
+		draw_line(
+			center + Vector2(offset - 6.0, -14.0),
+			center + Vector2(offset + 6.0, -14.0),
+			marker_color,
+			2.0,
+		)
+		draw_line(
+			center + Vector2(offset - 6.0, 14.0),
+			center + Vector2(offset + 6.0, 14.0),
+			marker_color,
+			2.0,
+		)
+
+
+func _draw_sector_corner_marks(color: Color) -> void:
+	var inset := 36.0
+	var length := 44.0
+	var corners := [
+		[sector_rect.position + Vector2(inset, inset), Vector2.RIGHT, Vector2.DOWN],
+		[Vector2(sector_rect.end.x - inset, sector_rect.position.y + inset), Vector2.LEFT, Vector2.DOWN],
+		[sector_rect.end - Vector2(inset, inset), Vector2.LEFT, Vector2.UP],
+		[Vector2(sector_rect.position.x + inset, sector_rect.end.y - inset), Vector2.RIGHT, Vector2.UP],
+	]
+	for corner_data: Array in corners:
+		var corner: Vector2 = corner_data[0]
+		draw_line(corner, corner + corner_data[1] * length, color, 2.0)
+		draw_line(corner, corner + corner_data[2] * length, color, 2.0)

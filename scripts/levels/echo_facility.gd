@@ -38,6 +38,7 @@ const TUTORIAL_EXTRACTION: StringName = &"extraction"
 @onready var interaction_prompt_hud: InteractionPromptHud = %InteractionPromptHud
 @onready var onboarding_hud: OnboardingHud = %OnboardingHud
 @onready var decoy_hud: DecoyHud = %DecoyHud
+@onready var local_visibility: LocalVisibilityController = %LocalVisibility
 
 var onboarding_stage: int = 0
 var listener_was_alerted: bool = false
@@ -61,6 +62,7 @@ func _ready() -> void:
 		active_listener.allow_debug_input = false
 		active_listener.set_debug_enabled(false)
 	_interaction_controller = player.get_node(^"%InteractionController") as PlayerInteractionController
+	local_visibility.bind(player)
 	pulse_hud.bind(_pulse_controller)
 	objective_hud.bind(mission_controller)
 	interaction_prompt_hud.bind(_interaction_controller)

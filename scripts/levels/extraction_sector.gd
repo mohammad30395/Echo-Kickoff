@@ -6,7 +6,9 @@ func _configure_sector() -> void:
 	sector_id = &"extraction"
 	signature = SectorSignature.EXTRACTION
 	sector_rect = Rect2(-800.0, -850.0, 1600.0, 1700.0)
-	floor_color = Color(0.004, 0.01, 0.018, 1.0)
+	floor_color = Color(0.03, 0.07, 0.115, 1.0)
+	floor_panel_color = Color(0.045, 0.12, 0.17, 1.0)
+	lane_color = Color(0.22, 0.88, 0.7, 0.24)
 	wall_rects = [
 		Rect2(-800.0, -850.0, 160.0, 32.0),
 		Rect2(-300.0, -850.0, 1100.0, 32.0),

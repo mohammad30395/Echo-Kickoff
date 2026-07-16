@@ -89,7 +89,7 @@ func _draw_relay_icon(center: Vector2, active: bool) -> void:
 	for index in range(7):
 		var angle := -PI * 0.5 + TAU * index / 6.0
 		points.append(center + Vector2.from_angle(angle) * radius)
-	var color := Color(0.35, 1.0, 0.68, 1.0) if active else Color(0.28, 0.58, 0.64, 0.7)
+	var color := Color(0.35, 0.95, 1.0, 1.0) if active else Color(1.0, 0.72, 0.24, 0.82)
 	if _accessibility_manager != null:
 		color = _accessibility_manager.call(&"get_echo_color", color) as Color
 	draw_polyline(points, color, 2.0)
