@@ -39,6 +39,7 @@ func _collect_revealables() -> void:
 
 func _test_architecture_and_darkness() -> void:
 	for revealable: EchoRevealable in revealables:
+		revealable.set_local_visibility(0.0)
 		_expect(is_zero_approx(revealable.get_reveal_strength()), "%s did not start dark." % revealable.name)
 		if revealable.receives_local_visibility:
 			_expect(

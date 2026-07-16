@@ -63,7 +63,7 @@ offset_right = 306.0
 offset_bottom = 31.0
 theme_override_colors/font_color = Color(0.65, 0.86, 0.9, 1)
 theme_override_font_sizes/font_size = 12
-text = "ECHO PULSE // INFORMATION HAS A COST"
+text = "LOCAL NEAR // ECHO FAR + DANGER"
 
 [node name="CooldownBar" type="ProgressBar" parent="."]
 unique_name_in_owner = true

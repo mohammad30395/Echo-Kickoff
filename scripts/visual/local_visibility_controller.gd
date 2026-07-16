@@ -8,15 +8,20 @@ extends Node
 var _player: TopDownPlayer
 var _targets: Array[EchoRevealable] = []
 var _refresh_remaining: float = 0.0
+var _awareness_visual: PlayerLocalAwareness
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 	set_process(false)
+	call_deferred(&"_bind_parent_player")
 
 
 func bind(player: TopDownPlayer) -> void:
 	_player = player
+	_awareness_visual = get_node_or_null(^"../LocalAwareness") as PlayerLocalAwareness
+	if _awareness_visual != null:
+		_awareness_visual.configure(visibility_radius, inner_radius)
 	_cache_targets()
 	_update_visibility()
 	_refresh_remaining = refresh_interval
@@ -27,9 +32,21 @@ func get_cached_target_count() -> int:
 	return _targets.size()
 
 
+func is_bound() -> bool:
+	return is_instance_valid(_player)
+
+
 func refresh_targets() -> void:
 	_cache_targets()
 	_update_visibility()
+
+
+func _bind_parent_player() -> void:
+	var parent_player := get_parent() as TopDownPlayer
+	if parent_player == null:
+		push_error("LocalVisibilityController must be a child of TopDownPlayer.")
+		return
+	bind(parent_player)
 
 
 func _process(delta: float) -> void:

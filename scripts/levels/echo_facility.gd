@@ -38,7 +38,6 @@ const TUTORIAL_EXTRACTION: StringName = &"extraction"
 @onready var interaction_prompt_hud: InteractionPromptHud = %InteractionPromptHud
 @onready var onboarding_hud: OnboardingHud = %OnboardingHud
 @onready var decoy_hud: DecoyHud = %DecoyHud
-@onready var local_visibility: LocalVisibilityController = %LocalVisibility
 
 var onboarding_stage: int = 0
 var listener_was_alerted: bool = false
@@ -62,7 +61,6 @@ func _ready() -> void:
 		active_listener.allow_debug_input = false
 		active_listener.set_debug_enabled(false)
 	_interaction_controller = player.get_node(^"%InteractionController") as PlayerInteractionController
-	local_visibility.bind(player)
 	pulse_hud.bind(_pulse_controller)
 	objective_hud.bind(mission_controller)
 	interaction_prompt_hud.bind(_interaction_controller)
@@ -77,7 +75,7 @@ func _ready() -> void:
 		)
 	mission_controller.objective_changed.connect(_on_objective_changed)
 	mission_controller.extraction_state_changed.connect(_on_extraction_state_changed)
-	_show_tutorial_step(TUTORIAL_MOVE, 0, "MOVE // WASD OR ARROW KEYS")
+	_show_tutorial_step(TUTORIAL_MOVE, 0, "MOVE // LOCAL GLOW SHOWS NEARBY")
 
 
 func _process(delta: float) -> void:
@@ -87,7 +85,7 @@ func _process(delta: float) -> void:
 		and player.global_position.distance_to(START_POSITION) >= MOVEMENT_LEARN_DISTANCE
 	):
 		_complete_tutorial_step(TUTORIAL_MOVE)
-		_show_tutorial_step(TUTORIAL_PULSE, 1, "PULSE // SPACE OR LEFT MOUSE")
+		_show_tutorial_step(TUTORIAL_PULSE, 1, "PULSE SCOUTS FARTHER // SPACE OR LEFT MOUSE")
 
 
 func get_sectors() -> Array[FacilitySector]:

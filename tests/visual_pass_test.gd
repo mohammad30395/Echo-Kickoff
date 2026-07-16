@@ -43,7 +43,7 @@ func _load_facility() -> void:
 
 
 func _test_ambient_and_local_visibility() -> void:
-	var controller := facility.get_node(^"%LocalVisibility") as LocalVisibilityController
+	var controller := facility.player.get_node(^"%LocalVisibility") as LocalVisibilityController
 	_expect(controller != null, "Local visibility controller is missing.")
 	if controller != null:
 		_expect(controller.visibility_radius >= 120.0 and controller.visibility_radius <= 160.0, "Local visibility radius is not restrained.")
