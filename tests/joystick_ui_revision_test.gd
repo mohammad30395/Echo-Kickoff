@@ -156,7 +156,7 @@ func _test_polished_hud_states() -> void:
 	objective_hud._on_extraction_state_changed(true)
 	_expect((objective_hud.get_node(^"%StateLabel") as Label).text.contains("POWERED"), "Powered extraction state did not update.")
 	_expect((onboarding_hud.get_node(^"%StepLabel") as Label).text == "MOVE", "Tutorial banner lacks a concise step tag.")
-	_expect((onboarding_hud.get_node(^"%MessageLabel") as Label).text.contains("LOCAL GLOW"), "Tutorial banner lacks the movement instruction.")
+	_expect((onboarding_hud.get_node(^"%MessageLabel") as Label).text.contains("WASD"), "Tutorial banner does not establish keyboard movement first.")
 	var listener := facility.get_listeners()[0]
 	listener.trigger_game_over_on_contact = false
 	listener.receive_noise(NoiseEvent.new(listener.global_position, 500.0, NoiseEvent.CATEGORY_ECHO_PULSE))

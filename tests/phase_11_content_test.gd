@@ -232,7 +232,10 @@ func _test_spawn_collision_and_echo_coverage() -> void:
 func _test_locked_extraction_and_onboarding() -> void:
 	_expect(not extraction.is_unlocked and not extraction.try_activate(player), "Extraction accepted completion before 3/3.")
 	await _walk_route([Vector2(-3120.0, -120.0)], "orientation movement lesson")
-	_expect(facility.onboarding_stage == 1, "Movement did not introduce Echo as the next pressure.")
+	_expect(facility.onboarding_stage == 1, "Movement did not introduce passive local visibility.")
+	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_LOCAL, "Local visibility is not a distinct orientation lesson.")
+	await _walk_route([Vector2(-3100.0, -150.0)], "orientation local-visibility lesson")
+	_expect(facility.onboarding_stage == 2, "Local observation did not introduce Echo as the next pressure.")
 	await _emit_pulse_input()
 	await _physics_frames(8)
 	_expect(facility.onboarding_stage >= 2, "First Echo did not teach information/risk.")

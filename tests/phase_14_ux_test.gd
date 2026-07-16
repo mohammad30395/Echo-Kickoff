@@ -60,7 +60,9 @@ func _test_main_menu_help_credits_and_settings() -> void:
 	await process_frame
 	_expect(info_panel.visible and info_title.text == "HOW TO PLAY", "How to Play panel did not open.")
 	_expect(info_body.text.split("\n").size() <= 5, "How to Play uses too many text lines.")
-	_expect(info_body.text.contains("Move:") and info_body.text.contains("Every pulse also calls"), "How to Play does not teach the required loop.")
+	_expect(info_body.text.contains("Move:") and info_body.text.contains("always see a little"), "How to Play does not teach passive local visibility.")
+	_expect(info_body.text.contains("reveals farther") and info_body.text.contains("calls Listeners"), "How to Play does not distinguish Echo information from danger.")
+	_expect(info_body.text.contains("Misdirect Listeners"), "How to Play does not explain the decoy role.")
 	credits.pressed.emit()
 	await process_frame
 	_expect(info_panel.visible and info_title.text == "CREDITS", "Credits panel did not open.")
@@ -129,29 +131,54 @@ func _test_tutorial_sequence_and_accessibility_effects() -> void:
 	await _wait_for_scene(&"GameWorld")
 	_bind_facility()
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_MOVE, "Tutorial does not start with movement.")
-	player.global_position = EchoFacility.START_POSITION + Vector2(EchoFacility.MOVEMENT_LEARN_DISTANCE + 12.0, 0.0)
+	var onboarding := facility.get_node(^"%OnboardingHud") as OnboardingHud
+	_expect(onboarding.message.contains("WASD") and onboarding.message.contains("OPTIONAL PAD"), "Enabled movement aid is not introduced as an optional keyboard companion.")
+	accessibility_manager.call(&"set_movement_aid", false)
+	await process_frame
+	_expect(onboarding.message.contains("WASD") and not onboarding.message.contains("PAD"), "Disabled movement aid remains in required tutorial copy.")
+	accessibility_manager.call(&"set_movement_aid", true)
+	await process_frame
+	player.global_position = EchoFacility.START_POSITION + Vector2(EchoFacility.MOVE_TRIGGER_RADIUS + 8.0, 0.0)
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_MOVE), "Movement lesson was not completed by movement.")
-	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_PULSE, "Pulse lesson did not follow movement.")
+	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_LOCAL, "Passive local visibility did not follow movement.")
+	_expect(onboarding.message.contains("ALWAYS SEE A LITTLE"), "Local-visibility lesson does not explain the permanent nearby view.")
+	player.global_position = EchoFacility.START_POSITION + Vector2(EchoFacility.LOCAL_VISIBILITY_TRIGGER_RADIUS + 8.0, 0.0)
+	await process_frame
+	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_LOCAL), "Local-visibility lesson did not complete through movement.")
+	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_PULSE, "Long-range Pulse lesson did not follow local observation.")
+	_expect(onboarding.message.contains("REVEAL FARTHER"), "Pulse lesson does not distinguish its longer range.")
 	pulse_controller.try_emit_pulse()
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_PULSE), "Pulse lesson was not completed by pulsing.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_DANGER, "Pulse danger lesson did not appear immediately after pulsing.")
+	_expect(onboarding.message.contains("CALLS LISTENERS"), "Danger lesson does not explain the Pulse consequence.")
 	var listener := facility.get_listeners()[0]
 	listener.trigger_game_over_on_contact = false
 	listener.receive_noise(NoiseEvent.new(listener.global_position, 480.0, NoiseEvent.CATEGORY_ECHO_PULSE))
-	await process_frame
+	await create_timer(EchoFacility.DANGER_CONFIRMATION_DURATION + 0.2, false).timeout
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_DANGER), "Listener reaction did not complete pulse danger lesson.")
-	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_DECOY, "Decoy lesson appeared before or after the wrong step.")
-	decoy_controller.try_throw_at(player.global_position + Vector2(160.0, 0.0))
-	await process_frame
-	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_DECOY), "Decoy lesson was not completed by throwing a decoy.")
+	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_INTERACT, "Interaction lesson did not follow the danger demonstration.")
 	facility._on_interaction_focus_changed(facility.relay_a)
 	await process_frame
-	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_INTERACT, "Interaction lesson did not appear after pulse/decoy understanding.")
+	_expect(onboarding.message.contains("HOLD [E]"), "Interaction lesson does not use the shared hold prompt wording.")
 	facility._on_interaction_completed(facility.relay_a)
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_INTERACT), "Interaction lesson was not completed by interaction completion.")
+	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_DECOY, "Decoy lesson did not wait until interaction was understood.")
+	_expect(onboarding.message.contains("MISDIRECTS LISTENERS"), "Decoy lesson does not explain misdirection.")
+	player.global_position = EchoFacility.START_POSITION
+	await physics_frame
+	var tutorial_decoy := decoy_controller.try_throw_at(player.global_position + Vector2(160.0, 0.0))
+	_expect(tutorial_decoy != null, "Tutorial decoy setup could not find a valid throw position.")
+	await process_frame
+	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_DECOY), "Decoy lesson was not completed by throwing a decoy.")
+	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_EXTRACTION, "Mission/extraction guidance did not follow decoy understanding.")
+	_expect(onboarding.message.contains("RESTORE 3 RELAYS"), "Mission guidance does not put objectives before extraction.")
+	facility._on_objective_changed(3, 3)
+	_expect(onboarding.message.contains("POWERED") and onboarding.message.contains("RETURN"), "Powered extraction guidance is unclear.")
+	facility._on_interaction_completed(facility.extraction_terminal)
+	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_EXTRACTION), "Extraction lesson did not complete at extraction.")
 	facility._show_tutorial_step(EchoFacility.TUTORIAL_MOVE, 0, "MOVE SHOULD NOT RETURN")
 	_expect(facility.current_tutorial_step != EchoFacility.TUTORIAL_MOVE, "Completed movement tutorial reappeared in the same run.")
 	accessibility_manager.call(&"set_screen_shake", true)
@@ -167,7 +194,7 @@ func _test_tutorial_sequence_and_accessibility_effects() -> void:
 	_expect(float(accessibility_manager.call(&"get_flash_multiplier")) < 1.0, "Reduced flash did not lower the flash multiplier.")
 	accessibility_manager.call(&"set_high_contrast", true)
 	_expect(accessibility_manager.call(&"get_text_color", Color(0.1, 0.2, 0.3, 1.0)) != Color(0.1, 0.2, 0.3, 1.0), "High contrast did not alter UI colors.")
-	print("UX_TUTORIAL_ACCESSIBILITY_OK | run-local lessons, no repeats, shake/flash/contrast settings functional")
+	print("UX_TUTORIAL_ACCESSIBILITY_OK | ordered local/Pulse/danger/interaction/decoy/extraction lessons and contextual pad hint")
 
 
 func _bind_facility() -> void:

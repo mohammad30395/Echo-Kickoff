@@ -175,7 +175,10 @@ func _test_authored_architecture_and_dark_start() -> void:
 
 func _test_reveal_alert_loss_and_restart() -> void:
 	await _walk_route([Vector2(-3120.0, -120.0)], "entry movement")
-	_expect(sector.onboarding_stage == 1, "Movement did not advance the minimal onboarding to Echo.")
+	_expect(sector.onboarding_stage == 1, "Movement did not advance to passive local visibility.")
+	_expect(sector.current_tutorial_step == EchoFacility.TUTORIAL_LOCAL, "Local visibility was not isolated as its own action lesson.")
+	await _walk_route([Vector2(-3100.0, -150.0)], "local visibility observation")
+	_expect(sector.onboarding_stage == 2, "Local observation did not unlock the long-range Echo lesson.")
 	await _emit_pulse_input()
 	await _physics_frames(9)
 	var entry_wall_revealed := false

@@ -4,6 +4,7 @@ extends Control
 @onready var prompt_label: Label = %PromptLabel
 @onready var progress_bar: ProgressBar = %ProgressBar
 @onready var frame: HudFrame = %Frame
+@onready var action_label: Label = %ActionLabel
 
 var controller: PlayerInteractionController
 var _accessibility_manager: Node
@@ -36,6 +37,7 @@ func bind(interaction_controller: PlayerInteractionController) -> void:
 func _on_prompt_changed(text: String, progress: float, available: bool) -> void:
 	visible = not text.is_empty()
 	prompt_label.text = text
+	action_label.text = "HOLD TO INTERACT" if available else "SYSTEM STATUS"
 	progress_bar.value = clampf(progress, 0.0, 1.0)
 	progress_bar.visible = available
 	prompt_label.modulate = (

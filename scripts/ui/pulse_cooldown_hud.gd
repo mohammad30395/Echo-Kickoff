@@ -96,7 +96,7 @@ func _refresh() -> void:
 		frame.set_accent_color(Color(1.0, 0.58, 0.24, 0.9))
 		frame.set_warning_palette(true)
 	elif _controller != null:
-		status_label.text = "READY // SPACE OR LEFT MOUSE"
+		status_label.text = "READY // [SPACE] / LEFT MOUSE"
 		status_label.modulate = _echo_color(Color(0.45, 0.96, 1.0, 1.0))
 		frame.set_accent_color(Color(0.32, 0.88, 0.96, 0.9))
 		frame.set_warning_palette(false)

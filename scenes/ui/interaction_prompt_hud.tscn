@@ -36,6 +36,7 @@ stretch_mode = 5
 mouse_filter = 2
 
 [node name="ActionLabel" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 42.0
 offset_top = 8.0
@@ -43,7 +44,7 @@ offset_right = 304.0
 offset_bottom = 24.0
 theme_override_colors/font_color = Color(0.44, 0.7, 0.72, 1)
 theme_override_font_sizes/font_size = 10
-text = "FACILITY INTERFACE"
+text = "HOLD TO INTERACT"
 horizontal_alignment = 1
 
 [node name="PromptLabel" type="Label" parent="."]
