@@ -1,8 +1,11 @@
 # Echo Kickoff — Tutorial Revision Audit
 
-Date: **2026-07-17**  
-Scope: revised visibility-model and player-tool onboarding  
-Renderer/platform target: Godot 4 Compatibility, Web and Windows  
+Date: **2026-07-17**
+
+Scope: revised visibility-model and player-tool onboarding
+
+Renderer/platform target: Godot 4 Compatibility, Web and Windows
+
 Result: **PASS**
 
 ## Revision boundary
