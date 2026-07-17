@@ -11,15 +11,34 @@ enum PrimitiveKind {
 	ENEMY,
 }
 
+enum PropStyle {
+	CRATE,
+	FLOOR_MACHINERY,
+	WARNING_PANEL,
+}
+
+const PROP_STYLE_COUNT: int = 3
+
 @export var primitive_kind: PrimitiveKind = PrimitiveKind.WALL:
 	set(value):
 		primitive_kind = value
+		uses_solid_body = primitive_kind != PrimitiveKind.ENEMY
 		queue_redraw()
 @export var primitive_size: Vector2 = Vector2(160.0, 32.0):
 	set(value):
 		primitive_size = value.max(Vector2.ONE)
 		queue_redraw()
 @export var fill_color: Color = Color(0.08, 0.22, 0.32, 1.0)
+@export var prop_style: PropStyle = PropStyle.CRATE:
+	set(value):
+		prop_style = value
+		queue_redraw()
+
+
+func _init() -> void:
+	uses_solid_body = true
+	solid_body_alpha = 0.92
+	revealed_fill_alpha = 0.98
 
 
 func _draw() -> void:
@@ -61,8 +80,9 @@ func _draw_wall() -> void:
 	draw_rect(shadow, get_fill_color(Color(0.01, 0.025, 0.045, 1.0)), true)
 	_draw_luminous_rect(wall_rect, true)
 	var inset := wall_rect.grow(-5.0)
-	draw_rect(inset, get_fill_color(Color(0.1, 0.25, 0.36, 1.0)), true)
+	draw_rect(inset, get_fill_color(Color(0.105, 0.24, 0.33, 1.0)), true)
 	draw_rect(inset, get_outline_color(0.36), false, 1.0)
+	_draw_wall_depth_bands(wall_rect, inset)
 	var axis_start: Vector2
 	var axis_end: Vector2
 	if primitive_size.x >= primitive_size.y:
@@ -73,6 +93,7 @@ func _draw_wall() -> void:
 		axis_end = Vector2(wall_rect.position.x + 3.0, wall_rect.end.y - 10.0)
 	draw_line(axis_start, axis_end, get_outline_color(0.72), get_outline_width())
 	_draw_wall_seams(wall_rect)
+	_draw_wall_end_caps(wall_rect)
 
 
 func _draw_floor_boundary() -> void:
@@ -122,6 +143,17 @@ func _draw_door() -> void:
 
 
 func _draw_prop() -> void:
+	match prop_style:
+		PropStyle.FLOOR_MACHINERY:
+			_draw_floor_machinery()
+			return
+		PropStyle.WARNING_PANEL:
+			_draw_warning_panel()
+			return
+	_draw_crate()
+
+
+func _draw_crate() -> void:
 	var prop_rect := _centered_rect(primitive_size)
 	draw_rect(prop_rect.grow(3.0), get_fill_color(Color(0.01, 0.025, 0.04, 1.0)), true)
 	_draw_luminous_rect(prop_rect, true)
@@ -133,6 +165,47 @@ func _draw_prop() -> void:
 	draw_line(Vector2(inset.end.x, inset.position.y), Vector2(inset.position.x, inset.end.y), brace_color, 1.5)
 	for corner: Vector2 in [inset.position, Vector2(inset.end.x, inset.position.y), inset.end, Vector2(inset.position.x, inset.end.y)]:
 		draw_circle(corner, 2.0, get_outline_color(0.72))
+
+
+func _draw_floor_machinery() -> void:
+	var machine := _centered_rect(primitive_size)
+	draw_rect(machine.grow(4.0), get_fill_color(Color(0.008, 0.022, 0.035, 1.0)), true)
+	draw_rect(machine, get_fill_color(Color(0.07, 0.2, 0.25, 1.0)), true)
+	draw_rect(machine, get_outline_color(0.18), false, 7.0)
+	draw_rect(machine, get_outline_color(), false, get_outline_width())
+	var radius := minf(primitive_size.x, primitive_size.y) * 0.24
+	draw_circle(Vector2.ZERO, radius + 7.0, get_fill_color(Color(0.025, 0.07, 0.09, 1.0)))
+	draw_circle(Vector2.ZERO, radius, get_fill_color(Color(0.11, 0.26, 0.29, 1.0)))
+	draw_circle(Vector2.ZERO, radius, get_outline_color(0.7), false, 2.0)
+	for direction: Vector2 in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
+		var start := direction * (radius + 8.0)
+		var end := direction * (minf(primitive_size.x, primitive_size.y) * 0.44)
+		draw_line(start, end, get_outline_color(0.52), 2.0)
+	for offset: float in [-0.28, 0.28]:
+		var vent_x: float = primitive_size.x * offset
+		draw_line(
+			Vector2(vent_x, -primitive_size.y * 0.28),
+			Vector2(vent_x, primitive_size.y * 0.28),
+			get_outline_color(0.4),
+			2.0,
+		)
+
+
+func _draw_warning_panel() -> void:
+	var panel := _centered_rect(primitive_size)
+	draw_rect(panel.grow(3.0), get_fill_color(Color(0.015, 0.025, 0.04, 1.0)), true)
+	draw_rect(panel, get_fill_color(Color(0.15, 0.09, 0.12, 1.0)), true)
+	draw_rect(panel, get_outline_color(0.2), false, 7.0)
+	draw_rect(panel, get_outline_color(), false, get_outline_width())
+	var inset := panel.grow(-8.0)
+	var stripe_x := inset.position.x - inset.size.y
+	while stripe_x < inset.end.x:
+		var from := Vector2(maxf(stripe_x, inset.position.x), inset.end.y)
+		var to := Vector2(minf(stripe_x + inset.size.y, inset.end.x), inset.position.y)
+		draw_line(from, to, get_outline_color(0.42), 3.0)
+		stripe_x += 22.0
+	var status := Rect2(inset.position + Vector2(6.0, 6.0), Vector2(minf(28.0, inset.size.x * 0.35), 6.0))
+	draw_rect(status, get_outline_color(0.88), true)
 
 
 func _draw_terminal() -> void:
@@ -214,6 +287,52 @@ func _draw_wall_seams(rect: Rect2) -> void:
 				Vector2(rect.end.x - 5.0, seam_y),
 				get_outline_color(0.26),
 				1.0,
+			)
+
+
+func _draw_wall_depth_bands(wall_rect: Rect2, inset: Rect2) -> void:
+	if primitive_size.x >= primitive_size.y:
+		var top_band := Rect2(
+			Vector2(inset.position.x, inset.position.y),
+			Vector2(inset.size.x, minf(5.0, inset.size.y * 0.28)),
+		)
+		var lower_band := Rect2(
+			Vector2(inset.position.x, inset.end.y - minf(4.0, inset.size.y * 0.22)),
+			Vector2(inset.size.x, minf(4.0, inset.size.y * 0.22)),
+		)
+		draw_rect(top_band, get_fill_color(Color(0.18, 0.36, 0.46, 1.0)), true)
+		draw_rect(lower_band, get_fill_color(Color(0.025, 0.07, 0.11, 1.0)), true)
+	else:
+		var left_band := Rect2(
+			Vector2(inset.position.x, inset.position.y),
+			Vector2(minf(5.0, inset.size.x * 0.28), inset.size.y),
+		)
+		var right_band := Rect2(
+			Vector2(inset.end.x - minf(4.0, inset.size.x * 0.22), inset.position.y),
+			Vector2(minf(4.0, inset.size.x * 0.22), inset.size.y),
+		)
+		draw_rect(left_band, get_fill_color(Color(0.18, 0.36, 0.46, 1.0)), true)
+		draw_rect(right_band, get_fill_color(Color(0.025, 0.07, 0.11, 1.0)), true)
+	draw_rect(wall_rect, get_outline_color(0.22), false, 2.0)
+
+
+func _draw_wall_end_caps(wall_rect: Rect2) -> void:
+	var cap_color := get_outline_color(0.34)
+	if primitive_size.x >= primitive_size.y:
+		for x in [wall_rect.position.x + 5.0, wall_rect.end.x - 5.0]:
+			draw_line(
+				Vector2(x, wall_rect.position.y + 3.0),
+				Vector2(x, wall_rect.end.y - 3.0),
+				cap_color,
+				2.0,
+			)
+	else:
+		for y in [wall_rect.position.y + 5.0, wall_rect.end.y - 5.0]:
+			draw_line(
+				Vector2(wall_rect.position.x + 3.0, y),
+				Vector2(wall_rect.end.x - 3.0, y),
+				cap_color,
+				2.0,
 			)
 
 

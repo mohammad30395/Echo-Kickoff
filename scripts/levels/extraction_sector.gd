@@ -6,9 +6,19 @@ func _configure_sector() -> void:
 	sector_id = &"extraction"
 	signature = SectorSignature.EXTRACTION
 	sector_rect = Rect2(-800.0, -850.0, 1600.0, 1700.0)
-	floor_color = Color(0.03, 0.07, 0.115, 1.0)
-	floor_panel_color = Color(0.045, 0.12, 0.17, 1.0)
-	lane_color = Color(0.22, 0.88, 0.7, 0.24)
+	floor_color = Color(0.02, 0.08, 0.085, 1.0)
+	floor_panel_color = Color(0.03, 0.13, 0.13, 1.0)
+	floor_panel_secondary_color = Color(0.025, 0.105, 0.11, 1.0)
+	room_floor_color = Color(0.04, 0.15, 0.14, 1.0)
+	corridor_floor_color = Color(0.045, 0.18, 0.15, 1.0)
+	restricted_floor_color = Color(0.14, 0.055, 0.06, 1.0)
+	accent_color = Color(0.2, 0.86, 0.66, 1.0)
+	secondary_accent_color = Color(0.2, 0.55, 0.66, 1.0)
+	wall_body_color = Color(0.06, 0.19, 0.2, 1.0)
+	wall_trim_color = Color(0.25, 0.9, 0.7, 1.0)
+	grid_color = Color(0.1, 0.46, 0.38, 0.1)
+	major_grid_color = Color(0.18, 0.68, 0.54, 0.15)
+	lane_color = Color(0.22, 0.88, 0.7, 0.34)
 	wall_rects = [
 		Rect2(-800.0, -850.0, 160.0, 32.0),
 		Rect2(-300.0, -850.0, 1100.0, 32.0),
@@ -64,3 +74,5 @@ func _configure_sector() -> void:
 		Vector2(790.0, 50.0),
 		Vector2(790.0, 525.0),
 	]
+	relay_zone_indices = [6]
+	danger_zone_indices = [7]

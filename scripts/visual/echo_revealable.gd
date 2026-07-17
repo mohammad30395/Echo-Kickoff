@@ -10,6 +10,8 @@ signal reveal_changed(strength: float)
 @export_category("Darkness")
 @export_range(0.0, 0.25, 0.005) var darkness_visibility: float = 0.08
 @export_range(0.0, 1.0, 0.01) var ambient_fill_alpha: float = 0.42
+@export var uses_solid_body: bool = false
+@export_range(0.0, 1.0, 0.01) var solid_body_alpha: float = 0.9
 @export_range(0.0, 1.0, 0.01) var local_visibility_cap: float = 0.32
 @export var receives_local_visibility: bool = true
 @export_range(0.0, 1.0, 0.01) var revealed_fill_alpha: float = 0.24
@@ -94,9 +96,15 @@ func get_reveal_distance_from(origin: Vector2) -> float:
 func get_fill_color(base_color: Color) -> Color:
 	var visible_strength := get_effective_visibility_strength()
 	var result := base_color.lerp(luminous_color, visible_strength * 0.22)
+	var ambient_alpha := (
+		solid_body_alpha
+		if uses_solid_body
+		else darkness_visibility * ambient_fill_alpha
+	)
+	var echo_alpha := maxf(revealed_fill_alpha, ambient_alpha)
 	result.a = base_color.a * lerpf(
-		darkness_visibility * ambient_fill_alpha,
-		revealed_fill_alpha,
+		ambient_alpha,
+		echo_alpha,
 		visible_strength,
 	)
 	return result

@@ -6,8 +6,19 @@ func _configure_sector() -> void:
 	sector_id = &"laboratory"
 	signature = SectorSignature.LABORATORY
 	sector_rect = Rect2(-2500.0, -1700.0, 5000.0, 3400.0)
-	floor_color = Color(0.028, 0.062, 0.102, 1.0)
-	floor_panel_color = Color(0.045, 0.105, 0.16, 1.0)
+	floor_color = Color(0.022, 0.075, 0.095, 1.0)
+	floor_panel_color = Color(0.035, 0.13, 0.145, 1.0)
+	floor_panel_secondary_color = Color(0.028, 0.105, 0.125, 1.0)
+	room_floor_color = Color(0.045, 0.145, 0.15, 1.0)
+	corridor_floor_color = Color(0.05, 0.17, 0.17, 1.0)
+	restricted_floor_color = Color(0.16, 0.045, 0.075, 1.0)
+	accent_color = Color(0.2, 0.72, 0.74, 1.0)
+	secondary_accent_color = Color(0.48, 0.33, 0.72, 1.0)
+	wall_body_color = Color(0.07, 0.18, 0.23, 1.0)
+	wall_trim_color = Color(0.3, 0.8, 0.82, 1.0)
+	grid_color = Color(0.1, 0.42, 0.42, 0.1)
+	major_grid_color = Color(0.42, 0.28, 0.62, 0.15)
+	lane_color = Color(0.3, 0.76, 0.72, 0.3)
 	wall_rects = [
 		Rect2(-2500.0, -1700.0, 5000.0, 32.0),
 		Rect2(-2500.0, 1668.0, 5000.0, 32.0),
@@ -119,3 +130,5 @@ func _configure_sector() -> void:
 		Vector2(-2510.0, 900.0),
 		Vector2(-2510.0, 1375.0),
 	]
+	relay_zone_indices = [1, 8]
+	danger_zone_indices = [0]

@@ -4,6 +4,7 @@ extends FacilityInteractable
 signal door_opened(door: FacilityDoor, actor: Node2D)
 
 @export var is_unlocked: bool = false
+@export var relay_controlled: bool = false
 
 @onready var door_visual: FacilityDoorVisual = %Visual
 @onready var blocker: StaticBody2D = %Blocker
@@ -14,14 +15,22 @@ func _ready() -> void:
 	interaction_name = "FACILITY DOOR"
 	super._ready()
 	add_to_group(&"facility_door")
-	door_visual.set_door_state(is_unlocked, is_activated)
+	door_visual.set_door_state(is_unlocked, is_activated, relay_controlled)
 
 
 func set_unlocked(unlocked: bool) -> void:
 	if is_unlocked == unlocked:
 		return
 	is_unlocked = unlocked
-	door_visual.set_door_state(is_unlocked, is_activated)
+	door_visual.set_door_state(is_unlocked, is_activated, relay_controlled)
+	interaction_state_changed.emit()
+
+
+func set_relay_controlled(controlled: bool) -> void:
+	if relay_controlled == controlled:
+		return
+	relay_controlled = controlled
+	door_visual.set_door_state(is_unlocked, is_activated, relay_controlled)
 	interaction_state_changed.emit()
 
 
@@ -42,7 +51,7 @@ func get_line_of_sight_exclusions() -> Array[RID]:
 
 
 func _perform_activation(actor: Node2D) -> void:
-	door_visual.set_door_state(true, true)
+	door_visual.set_door_state(true, true, relay_controlled)
 	blocker_shape.set_deferred(&"disabled", true)
 	var audio_manager := get_node_or_null("/root/AudioManager")
 	if audio_manager != null:
