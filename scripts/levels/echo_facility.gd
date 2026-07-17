@@ -10,6 +10,8 @@ const START_POSITION := Vector2(-3150.0, 0.0)
 const MOVE_TRIGGER_RADIUS := 48.0
 const LOCAL_VISIBILITY_TRIGGER_RADIUS := 132.0
 const DANGER_CONFIRMATION_DURATION := 1.35
+const THREAT_FEEDBACK_RADIUS := 440.0
+const THREAT_FEEDBACK_INTERVAL := 0.1
 const TUTORIAL_STAGE_COUNT := 7
 const SHAKE_OFFSETS: Array[Vector2] = [
 	Vector2(4.0, -2.0),
@@ -58,6 +60,7 @@ var _accessibility_manager: Node
 var _listener_reaction_observed: bool = false
 var _danger_confirmation_pending: bool = false
 var _interaction_completed_before_lesson: bool = false
+var _threat_feedback_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -104,6 +107,32 @@ func _exit_tree() -> void:
 func _process(delta: float) -> void:
 	elapsed_run_time += maxf(delta, 0.0)
 	_update_orientation_tutorial_zones()
+	_threat_feedback_timer -= maxf(delta, 0.0)
+	if _threat_feedback_timer <= 0.0:
+		_threat_feedback_timer = THREAT_FEEDBACK_INTERVAL
+		_update_player_threat_feedback()
+
+
+func _update_player_threat_feedback() -> void:
+	if not is_instance_valid(player):
+		return
+	var threat_nearby := _listener_is_nearby_threat(listener)
+	if not threat_nearby:
+		threat_nearby = _listener_is_nearby_threat(listener_south)
+	player.set_threat_nearby(threat_nearby)
+
+
+func _listener_is_nearby_threat(active_listener: Listener) -> bool:
+	if not is_instance_valid(active_listener) or active_listener.is_disabled:
+		return false
+	match active_listener.current_state:
+		Listener.ListenerState.INVESTIGATE, Listener.ListenerState.SEARCH, Listener.ListenerState.CHASE:
+			pass
+		_:
+			return false
+	return active_listener.global_position.distance_squared_to(player.global_position) <= (
+		THREAT_FEEDBACK_RADIUS * THREAT_FEEDBACK_RADIUS
+	)
 
 
 func _update_orientation_tutorial_zones() -> void:

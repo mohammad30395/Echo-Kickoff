@@ -76,7 +76,7 @@ func try_emit_pulse() -> EchoPulse:
 	var pulse := ECHO_PULSE_SCENE.instantiate() as EchoPulse
 	pulse.configure(pulse_radius, pulse_duration, pulse_loudness, debug_visuals)
 	_player.get_parent().add_child(pulse)
-	var noise_event := pulse.begin(_player.global_position)
+	var noise_event := pulse.begin(_player.get_echo_origin())
 	_active_pulse_count += 1
 	pulse.pulse_finished.connect(_on_pulse_finished, CONNECT_ONE_SHOT)
 	cooldown_remaining = pulse_cooldown

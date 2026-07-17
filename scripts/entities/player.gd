@@ -16,6 +16,7 @@ extends CharacterBody2D
 
 @onready var visuals: PlayerVisual = %Visuals
 @onready var player_camera: Camera2D = %Camera2D
+@onready var pulse_controller: PlayerPulseController = %PulseController
 
 var facing_direction: Vector2 = Vector2.RIGHT
 var movement_aid_vector: Vector2 = Vector2.ZERO
@@ -29,6 +30,8 @@ func _ready() -> void:
 	player_camera.position_smoothing_enabled = true
 	player_camera.position_smoothing_speed = camera_smoothing_speed
 	visuals.set_facing_direction(facing_direction)
+	visuals.set_movement_state(Vector2.ZERO, max_speed)
+	visuals.bind_pulse_controller(pulse_controller)
 
 
 func _physics_process(delta: float) -> void:
@@ -41,7 +44,8 @@ func _physics_process(delta: float) -> void:
 	var input_direction := select_strongest_movement_input(keyboard_direction, movement_aid_vector)
 	velocity = calculate_next_velocity(velocity, input_direction, delta)
 	move_and_slide()
-	_update_facing_direction()
+	_update_facing_direction(input_direction)
+	visuals.set_movement_state(velocity, max_speed)
 
 
 func calculate_next_velocity(
@@ -80,16 +84,42 @@ func select_strongest_movement_input(
 	return joystick if joystick.length_squared() > keyboard.length_squared() else keyboard
 
 
-func _update_facing_direction() -> void:
-	var next_facing := facing_direction
-	if face_mouse:
-		var mouse_offset := get_global_mouse_position() - global_position
-		if mouse_offset.length() > mouse_dead_zone:
-			next_facing = mouse_offset.normalized()
-	elif velocity.length_squared() > 1.0:
-		next_facing = velocity.normalized()
+func calculate_facing_direction(
+	current_direction: Vector2,
+	mouse_offset: Vector2,
+	movement_direction: Vector2,
+	mouse_facing_enabled: bool = true,
+) -> Vector2:
+	if mouse_facing_enabled and mouse_offset.length() > mouse_dead_zone:
+		return mouse_offset.normalized()
+	if movement_direction.length_squared() > 0.0001:
+		return movement_direction.normalized()
+	return _safe_normalized(current_direction, Vector2.RIGHT)
 
-	facing_direction = _safe_normalized(next_facing, facing_direction)
+
+func get_echo_origin() -> Vector2:
+	return visuals.get_scanner_global_position()
+
+
+func set_threat_nearby(active: bool) -> void:
+	visuals.set_threat_nearby(active)
+
+
+func set_captured(active: bool) -> void:
+	visuals.set_captured(active)
+
+
+func _update_facing_direction(input_direction: Vector2 = Vector2.ZERO) -> void:
+	var mouse_offset := get_global_mouse_position() - global_position
+	var movement_direction := input_direction
+	if movement_direction.length_squared() <= 0.0001 and velocity.length_squared() > 1.0:
+		movement_direction = velocity
+	facing_direction = calculate_facing_direction(
+		facing_direction,
+		mouse_offset,
+		movement_direction,
+		face_mouse,
+	)
 	visuals.set_facing_direction(facing_direction)
 
 

@@ -105,7 +105,7 @@ func _test_pulse_input_reveal_and_noise() -> void:
 	_expect(noise_events.size() == noise_count_before + 1, "Pulse did not publish exactly one noise event.")
 	var pulse_noise: NoiseEvent = noise_events.back()
 	_expect(pulse_noise.category == NoiseEvent.CATEGORY_ECHO_PULSE, "Pulse noise category is incorrect.")
-	_expect(pulse_noise.position.is_equal_approx(player.global_position), "Pulse noise did not record its emission position.")
+	_expect(pulse_noise.position.is_equal_approx(player.get_echo_origin()), "Pulse noise did not originate at the handheld scanner.")
 	_expect(is_equal_approx(pulse_noise.loudness, controller.pulse_loudness), "Pulse noise loudness is incorrect.")
 	_expect(pulse_noise.timestamp >= 0.0, "Pulse noise timestamp is invalid.")
 	_expect(pulse.loudness > pulse.max_radius, "Noise radius is not larger than reveal radius.")
