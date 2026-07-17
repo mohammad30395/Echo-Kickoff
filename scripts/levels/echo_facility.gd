@@ -4,6 +4,7 @@ extends Node2D
 signal onboarding_stage_changed(stage: int, message: String)
 signal listener_alerted(listener: Listener)
 signal tutorial_step_completed(step_id: StringName)
+signal movement_method_understood(method: StringName)
 
 const LEVEL_BOUNDS := Rect2(-3400.0, -1700.0, 6600.0, 3400.0)
 const START_POSITION := Vector2(-3150.0, 0.0)
@@ -61,6 +62,8 @@ var _listener_reaction_observed: bool = false
 var _danger_confirmation_pending: bool = false
 var _interaction_completed_before_lesson: bool = false
 var _threat_feedback_timer: float = 0.0
+var _movement_methods_understood: Dictionary[StringName, bool] = {}
+var _movement_completion_method: StringName = &"none"
 
 
 func _ready() -> void:
@@ -80,6 +83,7 @@ func _ready() -> void:
 	decoy_hud.bind(_decoy_controller)
 	threat_status_hud.bind(get_listeners())
 	movement_aid.bind(player)
+	player.movement_method_used.connect(_on_movement_method_used)
 	_accessibility_manager = get_node_or_null("/root/AccessibilityManager")
 	if _accessibility_manager != null:
 		_accessibility_manager.connect(&"movement_aid_changed", _on_movement_aid_changed)
@@ -93,7 +97,7 @@ func _ready() -> void:
 		)
 	mission_controller.objective_changed.connect(_on_objective_changed)
 	mission_controller.extraction_state_changed.connect(_on_extraction_state_changed)
-	_show_tutorial_step(TUTORIAL_MOVE, 0, _get_move_tutorial_message())
+	_show_movement_tutorial()
 
 
 func _exit_tree() -> void:
@@ -138,12 +142,7 @@ func _listener_is_nearby_threat(active_listener: Listener) -> bool:
 func _update_orientation_tutorial_zones() -> void:
 	var distance_from_start := player.global_position.distance_to(START_POSITION)
 	if not is_tutorial_completed(TUTORIAL_MOVE) and distance_from_start >= MOVE_TRIGGER_RADIUS:
-		_complete_tutorial_step(TUTORIAL_MOVE)
-		_show_tutorial_step(
-			TUTORIAL_LOCAL,
-			1,
-			"LOCAL // YOU CAN ALWAYS SEE A LITTLE AROUND YOU",
-		)
+		_complete_movement_tutorial(&"distance_fallback")
 	elif (
 		is_tutorial_completed(TUTORIAL_MOVE)
 		and not is_tutorial_completed(TUTORIAL_LOCAL)
@@ -153,7 +152,8 @@ func _update_orientation_tutorial_zones() -> void:
 		_show_tutorial_step(
 			TUTORIAL_PULSE,
 			2,
-			"PULSE // REVEAL FARTHER: [SPACE] / LEFT MOUSE",
+			"PULSE // USE ECHO PULSE TO SCAN FARTHER",
+			_get_pulse_tutorial_hint(),
 		)
 
 
@@ -222,7 +222,7 @@ func _on_pulse_started(_pulse: EchoPulse, _noise_event: NoiseEvent) -> void:
 		_show_tutorial_step(
 			TUTORIAL_DANGER,
 			3,
-			"DANGER // PULSE REVEALS, BUT CALLS LISTENERS",
+			"DANGER // THE PULSE REVEALS THE FACILITY — AND CALLS LISTENERS",
 		)
 		if _listener_reaction_observed:
 			_schedule_danger_confirmation()
@@ -298,7 +298,7 @@ func _on_interaction_focus_changed(interactable: FacilityInteractable) -> void:
 		_show_tutorial_step(
 			TUTORIAL_INTERACT,
 			4,
-			"INTERACT // HOLD [E] AT RELAYS / EXTRACTION",
+			"INTERACT // HOLD E TO RESTORE A RELAY",
 		)
 
 
@@ -313,12 +313,17 @@ func _on_interaction_completed(interactable: FacilityInteractable) -> void:
 		_interaction_completed_before_lesson = true
 
 
-func _show_tutorial_step(step_id: StringName, stage: int, message: String) -> void:
+func _show_tutorial_step(
+	step_id: StringName,
+	stage: int,
+	message: String,
+	hint: String = "",
+) -> void:
 	if is_tutorial_completed(step_id):
 		return
 	current_tutorial_step = step_id
 	onboarding_stage = maxi(onboarding_stage, stage)
-	onboarding_hud.show_message(message, stage, TUTORIAL_STAGE_COUNT)
+	onboarding_hud.show_message(message, stage, TUTORIAL_STAGE_COUNT, hint)
 	onboarding_stage_changed.emit(onboarding_stage, message)
 
 
@@ -326,6 +331,8 @@ func _complete_tutorial_step(step_id: StringName) -> void:
 	if is_tutorial_completed(step_id):
 		return
 	_tutorial_completed[step_id] = true
+	if step_id == TUTORIAL_MOVE:
+		movement_aid.set_tutorial_highlight_active(false)
 	tutorial_step_completed.emit(step_id)
 	if current_tutorial_step == step_id:
 		current_tutorial_step = &""
@@ -343,7 +350,7 @@ func _complete_danger_tutorial() -> void:
 		_show_tutorial_step(
 			TUTORIAL_INTERACT,
 			4,
-			"INTERACT // HOLD [E] AT RELAYS / EXTRACTION",
+			"INTERACT // HOLD E TO RESTORE A RELAY",
 		)
 
 
@@ -353,7 +360,7 @@ func _complete_interaction_tutorial() -> void:
 	_show_tutorial_step(
 		TUTORIAL_DECOY,
 		5,
-		"DECOY // [Q] / RIGHT MOUSE MISDIRECTS LISTENERS",
+		"DECOY // Q OR RIGHT MOUSE TO THROW A SOUND DECOY",
 	)
 
 
@@ -374,20 +381,76 @@ func _schedule_danger_confirmation() -> void:
 	timer.timeout.connect(_complete_danger_tutorial, CONNECT_ONE_SHOT)
 
 
-func _get_move_tutorial_message() -> String:
-	var movement_aid_enabled := false
-	if _accessibility_manager != null:
-		movement_aid_enabled = bool(_accessibility_manager.get("movement_aid_enabled"))
-	return (
-		"MOVE // WASD / ARROWS OR BOTTOM-RIGHT JOYSTICK"
-		if movement_aid_enabled
-		else "MOVE // WASD / ARROWS"
+func is_movement_method_understood(method: StringName) -> bool:
+	return _movement_methods_understood.has(method)
+
+
+func get_movement_completion_method() -> StringName:
+	return _movement_completion_method
+
+
+func _on_movement_method_used(method: StringName) -> void:
+	if method not in [
+		TopDownPlayer.MOVEMENT_METHOD_KEYBOARD,
+		TopDownPlayer.MOVEMENT_METHOD_JOYSTICK,
+	]:
+		return
+	if not _movement_methods_understood.has(method):
+		_movement_methods_understood[method] = true
+		movement_method_understood.emit(method)
+	if not is_tutorial_completed(TUTORIAL_MOVE):
+		_complete_movement_tutorial(method)
+
+
+func _complete_movement_tutorial(method: StringName) -> void:
+	if is_tutorial_completed(TUTORIAL_MOVE):
+		return
+	_movement_completion_method = method
+	_complete_tutorial_step(TUTORIAL_MOVE)
+	_show_tutorial_step(
+		TUTORIAL_LOCAL,
+		1,
+		"VISIBILITY // YOU CAN ALWAYS SEE NEARBY",
 	)
 
 
-func _on_movement_aid_changed(_enabled: bool) -> void:
+func _show_movement_tutorial() -> void:
+	var joystick_visible := _is_joystick_visible()
+	_show_tutorial_step(
+		TUTORIAL_MOVE,
+		0,
+		"MOVE // WASD OR ARROW KEYS",
+		"DRAG THE JOYSTICK TO MOVE" if joystick_visible else "",
+	)
+	movement_aid.set_tutorial_highlight_active(joystick_visible)
+
+
+func _get_pulse_tutorial_hint() -> String:
+	return (
+		"SPACE OR LEFT CLICK OUTSIDE THE JOYSTICK"
+		if _is_joystick_visible()
+		else "SPACE OR LEFT CLICK"
+	)
+
+
+func _is_joystick_visible() -> bool:
+	return (
+		_accessibility_manager != null
+		and bool(_accessibility_manager.get("movement_aid_enabled"))
+	)
+
+
+func _on_movement_aid_changed(enabled: bool) -> void:
 	if current_tutorial_step == TUTORIAL_MOVE and not is_tutorial_completed(TUTORIAL_MOVE):
-		_show_tutorial_step(TUTORIAL_MOVE, 0, _get_move_tutorial_message())
+		_show_movement_tutorial()
+		movement_aid.set_tutorial_highlight_active(enabled)
+	elif current_tutorial_step == TUTORIAL_PULSE and not is_tutorial_completed(TUTORIAL_PULSE):
+		_show_tutorial_step(
+			TUTORIAL_PULSE,
+			2,
+			"PULSE // USE ECHO PULSE TO SCAN FARTHER",
+			_get_pulse_tutorial_hint(),
+		)
 
 
 func _request_screen_shake(strength: float, duration: float) -> void:

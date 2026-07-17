@@ -1,6 +1,11 @@
 class_name TopDownPlayer
 extends CharacterBody2D
 
+signal movement_method_used(method: StringName)
+
+const MOVEMENT_METHOD_KEYBOARD: StringName = &"keyboard"
+const MOVEMENT_METHOD_JOYSTICK: StringName = &"joystick"
+
 @export_category("Movement")
 @export_range(1.0, 1000.0, 1.0) var max_speed: float = 230.0
 @export_range(1.0, 6000.0, 1.0) var acceleration: float = 1800.0
@@ -20,6 +25,8 @@ extends CharacterBody2D
 
 var facing_direction: Vector2 = Vector2.RIGHT
 var movement_aid_vector: Vector2 = Vector2.ZERO
+var _reported_keyboard_movement: bool = false
+var _reported_joystick_movement: bool = false
 
 
 func _ready() -> void:
@@ -41,6 +48,7 @@ func _physics_process(delta: float) -> void:
 		&"move_up",
 		&"move_down",
 	)
+	_report_movement_methods(keyboard_direction, movement_aid_vector)
 	var input_direction := select_strongest_movement_input(keyboard_direction, movement_aid_vector)
 	velocity = calculate_next_velocity(velocity, input_direction, delta)
 	move_and_slide()
@@ -82,6 +90,24 @@ func select_strongest_movement_input(
 	var keyboard := keyboard_direction.limit_length(1.0)
 	var joystick := joystick_direction.limit_length(1.0)
 	return joystick if joystick.length_squared() > keyboard.length_squared() else keyboard
+
+
+func has_used_movement_method(method: StringName) -> bool:
+	match method:
+		MOVEMENT_METHOD_KEYBOARD:
+			return _reported_keyboard_movement
+		MOVEMENT_METHOD_JOYSTICK:
+			return _reported_joystick_movement
+	return false
+
+
+func _report_movement_methods(keyboard_direction: Vector2, joystick_direction: Vector2) -> void:
+	if not _reported_keyboard_movement and keyboard_direction.length_squared() > 0.0001:
+		_reported_keyboard_movement = true
+		movement_method_used.emit(MOVEMENT_METHOD_KEYBOARD)
+	if not _reported_joystick_movement and joystick_direction.length_squared() > 0.0001:
+		_reported_joystick_movement = true
+		movement_method_used.emit(MOVEMENT_METHOD_JOYSTICK)
 
 
 func calculate_facing_direction(

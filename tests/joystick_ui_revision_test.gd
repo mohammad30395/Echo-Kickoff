@@ -3,8 +3,9 @@ extends SceneTree
 const FACILITY_SCENE_PATH := "res://scenes/levels/echo_facility.tscn"
 const TEST_SIZES: Array[Vector2i] = [
 	Vector2i(1280, 720),
-	Vector2i(1024, 768),
+	Vector2i(1366, 768),
 	Vector2i(1600, 900),
+	Vector2i(1920, 1080),
 ]
 
 var failures: Array[String] = []
@@ -72,6 +73,9 @@ func _test_keyboard_primary_and_visible_default() -> void:
 	Input.action_release(&"move_right")
 	_expect(player.global_position.x > start.x + 8.0, "Keyboard movement failed while the optional aid was disabled.")
 	_expect(player.movement_aid_vector == Vector2.ZERO, "Idle joystick injected a movement vector.")
+	_expect(facility.is_movement_method_understood(TopDownPlayer.MOVEMENT_METHOD_KEYBOARD), "Keyboard movement was not marked understood.")
+	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_MOVE), "Keyboard movement did not complete the shared movement lesson.")
+	_expect(not movement_aid.is_tutorial_highlight_active(), "Joystick highlight remained after keyboard completed movement.")
 	print("JOYSTICK_UI_OK | keyboard movement remains available; joystick defaults visible")
 
 
@@ -125,6 +129,7 @@ func _test_bounded_drag_and_keyboard_coexistence() -> void:
 	var drag_start := player.global_position
 	await _physics_frames(10)
 	_expect(player.global_position.x > drag_start.x + 6.0, "Drag movement did not move the Player.")
+	_expect(facility.is_movement_method_understood(TopDownPlayer.MOVEMENT_METHOD_JOYSTICK), "Joystick movement was not marked understood after switching controls.")
 
 	Input.action_press(&"move_up")
 	var strongest := player.select_strongest_movement_input(Vector2.UP, movement_aid.get_direction())
@@ -257,7 +262,10 @@ func _test_polished_hud_states() -> void:
 	objective_hud._on_extraction_state_changed(true)
 	_expect((objective_hud.get_node(^"%StateLabel") as Label).text.contains("POWERED"), "Powered extraction state did not update.")
 	_expect((onboarding_hud.get_node(^"%StepLabel") as Label).text == "MOVE", "Tutorial banner lacks a concise step tag.")
-	_expect((onboarding_hud.get_node(^"%MessageLabel") as Label).text.contains("WASD"), "Tutorial banner does not establish keyboard movement first.")
+	_expect(onboarding_hud.message == "MOVE // WASD OR ARROW KEYS", "Tutorial banner does not establish keyboard movement first.")
+	_expect(onboarding_hud.hint == "DRAG THE JOYSTICK TO MOVE", "Tutorial banner does not explain joystick drag movement.")
+	_expect(movement_aid.is_tutorial_highlight_active(), "Joystick tutorial highlight is not active before first movement.")
+	_expect((pulse_hud.get_node(^"%StatusLabel") as Label).text.contains("LEFT CLICK OUTSIDE THE JOYSTICK"), "Pulse HUD does not explain the joystick click boundary.")
 	var listener := facility.get_listeners()[0]
 	listener.trigger_game_over_on_contact = false
 	listener.receive_noise(NoiseEvent.new(listener.global_position, 500.0, NoiseEvent.CATEGORY_ECHO_PULSE))
@@ -288,7 +296,13 @@ func _test_safe_layout_and_focus() -> void:
 		for control: Control in controls:
 			_expect(viewport_rect.encloses(control.get_global_rect()), "%s overflowed at %s." % [control.name, test_size])
 		_expect((facility.get_node(^"%ThreatStatusHud") as Control).get_global_rect().position == Vector2(20.0, 20.0), "Threat status shifted from its reserved top-left zone at %s." % test_size)
-		_expect((facility.get_node(^"%DecoyHud") as Control).get_global_rect().position == Vector2(20.0, 98.0), "Decoy status shifted from its reserved top-left zone at %s." % test_size)
+		var onboarding_rect := (facility.get_node(^"%OnboardingHud") as Control).get_global_rect()
+		var objective_rect := (facility.get_node(^"%ObjectiveHud") as Control).get_global_rect()
+		var decoy_rect := (facility.get_node(^"%DecoyHud") as Control).get_global_rect()
+		var prompt_rect := (facility.get_node(^"%InteractionPromptHud") as Control).get_global_rect()
+		_expect(onboarding_rect.position.y == 20.0 and is_equal_approx(onboarding_rect.get_center().x, test_size.x * 0.5), "Tutorial left its top-centre zone at %s." % test_size)
+		_expect(objective_rect.position.y == 20.0 and is_equal_approx(objective_rect.end.x, test_size.x - 20.0), "Objective left its top-right zone at %s." % test_size)
+		_expect(decoy_rect.position == Vector2(20.0, test_size.y - 96.0), "Decoy left its bottom-left zone at %s." % test_size)
 		for first_index in range(controls.size()):
 			for second_index in range(first_index + 1, controls.size()):
 				var first := controls[first_index]
@@ -297,7 +311,9 @@ func _test_safe_layout_and_focus() -> void:
 		_expect(not movement_aid.get_global_rect().has_point(Vector2(test_size) * 0.5), "Movement aid obstructs the player/camera focus at %s." % test_size)
 		var pulse_rect := (facility.get_node(^"%PulseCooldownHud") as Control).get_global_rect()
 		var joystick_rect := movement_aid.get_global_rect()
-		_expect(pulse_rect.end.y <= joystick_rect.position.y - 16.0, "Pulse HUD lacks vertical separation above the joystick at %s." % test_size)
+		_expect(is_equal_approx(pulse_rect.get_center().x, test_size.x * 0.5) and is_equal_approx(pulse_rect.end.y, test_size.y - 20.0), "Pulse HUD left its bottom-centre zone at %s." % test_size)
+		_expect(is_equal_approx(joystick_rect.end.x, test_size.x - 40.0) and is_equal_approx(joystick_rect.end.y, test_size.y - 40.0), "Joystick left its bottom-right safe zone at %s." % test_size)
+		_expect(prompt_rect.end.y <= pulse_rect.position.y - 12.0, "Interaction prompt lacks separation above bottom-centre Pulse at %s." % test_size)
 		print("JOYSTICK_UI_LAYOUT_OK | %dx%d" % [test_size.x, test_size.y])
 	print("JOYSTICK_UI_OK | all essential HUD zones remain separate and browser-safe")
 
@@ -311,6 +327,7 @@ func _test_web_safe_implementation_guards() -> void:
 	_expect(source.contains("Rect2(Vector2.ZERO, size).has_point"), "Movement aid lacks a bounded press-region guard.")
 	_expect(source.contains("active_pointer_id"), "Virtual joystick lacks pointer ownership for multi-touch safety.")
 	_expect(source.contains("should_consume_echo_event"), "Virtual joystick lacks an explicit Echo conflict guard.")
+	_expect(source.contains("set_tutorial_highlight_active") and source.contains("create_tween"), "Joystick lacks a bounded animated tutorial highlight.")
 	print("JOYSTICK_UI_OK | event-driven Compatibility-safe mouse/touch implementation")
 
 

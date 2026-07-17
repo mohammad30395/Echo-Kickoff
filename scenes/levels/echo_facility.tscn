@@ -110,22 +110,11 @@ unique_name_in_owner = true
 [node name="OnboardingHud" parent="HUDLayer/HUD" instance=ExtResource("13_onboarding_hud")]
 unique_name_in_owner = true
 
-[node name="TopLeftHudStack" type="VBoxContainer" parent="HUDLayer/HUD"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 300.0
-offset_bottom = 174.0
-theme_override_constants/separation = 14
-mouse_filter = 2
-
-[node name="ThreatStatusHud" parent="HUDLayer/HUD/TopLeftHudStack" instance=ExtResource("15_threat_hud")]
+[node name="ThreatStatusHud" parent="HUDLayer/HUD" instance=ExtResource("15_threat_hud")]
 unique_name_in_owner = true
-layout_mode = 2
 
-[node name="DecoyHud" parent="HUDLayer/HUD/TopLeftHudStack" instance=ExtResource("14_decoy_hud")]
+[node name="DecoyHud" parent="HUDLayer/HUD" instance=ExtResource("14_decoy_hud")]
 unique_name_in_owner = true
-layout_mode = 2
 
 [node name="MovementAid" parent="HUDLayer/HUD" instance=ExtResource("16_movement_aid")]
 unique_name_in_owner = true

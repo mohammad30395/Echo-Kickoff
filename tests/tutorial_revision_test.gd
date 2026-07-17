@@ -1,7 +1,7 @@
 extends SceneTree
 
 const FACILITY_SCENE_PATH := "res://scenes/levels/echo_facility.tscn"
-const MAX_TUTORIAL_MESSAGE_LENGTH := 56
+const MAX_TUTORIAL_MESSAGE_LENGTH := 72
 
 var failures: Array[String] = []
 var completed_steps: Array[StringName] = []
@@ -42,14 +42,14 @@ func _run() -> void:
 
 func _test_keyboard_first_and_contextual_pad_hint() -> void:
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_MOVE, "Tutorial does not begin with movement.")
-	_expect(onboarding.message.contains("WASD / ARROWS"), "Default movement copy does not retain keyboard controls.")
-	_expect(onboarding.message.contains("BOTTOM-RIGHT JOYSTICK"), "Default movement copy omits the visible joystick.")
+	_expect(onboarding.message == "MOVE // WASD OR ARROW KEYS", "Default movement copy does not retain the exact keyboard controls.")
+	_expect(onboarding.hint == "DRAG THE JOYSTICK TO MOVE", "Default movement hint omits the visible joystick.")
 	accessibility_manager.call(&"set_joystick_visibility_mode", 2)
 	await process_frame
-	_expect(onboarding.message == "MOVE // WASD / ARROWS", "Hidden joystick did not restore concise keyboard-only copy.")
+	_expect(onboarding.message == "MOVE // WASD OR ARROW KEYS" and onboarding.hint.is_empty(), "Hidden joystick did not restore concise keyboard-only copy.")
 	accessibility_manager.call(&"set_joystick_visibility_mode", 0)
 	await process_frame
-	_expect(onboarding.message.contains("JOYSTICK"), "Always Show Joystick did not restore the contextual hint.")
+	_expect(onboarding.hint == "DRAG THE JOYSTICK TO MOVE", "Always Show Joystick did not restore the contextual hint.")
 	_assert_short_message()
 	print("TUTORIAL_REVISION_OK | movement lesson includes keyboard and the visible joystick")
 
@@ -68,7 +68,7 @@ func _test_visibility_trigger_bands_and_early_action_gate() -> void:
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_MOVE), "Movement trigger band did not complete through action.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_LOCAL, "Local awareness did not receive a separate lesson.")
-	_expect(onboarding.message.contains("ALWAYS SEE A LITTLE AROUND YOU"), "Passive local visibility wording is unclear.")
+	_expect(onboarding.message == "VISIBILITY // YOU CAN ALWAYS SEE NEARBY", "Passive local visibility wording is unclear.")
 	_assert_short_message()
 	player.global_position = EchoFacility.START_POSITION + Vector2(EchoFacility.LOCAL_VISIBILITY_TRIGGER_RADIUS - 2.0, 0.0)
 	await process_frame
@@ -77,7 +77,8 @@ func _test_visibility_trigger_bands_and_early_action_gate() -> void:
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_LOCAL), "Local-observation trigger band did not complete through movement.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_PULSE, "Long-range Echo did not follow passive visibility.")
-	_expect(onboarding.message.contains("REVEAL FARTHER"), "Echo lesson does not establish its longer range.")
+	_expect(onboarding.message == "PULSE // USE ECHO PULSE TO SCAN FARTHER", "Echo lesson does not establish its longer range.")
+	_expect(onboarding.hint == "SPACE OR LEFT CLICK OUTSIDE THE JOYSTICK", "Pulse lesson does not explain the joystick click boundary.")
 	_assert_short_message()
 	print("TUTORIAL_REVISION_OK | separate action bands teach local visibility before long-range Echo")
 
@@ -97,7 +98,7 @@ func _test_ordered_tool_lessons() -> void:
 	_expect(lesson_pulse != null, "Long-range Echo lesson could not be completed.")
 	await process_frame
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_DANGER, "Danger did not immediately follow the taught Echo action.")
-	_expect(onboarding.message.contains("PULSE REVEALS") and onboarding.message.contains("CALLS LISTENERS"), "Pulse information/danger relationship is unclear.")
+	_expect(onboarding.message == "DANGER // THE PULSE REVEALS THE FACILITY — AND CALLS LISTENERS", "Pulse information/danger relationship is unclear.")
 	_assert_short_message()
 	var early_decoy := SoundDecoy.new()
 	facility._on_decoy_thrown(early_decoy, player.global_position)
@@ -106,12 +107,12 @@ func _test_ordered_tool_lessons() -> void:
 	await create_timer(EchoFacility.DANGER_CONFIRMATION_DURATION + 0.2, false).timeout
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_DANGER), "Listener reaction did not complete danger teaching.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_INTERACT, "Interaction did not follow demonstrated danger.")
-	_expect(onboarding.message.contains("HOLD [E]"), "Interaction lesson does not match the contextual prompt.")
+	_expect(onboarding.message == "INTERACT // HOLD E TO RESTORE A RELAY", "Interaction lesson does not match the contextual prompt.")
 	_assert_short_message()
 	facility._on_interaction_completed(facility.relay_a)
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_INTERACT), "Relay action did not complete interaction teaching.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_DECOY, "Decoy appeared before or after the required interaction position.")
-	_expect(onboarding.message.contains("MISDIRECTS LISTENERS"), "Decoy lesson does not explain misdirection.")
+	_expect(onboarding.message == "DECOY // Q OR RIGHT MOUSE TO THROW A SOUND DECOY", "Decoy lesson does not explain the sound-decoy action.")
 	_assert_short_message()
 	var lesson_decoy := SoundDecoy.new()
 	facility._on_decoy_thrown(lesson_decoy, player.global_position)
@@ -141,7 +142,7 @@ func _test_ordered_tool_lessons() -> void:
 
 
 func _test_banner_style_and_interaction_wording() -> void:
-	onboarding.show_message("DANGER // PULSE REVEALS, BUT CALLS LISTENERS", 3, 7)
+	onboarding.show_message("DANGER // THE PULSE REVEALS THE FACILITY — AND CALLS LISTENERS", 3, 7)
 	_expect(onboarding.frame.use_warning_palette, "Danger banner lacks warning framing.")
 	_expect(onboarding.stage_index == 3 and onboarding.stage_count == 7, "Tutorial progress framing does not show the seven-step sequence.")
 	onboarding.show_message("EXTRACTION // POWERED: RETURN TO ENTRY", 6, 7)

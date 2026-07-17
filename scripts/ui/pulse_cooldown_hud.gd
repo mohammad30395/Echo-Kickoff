@@ -24,10 +24,9 @@ func _ready() -> void:
 		_accessibility_manager.connect(&"settings_changed", _on_accessibility_changed)
 	debug_label.visible = show_debug_hint
 	if not show_debug_hint:
-		# Keep the authored top edge above the joystick and only collapse the
-		# hidden debug row. Reassigning `offset_top` here used to destroy the
-		# responsive scene position at runtime.
-		offset_bottom = offset_top + 84.0
+		# Collapse only the hidden debug row while preserving the authored
+		# bottom-centre safe margin.
+		offset_top = offset_bottom - 84.0
 	_refresh()
 
 
@@ -99,7 +98,7 @@ func _refresh() -> void:
 		frame.set_accent_color(Color(1.0, 0.58, 0.24, 0.9))
 		frame.set_warning_palette(true)
 	elif _controller != null:
-		status_label.text = "READY // [SPACE] / LEFT MOUSE"
+		status_label.text = "READY // SPACE OR LEFT CLICK OUTSIDE THE JOYSTICK"
 		status_label.modulate = _echo_color(Color(0.45, 0.96, 1.0, 1.0))
 		frame.set_accent_color(Color(0.32, 0.88, 0.96, 0.9))
 		frame.set_warning_palette(false)

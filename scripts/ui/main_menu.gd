@@ -7,6 +7,7 @@ extends Control
 @onready var info_panel: PanelContainer = %InfoPanel
 @onready var info_title: Label = %InfoTitle
 @onready var info_body: Label = %InfoBody
+@onready var settings_row: HBoxContainer = $Center/Content/SettingsRow
 
 
 func _ready() -> void:
@@ -24,8 +25,8 @@ func _on_new_game_pressed() -> void:
 
 
 func _on_how_to_play_pressed() -> void:
-	info_title.text = "HOW TO PLAY"
-	info_body.text = "Move: WASD / arrows or the bottom-right analogue joystick.\nYou always see a little nearby; Echo Pulse reveals farther.\nPulse: [Space] / Left Mouse. It also calls Listeners.\nInteract: hold [E] at relays and extraction.\nMisdirect Listeners: [Q] / Right Mouse throws a decoy."
+	info_title.text = "HOW TO PLAY // CONTROLS"
+	info_body.text = "WASD / Arrow Keys — Move\nReal Virtual Joystick — Drag the bottom-right control to move\nVisibility — You can always see nearby\nEcho Pulse — Space or left click outside the joystick; scans farther and calls Listeners\nDecoy — Q or right mouse to throw a sound decoy\nInteract — Hold E to restore relays and use extraction\nPause — Escape\nRestart — R after capture"
 	_show_info_panel()
 
 
@@ -37,9 +38,11 @@ func _on_credits_pressed() -> void:
 
 func _on_close_info_pressed() -> void:
 	info_panel.visible = false
+	settings_row.visible = true
 	how_to_play_button.grab_focus()
 
 
 func _show_info_panel() -> void:
+	settings_row.visible = false
 	info_panel.visible = true
 	close_info_button.grab_focus()

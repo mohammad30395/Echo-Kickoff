@@ -32,20 +32,20 @@ theme_override_colors/font_color = Color(0.48, 0.9, 0.96, 0.92)
 theme_override_colors/font_outline_color = Color(0.005, 0.012, 0.02, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 12
-text = "MOVEMENT // ANALOG JOYSTICK"
+text = "MOVEMENT // VIRTUAL JOYSTICK"
 horizontal_alignment = 1
 
 [node name="StateLabel" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 12.0
-offset_top = 214.0
+offset_top = 212.0
 offset_right = 228.0
-offset_bottom = 234.0
+offset_bottom = 238.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.42, 0.72, 0.78, 0.82)
 theme_override_colors/font_outline_color = Color(0.005, 0.012, 0.02, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 10
-text = "READY // DRAG TO MOVE"
+text = "LEFT CLICK INSIDE: DRAG TO MOVE"
 horizontal_alignment = 1

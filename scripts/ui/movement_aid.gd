@@ -23,6 +23,9 @@ var _player: TopDownPlayer
 var _accessibility_manager: Node
 var _event_bus: Node
 var _round_input_enabled: bool = true
+var _tutorial_highlight_active: bool = false
+var _tutorial_highlight_strength: float = 0.0
+var _tutorial_highlight_tween: Tween
 
 
 func _ready() -> void:
@@ -53,6 +56,8 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	if _tutorial_highlight_tween != null and _tutorial_highlight_tween.is_valid():
+		_tutorial_highlight_tween.kill()
 	_clear_input()
 	if _accessibility_manager != null:
 		if _accessibility_manager.is_connected(
@@ -96,6 +101,44 @@ func get_pad_center() -> Vector2:
 
 func get_interaction_radius() -> float:
 	return pad_radius + interaction_padding
+
+
+func set_tutorial_highlight_active(active: bool) -> void:
+	if _tutorial_highlight_active == active:
+		return
+	_tutorial_highlight_active = active
+	if _tutorial_highlight_tween != null and _tutorial_highlight_tween.is_valid():
+		_tutorial_highlight_tween.kill()
+	_tutorial_highlight_tween = null
+	if _tutorial_highlight_active:
+		_tutorial_highlight_strength = 0.25
+		_tutorial_highlight_tween = create_tween()
+		_tutorial_highlight_tween.set_loops()
+		_tutorial_highlight_tween.set_trans(Tween.TRANS_SINE)
+		_tutorial_highlight_tween.set_ease(Tween.EASE_IN_OUT)
+		_tutorial_highlight_tween.tween_method(
+			_set_tutorial_highlight_strength,
+			0.25,
+			1.0,
+			0.58,
+		)
+		_tutorial_highlight_tween.tween_method(
+			_set_tutorial_highlight_strength,
+			1.0,
+			0.25,
+			0.58,
+		)
+	else:
+		_tutorial_highlight_strength = 0.0
+	queue_redraw()
+
+
+func is_tutorial_highlight_active() -> bool:
+	return _tutorial_highlight_active
+
+
+func get_tutorial_highlight_strength() -> float:
+	return _tutorial_highlight_strength
 
 
 func should_consume_echo_event(event: InputEventMouseButton) -> bool:
@@ -263,7 +306,7 @@ func _refresh_state_label() -> void:
 		state_label.text = "LOCKED // ROUND PAUSED"
 		state_label.modulate = Color(0.5, 0.62, 0.66, 0.82)
 	else:
-		state_label.text = "READY // DRAG TO MOVE"
+		state_label.text = "LEFT CLICK INSIDE: DRAG TO MOVE"
 		state_label.modulate = Color(0.65, 0.88, 0.92, 0.9)
 
 
@@ -275,6 +318,22 @@ func _draw() -> void:
 		cyan = _accessibility_manager.call(&"get_echo_color", cyan) as Color
 		panel = _accessibility_manager.call(&"get_panel_color", panel) as Color
 	var active_strength := direction.length() if is_dragging else 0.0
+	if _tutorial_highlight_active and _round_input_enabled:
+		var highlight := Color(cyan, 0.18 + _tutorial_highlight_strength * 0.44)
+		draw_arc(
+			center,
+			pad_radius + 27.0 + _tutorial_highlight_strength * 5.0,
+			-2.9,
+			2.9,
+			56,
+			highlight,
+			3.0,
+		)
+		draw_circle(
+			center + Vector2(-pad_radius - 31.0, -20.0),
+			3.0 + _tutorial_highlight_strength * 2.0,
+			highlight,
+		)
 
 	# Reserved control plate and the large analogue movement range.
 	draw_circle(center, pad_radius + 22.0, Color(panel, 0.52 if is_dragging else 0.4))
@@ -337,4 +396,9 @@ func _on_accessibility_changed(
 	_reduced_flash_enabled: bool,
 	_screen_shake_enabled: bool,
 ) -> void:
+	queue_redraw()
+
+
+func _set_tutorial_highlight_strength(strength: float) -> void:
+	_tutorial_highlight_strength = clampf(strength, 0.0, 1.0)
 	queue_redraw()

@@ -73,7 +73,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.58, 0.74, 0.78, 1)
 theme_override_font_sizes/font_size = 14
-text = "MOVE WASD/ARROWS OR JOYSTICK // PULSE [SPACE]/LEFT MOUSE // HOLD [E] // DECOY [Q]/RIGHT MOUSE"
+text = "MOVE: WASD / ARROW KEYS OR REAL VIRTUAL JOYSTICK // ECHO PULSE: SPACE / LEFT CLICK OUTSIDE JOYSTICK\nDECOY: Q / RIGHT MOUSE // INTERACT: HOLD E // PAUSE: ESC // RESTART: R AFTER CAPTURE"
 horizontal_alignment = 1
 autowrap_mode = 2
 

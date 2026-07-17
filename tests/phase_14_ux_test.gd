@@ -58,11 +58,12 @@ func _test_main_menu_help_credits_and_settings() -> void:
 	_expect(root.gui_get_focus_owner() == new_game, "Main Menu does not focus Start first.")
 	how_to_play.pressed.emit()
 	await process_frame
-	_expect(info_panel.visible and info_title.text == "HOW TO PLAY", "How to Play panel did not open.")
-	_expect(info_body.text.split("\n").size() <= 5, "How to Play uses too many text lines.")
-	_expect(info_body.text.contains("Move:") and info_body.text.contains("always see a little"), "How to Play does not teach passive local visibility.")
-	_expect(info_body.text.contains("reveals farther") and info_body.text.contains("calls Listeners"), "How to Play does not distinguish Echo information from danger.")
-	_expect(info_body.text.contains("Misdirect Listeners"), "How to Play does not explain the decoy role.")
+	_expect(info_panel.visible and info_title.text == "HOW TO PLAY // CONTROLS", "How to Play panel did not open.")
+	_expect(info_body.text.split("\n").size() == 8, "How to Play does not present the complete concise control list.")
+	for required_copy: String in ["WASD / Arrow Keys", "Real Virtual Joystick", "Echo Pulse", "Decoy", "Interact", "Pause", "Restart"]:
+		_expect(info_body.text.contains(required_copy), "How to Play is missing %s." % required_copy)
+	_expect(info_body.text.contains("always see nearby"), "How to Play does not teach passive local visibility.")
+	_expect(info_body.text.contains("scans farther") and info_body.text.contains("calls Listeners"), "How to Play does not distinguish Echo information from danger.")
 	credits.pressed.emit()
 	await process_frame
 	_expect(info_panel.visible and info_title.text == "CREDITS", "Credits panel did not open.")
@@ -137,22 +138,23 @@ func _test_tutorial_sequence_and_accessibility_effects() -> void:
 	_bind_facility()
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_MOVE, "Tutorial does not start with movement.")
 	var onboarding := facility.get_node(^"%OnboardingHud") as OnboardingHud
-	_expect(onboarding.message.contains("WASD") and onboarding.message.contains("JOYSTICK"), "Visible joystick is not introduced beside keyboard movement.")
+	_expect(onboarding.message == "MOVE // WASD OR ARROW KEYS" and onboarding.hint == "DRAG THE JOYSTICK TO MOVE", "Visible joystick is not introduced beside keyboard movement.")
 	accessibility_manager.call(&"set_movement_aid", false)
 	await process_frame
-	_expect(onboarding.message.contains("WASD") and not onboarding.message.contains("JOYSTICK"), "Hidden joystick remains in required tutorial copy.")
+	_expect(onboarding.message == "MOVE // WASD OR ARROW KEYS" and onboarding.hint.is_empty(), "Hidden joystick remains in required tutorial copy.")
 	accessibility_manager.call(&"set_movement_aid", true)
 	await process_frame
 	player.global_position = EchoFacility.START_POSITION + Vector2(EchoFacility.MOVE_TRIGGER_RADIUS + 8.0, 0.0)
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_MOVE), "Movement lesson was not completed by movement.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_LOCAL, "Passive local visibility did not follow movement.")
-	_expect(onboarding.message.contains("ALWAYS SEE A LITTLE"), "Local-visibility lesson does not explain the permanent nearby view.")
+	_expect(onboarding.message == "VISIBILITY // YOU CAN ALWAYS SEE NEARBY", "Local-visibility lesson does not explain the permanent nearby view.")
 	player.global_position = EchoFacility.START_POSITION + Vector2(EchoFacility.LOCAL_VISIBILITY_TRIGGER_RADIUS + 8.0, 0.0)
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_LOCAL), "Local-visibility lesson did not complete through movement.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_PULSE, "Long-range Pulse lesson did not follow local observation.")
-	_expect(onboarding.message.contains("REVEAL FARTHER"), "Pulse lesson does not distinguish its longer range.")
+	_expect(onboarding.message == "PULSE // USE ECHO PULSE TO SCAN FARTHER", "Pulse lesson does not distinguish its longer range.")
+	_expect(onboarding.hint == "SPACE OR LEFT CLICK OUTSIDE THE JOYSTICK", "Pulse lesson does not explain where left click emits Echo.")
 	pulse_controller.try_emit_pulse()
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_PULSE), "Pulse lesson was not completed by pulsing.")
@@ -166,12 +168,12 @@ func _test_tutorial_sequence_and_accessibility_effects() -> void:
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_INTERACT, "Interaction lesson did not follow the danger demonstration.")
 	facility._on_interaction_focus_changed(facility.relay_a)
 	await process_frame
-	_expect(onboarding.message.contains("HOLD [E]"), "Interaction lesson does not use the shared hold prompt wording.")
+	_expect(onboarding.message == "INTERACT // HOLD E TO RESTORE A RELAY", "Interaction lesson does not use the shared hold prompt wording.")
 	facility._on_interaction_completed(facility.relay_a)
 	await process_frame
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_INTERACT), "Interaction lesson was not completed by interaction completion.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_DECOY, "Decoy lesson did not wait until interaction was understood.")
-	_expect(onboarding.message.contains("MISDIRECTS LISTENERS"), "Decoy lesson does not explain misdirection.")
+	_expect(onboarding.message == "DECOY // Q OR RIGHT MOUSE TO THROW A SOUND DECOY", "Decoy lesson does not explain the sound-decoy action.")
 	player.global_position = EchoFacility.START_POSITION
 	await physics_frame
 	var tutorial_decoy := decoy_controller.try_throw_at(player.global_position + Vector2(160.0, 0.0))
