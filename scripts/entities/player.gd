@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 		&"move_up",
 		&"move_down",
 	)
-	var input_direction := (keyboard_direction + movement_aid_vector).limit_length(1.0)
+	var input_direction := select_strongest_movement_input(keyboard_direction, movement_aid_vector)
 	velocity = calculate_next_velocity(velocity, input_direction, delta)
 	move_and_slide()
 	_update_facing_direction()
@@ -61,6 +61,23 @@ func set_movement_aid_vector(direction: Vector2) -> void:
 
 func clear_movement_aid_vector() -> void:
 	movement_aid_vector = Vector2.ZERO
+
+
+func set_virtual_joystick_vector(direction: Vector2) -> void:
+	set_movement_aid_vector(direction)
+
+
+func clear_virtual_joystick_vector() -> void:
+	clear_movement_aid_vector()
+
+
+func select_strongest_movement_input(
+	keyboard_direction: Vector2,
+	joystick_direction: Vector2,
+) -> Vector2:
+	var keyboard := keyboard_direction.limit_length(1.0)
+	var joystick := joystick_direction.limit_length(1.0)
+	return joystick if joystick.length_squared() > keyboard.length_squared() else keyboard
 
 
 func _update_facing_direction() -> void:

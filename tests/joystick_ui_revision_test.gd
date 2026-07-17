@@ -32,9 +32,12 @@ func _run() -> void:
 	accessibility_manager.call(&"reset_to_defaults")
 	await _create_facility()
 	_test_polished_hud_states()
-	await _test_keyboard_primary_and_disabled_default()
+	await _test_keyboard_primary_and_visible_default()
+	await _test_visibility_modes_and_session_state()
 	await _test_bounded_drag_and_keyboard_coexistence()
+	await _test_touch_analogue_and_pointer_capture()
 	await _test_mouse_actions_and_pause_clear()
+	await _test_terminal_state_locking()
 	await _test_safe_layout_and_focus()
 	_test_web_safe_implementation_guards()
 	_finish()
@@ -59,16 +62,38 @@ func _create_facility() -> void:
 	_expect(movement_aid != null and movement_aid.get("_player") == player, "Movement aid did not bind to the reusable Player.")
 
 
-func _test_keyboard_primary_and_disabled_default() -> void:
-	_expect(not bool(accessibility_manager.get("movement_aid_enabled")), "Movement aid is not disabled by default.")
-	_expect(not movement_aid.visible, "Disabled movement aid remains visible.")
+func _test_keyboard_primary_and_visible_default() -> void:
+	_expect(int(accessibility_manager.call(&"get_joystick_visibility_mode")) == 0, "Joystick does not default to Always Show.")
+	_expect(bool(accessibility_manager.get("movement_aid_enabled")), "Always Show does not report visible joystick state.")
+	_expect(movement_aid.visible, "Default joystick is not visible.")
 	var start := player.global_position
 	Input.action_press(&"move_right")
 	await _physics_frames(12)
 	Input.action_release(&"move_right")
 	_expect(player.global_position.x > start.x + 8.0, "Keyboard movement failed while the optional aid was disabled.")
-	_expect(player.movement_aid_vector == Vector2.ZERO, "Disabled movement aid injected a movement vector.")
-	print("JOYSTICK_UI_OK | keyboard-only movement remains primary; aid defaults hidden")
+	_expect(player.movement_aid_vector == Vector2.ZERO, "Idle joystick injected a movement vector.")
+	print("JOYSTICK_UI_OK | keyboard movement remains available; joystick defaults visible")
+
+
+func _test_visibility_modes_and_session_state() -> void:
+	accessibility_manager.call(&"set_joystick_visibility_mode", 1)
+	await process_frame
+	_expect(not movement_aid.visible, "Auto Show on Touch appeared before touch input was detected.")
+	var touch_probe := InputEventScreenTouch.new()
+	touch_probe.index = 9
+	touch_probe.pressed = true
+	touch_probe.position = Vector2.ZERO
+	accessibility_manager.call(&"_input", touch_probe)
+	await process_frame
+	_expect(movement_aid.visible, "Auto Show on Touch did not reveal the joystick after touch input.")
+	_expect(int(accessibility_manager.call(&"get_joystick_visibility_mode")) == 1, "Auto Show mode was not retained during the session.")
+	accessibility_manager.call(&"set_joystick_visibility_mode", 2)
+	await process_frame
+	_expect(not movement_aid.visible, "Hide Joystick did not hide the control.")
+	accessibility_manager.call(&"set_joystick_visibility_mode", 0)
+	await process_frame
+	_expect(movement_aid.visible, "Always Show Joystick did not restore the control.")
+	print("JOYSTICK_UI_OK | Always Show, Auto Touch, and Hide settings persist in the session")
 
 
 func _test_bounded_drag_and_keyboard_coexistence() -> void:
@@ -102,6 +127,8 @@ func _test_bounded_drag_and_keyboard_coexistence() -> void:
 	_expect(player.global_position.x > drag_start.x + 6.0, "Drag movement did not move the Player.")
 
 	Input.action_press(&"move_up")
+	var strongest := player.select_strongest_movement_input(Vector2.UP, movement_aid.get_direction())
+	_expect(strongest == Vector2.UP, "Equal-strength keyboard input did not retain intentional priority.")
 	await _physics_frames(8)
 	Input.action_release(&"move_up")
 	_expect(player.velocity.x > 0.0 and player.velocity.y < 0.0, "Keyboard input did not coexist with active pad input.")
@@ -114,11 +141,56 @@ func _test_bounded_drag_and_keyboard_coexistence() -> void:
 	movement_aid._gui_input(drag_release)
 	_expect(not movement_aid.is_dragging and movement_aid.get_direction() == Vector2.ZERO, "Movement aid remained latched after release.")
 	_expect(player.movement_aid_vector == Vector2.ZERO, "Player retained movement-aid input after release.")
+	await _physics_frames(20)
+	_expect(player.velocity.length() <= 0.1, "Player did not decelerate to a stop after joystick release.")
 
 	accessibility_manager.call(&"set_movement_aid", false)
 	await process_frame
 	_expect(not movement_aid.visible and player.movement_aid_vector == Vector2.ZERO, "Disabling the aid did not hide and clear it.")
 	print("JOYSTICK_UI_OK | bounded left-drag control, right-click isolation, normalized keyboard coexistence")
+
+
+func _test_touch_analogue_and_pointer_capture() -> void:
+	accessibility_manager.call(&"set_joystick_visibility_mode", 0)
+	await process_frame
+	var partial_touch := InputEventScreenTouch.new()
+	partial_touch.index = 4
+	partial_touch.pressed = true
+	partial_touch.position = movement_aid.get_pad_center() + Vector2(movement_aid.pad_radius * 0.575, 0.0)
+	movement_aid._gui_input(partial_touch)
+	_expect(movement_aid.is_dragging and movement_aid.active_pointer_id == 4, "Touch press did not capture its pointer index.")
+	_expect(is_equal_approx(movement_aid.get_direction().length(), 0.5), "Partial joystick displacement did not produce half-speed analogue output.")
+	var partial_velocity := player.calculate_next_velocity(Vector2.ZERO, movement_aid.get_direction(), 1.0)
+	_expect(is_equal_approx(partial_velocity.length(), player.max_speed * 0.5), "Partial joystick output did not reach the shared Player speed path.")
+
+	var second_touch := InputEventScreenTouch.new()
+	second_touch.index = 7
+	second_touch.pressed = true
+	second_touch.position = movement_aid.get_pad_center() + Vector2.UP * movement_aid.pad_radius
+	movement_aid._gui_input(second_touch)
+	_expect(movement_aid.active_pointer_id == 4, "A second touch hijacked the active joystick pointer.")
+	var emulated_mouse := InputEventMouseButton.new()
+	emulated_mouse.button_index = MOUSE_BUTTON_LEFT
+	emulated_mouse.pressed = true
+	emulated_mouse.position = movement_aid.get_pad_center()
+	movement_aid._gui_input(emulated_mouse)
+	_expect(movement_aid.active_pointer_id == 4, "Touch-emulated mouse input hijacked the active touch pointer.")
+
+	var diagonal_drag := InputEventScreenDrag.new()
+	diagonal_drag.index = 4
+	diagonal_drag.position = movement_aid.get_pad_center() + Vector2(1.0, 1.0).normalized() * movement_aid.pad_radius
+	movement_aid._gui_input(diagonal_drag)
+	_expect(is_equal_approx(movement_aid.get_direction().length(), 1.0), "Full diagonal touch output is not normalized.")
+	_expect(movement_aid.get_direction().x > 0.7 and movement_aid.get_direction().y > 0.7, "Diagonal touch direction is incorrect.")
+
+	var touch_release := InputEventScreenTouch.new()
+	touch_release.index = 4
+	touch_release.pressed = false
+	touch_release.position = movement_aid.get_pad_center()
+	movement_aid._gui_input(touch_release)
+	_expect(not movement_aid.is_dragging and movement_aid.get_direction() == Vector2.ZERO, "Touch release did not return the knob to center.")
+	_expect(player.movement_aid_vector == Vector2.ZERO, "Touch release left movement active on the Player.")
+	print("JOYSTICK_UI_OK | touch pointer capture, partial speed, diagonal normalization, and release")
 
 
 func _test_mouse_actions_and_pause_clear() -> void:
@@ -131,6 +203,14 @@ func _test_mouse_actions_and_pause_clear() -> void:
 	mouse_pulse.global_position = mouse_pulse.position
 	pulse_controller._unhandled_input(mouse_pulse)
 	_expect(pulse_controller.pulse_count == 1, "Left-mouse Echo input stopped working while the movement aid was enabled.")
+	pulse_controller.cooldown_remaining = 0.0
+	var blocked_pulse := InputEventMouseButton.new()
+	blocked_pulse.button_index = MOUSE_BUTTON_LEFT
+	blocked_pulse.pressed = true
+	blocked_pulse.position = movement_aid.get_global_rect().get_center()
+	blocked_pulse.global_position = blocked_pulse.position
+	pulse_controller._unhandled_input(blocked_pulse)
+	_expect(pulse_controller.pulse_count == 1, "Clicking the joystick safe area leaked into Echo Pulse.")
 
 	var drag_press := InputEventMouseButton.new()
 	drag_press.button_index = MOUSE_BUTTON_LEFT
@@ -142,6 +222,27 @@ func _test_mouse_actions_and_pause_clear() -> void:
 	await process_frame
 	_expect(not movement_aid.is_dragging and player.movement_aid_vector == Vector2.ZERO, "Pause did not clear active movement-aid input.")
 	print("JOYSTICK_UI_OK | mouse Echo remains available and pause clears transient pad input")
+
+
+func _test_terminal_state_locking() -> void:
+	movement_aid._on_round_state_changed(&"paused", &"playing")
+	var drag_press := InputEventMouseButton.new()
+	drag_press.button_index = MOUSE_BUTTON_LEFT
+	drag_press.pressed = true
+	drag_press.position = movement_aid.get_pad_center() + Vector2.RIGHT * movement_aid.pad_radius
+	movement_aid._gui_input(drag_press)
+	_expect(movement_aid.is_dragging, "Terminal-state test could not begin a joystick drag.")
+	event_bus.emit_signal(&"game_over_requested")
+	await process_frame
+	_expect(not movement_aid.is_dragging and not bool(movement_aid.get("_round_input_enabled")), "Game Over did not disable and clear joystick input.")
+	movement_aid._on_round_state_changed(&"player_caught", &"playing")
+	movement_aid._gui_input(drag_press)
+	_expect(movement_aid.is_dragging, "Joystick did not re-enable for a simulated restarted round.")
+	event_bus.emit_signal(&"victory_requested")
+	await process_frame
+	_expect(not movement_aid.is_dragging and not bool(movement_aid.get("_round_input_enabled")), "Victory did not disable and clear joystick input.")
+	movement_aid._on_round_state_changed(&"victory", &"playing")
+	print("JOYSTICK_UI_OK | pause, Game Over, Victory, and restarted-round input gates")
 
 
 func _test_polished_hud_states() -> void:
@@ -194,6 +295,9 @@ func _test_safe_layout_and_focus() -> void:
 				var second := controls[second_index]
 				_expect(not first.get_global_rect().intersects(second.get_global_rect()), "%s overlaps %s at %s." % [first.name, second.name, test_size])
 		_expect(not movement_aid.get_global_rect().has_point(Vector2(test_size) * 0.5), "Movement aid obstructs the player/camera focus at %s." % test_size)
+		var pulse_rect := (facility.get_node(^"%PulseCooldownHud") as Control).get_global_rect()
+		var joystick_rect := movement_aid.get_global_rect()
+		_expect(pulse_rect.end.y <= joystick_rect.position.y - 16.0, "Pulse HUD lacks vertical separation above the joystick at %s." % test_size)
 		print("JOYSTICK_UI_LAYOUT_OK | %dx%d" % [test_size.x, test_size.y])
 	print("JOYSTICK_UI_OK | all essential HUD zones remain separate and browser-safe")
 
@@ -201,11 +305,13 @@ func _test_safe_layout_and_focus() -> void:
 func _test_web_safe_implementation_guards() -> void:
 	var source := _read_text("res://scripts/ui/movement_aid.gd")
 	_expect(not source.contains("Input.action_press"), "Movement aid synthesizes shared keyboard actions.")
-	_expect(not source.contains("InputEventScreenTouch"), "Desktop-only movement aid expands scope into touch support.")
+	_expect(source.contains("InputEventScreenTouch") and source.contains("InputEventScreenDrag"), "Virtual joystick lacks touch input support.")
 	_expect(not source.contains("Shader"), "Movement aid uses an unnecessary shader path.")
 	_expect(not source.contains("_process("), "Movement aid adds a per-frame processing loop.")
 	_expect(source.contains("Rect2(Vector2.ZERO, size).has_point"), "Movement aid lacks a bounded press-region guard.")
-	print("JOYSTICK_UI_OK | event-driven Compatibility-safe implementation without mobile scope")
+	_expect(source.contains("active_pointer_id"), "Virtual joystick lacks pointer ownership for multi-touch safety.")
+	_expect(source.contains("should_consume_echo_event"), "Virtual joystick lacks an explicit Echo conflict guard.")
+	print("JOYSTICK_UI_OK | event-driven Compatibility-safe mouse/touch implementation")
 
 
 func _read_text(path: String) -> String:

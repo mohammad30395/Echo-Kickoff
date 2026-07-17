@@ -76,17 +76,22 @@ func _test_main_menu_help_credits_and_settings() -> void:
 		var high_contrast := access_panel.get_node(^"%HighContrastBox") as CheckBox
 		var reduced_flash := access_panel.get_node(^"%ReducedFlashBox") as CheckBox
 		var screen_shake := access_panel.get_node(^"%ScreenShakeBox") as CheckBox
-		var movement_aid := access_panel.get_node(^"%MovementAidBox") as CheckBox
+		var joystick_mode := access_panel.get_node(^"%JoystickModeOption") as OptionButton
 		high_contrast.button_pressed = true
 		reduced_flash.button_pressed = true
 		screen_shake.button_pressed = false
-		movement_aid.button_pressed = true
+		joystick_mode.select(2)
+		joystick_mode.item_selected.emit(2)
 		await process_frame
 		_expect(bool(accessibility_manager.get("high_contrast_enabled")), "High contrast checkbox did not update settings.")
 		_expect(bool(accessibility_manager.get("reduced_flash_enabled")), "Reduced flash checkbox did not update settings.")
 		_expect(not bool(accessibility_manager.get("screen_shake_enabled")), "Screen-shake checkbox did not update settings.")
-		_expect(bool(accessibility_manager.get("movement_aid_enabled")), "Movement-aid checkbox did not update settings.")
-		_expect(high_contrast.focus_mode != Control.FOCUS_NONE and reduced_flash.focus_mode != Control.FOCUS_NONE and screen_shake.focus_mode != Control.FOCUS_NONE and movement_aid.focus_mode != Control.FOCUS_NONE, "Accessibility checkboxes are not keyboard-focusable.")
+		_expect(not bool(accessibility_manager.get("movement_aid_enabled")), "Hide Joystick setting did not update visibility.")
+		_expect(int(accessibility_manager.call(&"get_joystick_visibility_mode")) == 2, "Joystick setting did not retain the selected mode.")
+		_expect(high_contrast.focus_mode != Control.FOCUS_NONE and reduced_flash.focus_mode != Control.FOCUS_NONE and screen_shake.focus_mode != Control.FOCUS_NONE and joystick_mode.focus_mode != Control.FOCUS_NONE, "Accessibility controls are not keyboard-focusable.")
+		joystick_mode.select(0)
+		joystick_mode.item_selected.emit(0)
+		await process_frame
 	menu.queue_free()
 	await process_frame
 	print("UX_MENU_OK | Start, How to Play, Credits, audio/accessibility settings, keyboard focus")
@@ -132,10 +137,10 @@ func _test_tutorial_sequence_and_accessibility_effects() -> void:
 	_bind_facility()
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_MOVE, "Tutorial does not start with movement.")
 	var onboarding := facility.get_node(^"%OnboardingHud") as OnboardingHud
-	_expect(onboarding.message.contains("WASD") and onboarding.message.contains("OPTIONAL PAD"), "Enabled movement aid is not introduced as an optional keyboard companion.")
+	_expect(onboarding.message.contains("WASD") and onboarding.message.contains("JOYSTICK"), "Visible joystick is not introduced beside keyboard movement.")
 	accessibility_manager.call(&"set_movement_aid", false)
 	await process_frame
-	_expect(onboarding.message.contains("WASD") and not onboarding.message.contains("PAD"), "Disabled movement aid remains in required tutorial copy.")
+	_expect(onboarding.message.contains("WASD") and not onboarding.message.contains("JOYSTICK"), "Hidden joystick remains in required tutorial copy.")
 	accessibility_manager.call(&"set_movement_aid", true)
 	await process_frame
 	player.global_position = EchoFacility.START_POSITION + Vector2(EchoFacility.MOVE_TRIGGER_RADIUS + 8.0, 0.0)

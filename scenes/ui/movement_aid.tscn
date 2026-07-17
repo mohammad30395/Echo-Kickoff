@@ -5,27 +5,47 @@
 [node name="MovementAid" type="Control"]
 unique_name_in_owner = true
 layout_mode = 3
-anchors_preset = 2
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -176.0
-offset_right = 176.0
-offset_bottom = -20.0
+offset_left = -280.0
+offset_top = -280.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 0
 grow_vertical = 0
+mouse_filter = 1
 mouse_default_cursor_shape = 13
+z_index = 20
 script = ExtResource("1_aid")
 
 [node name="Title" type="Label" parent="."]
 layout_mode = 0
 offset_left = 12.0
-offset_top = 3.0
-offset_right = 144.0
-offset_bottom = 23.0
+offset_top = 8.0
+offset_right = 228.0
+offset_bottom = 29.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.48, 0.82, 0.86, 0.78)
+theme_override_colors/font_color = Color(0.48, 0.9, 0.96, 0.92)
 theme_override_colors/font_outline_color = Color(0.005, 0.012, 0.02, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 11
-text = "MOVE PAD // DRAG"
+theme_override_font_sizes/font_size = 12
+text = "MOVEMENT // ANALOG JOYSTICK"
+horizontal_alignment = 1
+
+[node name="StateLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 12.0
+offset_top = 214.0
+offset_right = 228.0
+offset_bottom = 234.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.42, 0.72, 0.78, 0.82)
+theme_override_colors/font_outline_color = Color(0.005, 0.012, 0.02, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 10
+text = "READY // DRAG TO MOVE"
 horizontal_alignment = 1

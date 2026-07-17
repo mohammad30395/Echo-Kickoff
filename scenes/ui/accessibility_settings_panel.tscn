@@ -19,7 +19,7 @@ content_margin_right = 14.0
 content_margin_bottom = 10.0
 
 [node name="AccessibilitySettingsPanel" type="PanelContainer"]
-custom_minimum_size = Vector2(340, 154)
+custom_minimum_size = Vector2(340, 184)
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 script = ExtResource("1_access")
 
@@ -52,8 +52,20 @@ button_pressed = true
 theme_override_font_sizes/font_size = 14
 text = "SCREEN SHAKE"
 
-[node name="MovementAidBox" type="CheckBox" parent="Rows"]
-unique_name_in_owner = true
+[node name="JoystickRow" type="HBoxContainer" parent="Rows"]
+layout_mode = 2
+
+[node name="JoystickLabel" type="Label" parent="Rows/JoystickRow"]
+custom_minimum_size = Vector2(102, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "ON-SCREEN MOVE PAD"
+text = "JOYSTICK"
+vertical_alignment = 1
+
+[node name="JoystickModeOption" type="OptionButton" parent="Rows/JoystickRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(202, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+tooltip_text = "Choose when the bottom-right virtual joystick is visible."

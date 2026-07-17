@@ -25,7 +25,7 @@ func _on_new_game_pressed() -> void:
 
 func _on_how_to_play_pressed() -> void:
 	info_title.text = "HOW TO PLAY"
-	info_body.text = "Move: WASD / arrows; optional Move Pad is in Accessibility.\nYou always see a little nearby; Echo Pulse reveals farther.\nPulse: [Space] / Left Mouse. It also calls Listeners.\nInteract: hold [E] at relays and extraction.\nMisdirect Listeners: [Q] / Right Mouse throws a decoy."
+	info_body.text = "Move: WASD / arrows or the bottom-right analogue joystick.\nYou always see a little nearby; Echo Pulse reveals farther.\nPulse: [Space] / Left Mouse. It also calls Listeners.\nInteract: hold [E] at relays and extraction.\nMisdirect Listeners: [Q] / Right Mouse throws a decoy."
 	_show_info_panel()
 
 

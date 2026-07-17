@@ -42,17 +42,16 @@ func _run() -> void:
 
 func _test_keyboard_first_and_contextual_pad_hint() -> void:
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_MOVE, "Tutorial does not begin with movement.")
-	_expect(onboarding.message == "MOVE // WASD / ARROWS", "Default movement copy does not make keyboard primary.")
-	_expect(not onboarding.message.contains("PAD"), "Disabled movement aid appears in required controls.")
-	accessibility_manager.call(&"set_movement_aid", true)
+	_expect(onboarding.message.contains("WASD / ARROWS"), "Default movement copy does not retain keyboard controls.")
+	_expect(onboarding.message.contains("BOTTOM-RIGHT JOYSTICK"), "Default movement copy omits the visible joystick.")
+	accessibility_manager.call(&"set_joystick_visibility_mode", 2)
 	await process_frame
-	_expect(onboarding.message.contains("WASD / ARROWS"), "Enabled-pad hint displaced keyboard controls.")
-	_expect(onboarding.message.contains("OPTIONAL PAD"), "Enabled movement aid lacks a short contextual hint.")
-	accessibility_manager.call(&"set_movement_aid", false)
+	_expect(onboarding.message == "MOVE // WASD / ARROWS", "Hidden joystick did not restore concise keyboard-only copy.")
+	accessibility_manager.call(&"set_joystick_visibility_mode", 0)
 	await process_frame
-	_expect(not onboarding.message.contains("PAD"), "Movement-aid hint did not disappear when disabled.")
+	_expect(onboarding.message.contains("JOYSTICK"), "Always Show Joystick did not restore the contextual hint.")
 	_assert_short_message()
-	print("TUTORIAL_REVISION_OK | keyboard-first movement with contextual optional-pad hint")
+	print("TUTORIAL_REVISION_OK | movement lesson includes keyboard and the visible joystick")
 
 
 func _test_visibility_trigger_bands_and_early_action_gate() -> void:

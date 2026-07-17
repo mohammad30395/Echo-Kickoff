@@ -24,7 +24,10 @@ func _ready() -> void:
 		_accessibility_manager.connect(&"settings_changed", _on_accessibility_changed)
 	debug_label.visible = show_debug_hint
 	if not show_debug_hint:
-		offset_top = -112.0
+		# Keep the authored top edge above the joystick and only collapse the
+		# hidden debug row. Reassigning `offset_top` here used to destroy the
+		# responsive scene position at runtime.
+		offset_bottom = offset_top + 84.0
 	_refresh()
 
 

@@ -350,7 +350,7 @@ func _get_move_tutorial_message() -> String:
 	if _accessibility_manager != null:
 		movement_aid_enabled = bool(_accessibility_manager.get("movement_aid_enabled"))
 	return (
-		"MOVE // WASD / ARROWS + OPTIONAL PAD"
+		"MOVE // WASD / ARROWS OR BOTTOM-RIGHT JOYSTICK"
 		if movement_aid_enabled
 		else "MOVE // WASD / ARROWS"
 	)

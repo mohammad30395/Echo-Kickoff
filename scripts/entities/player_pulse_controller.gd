@@ -52,6 +52,9 @@ func _physics_process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"echo_pulse"):
+		if _is_echo_pointer_blocked(event):
+			get_viewport().set_input_as_handled()
+			return
 		try_emit_pulse()
 		get_viewport().set_input_as_handled()
 	elif allow_debug_input and event.is_action_pressed(&"debug_pulse_visuals"):
@@ -127,3 +130,16 @@ func _update_footsteps() -> void:
 
 func _on_pulse_finished() -> void:
 	_active_pulse_count = maxi(_active_pulse_count - 1, 0)
+
+
+func _is_echo_pointer_blocked(event: InputEvent) -> bool:
+	if not event is InputEventMouseButton:
+		return false
+	var mouse_event := event as InputEventMouseButton
+	if mouse_event.button_index != MOUSE_BUTTON_LEFT:
+		return false
+	for node: Node in get_tree().get_nodes_in_group(&"virtual_joystick"):
+		if node.has_method(&"should_consume_echo_event"):
+			if bool(node.call(&"should_consume_echo_event", mouse_event)):
+				return true
+	return false

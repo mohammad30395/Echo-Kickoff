@@ -4,7 +4,7 @@ extends PanelContainer
 @onready var high_contrast_box: CheckBox = %HighContrastBox
 @onready var reduced_flash_box: CheckBox = %ReducedFlashBox
 @onready var screen_shake_box: CheckBox = %ScreenShakeBox
-@onready var movement_aid_box: CheckBox = %MovementAidBox
+@onready var joystick_mode_option: OptionButton = %JoystickModeOption
 
 var _is_syncing: bool = false
 var _accessibility_manager: Node
@@ -19,9 +19,13 @@ func _ready() -> void:
 	high_contrast_box.toggled.connect(_on_high_contrast_toggled)
 	reduced_flash_box.toggled.connect(_on_reduced_flash_toggled)
 	screen_shake_box.toggled.connect(_on_screen_shake_toggled)
-	movement_aid_box.toggled.connect(_on_movement_aid_toggled)
+	joystick_mode_option.clear()
+	joystick_mode_option.add_item("ALWAYS SHOW JOYSTICK", 0)
+	joystick_mode_option.add_item("AUTO SHOW ON TOUCH", 1)
+	joystick_mode_option.add_item("HIDE JOYSTICK", 2)
+	joystick_mode_option.item_selected.connect(_on_joystick_mode_selected)
 	_accessibility_manager.connect(&"settings_changed", _on_settings_changed)
-	_accessibility_manager.connect(&"movement_aid_changed", _on_movement_aid_changed)
+	_accessibility_manager.connect(&"joystick_visibility_changed", _on_joystick_visibility_changed)
 	_sync_from_manager()
 
 
@@ -33,9 +37,9 @@ func _exit_tree() -> void:
 		_accessibility_manager.disconnect(&"settings_changed", _on_settings_changed)
 	if (
 		_accessibility_manager != null
-		and _accessibility_manager.is_connected(&"movement_aid_changed", _on_movement_aid_changed)
+		and _accessibility_manager.is_connected(&"joystick_visibility_changed", _on_joystick_visibility_changed)
 	):
-		_accessibility_manager.disconnect(&"movement_aid_changed", _on_movement_aid_changed)
+		_accessibility_manager.disconnect(&"joystick_visibility_changed", _on_joystick_visibility_changed)
 
 
 func _on_high_contrast_toggled(enabled: bool) -> void:
@@ -53,9 +57,10 @@ func _on_screen_shake_toggled(enabled: bool) -> void:
 		_accessibility_manager.call(&"set_screen_shake", enabled)
 
 
-func _on_movement_aid_toggled(enabled: bool) -> void:
+func _on_joystick_mode_selected(index: int) -> void:
 	if not _is_syncing:
-		_accessibility_manager.call(&"set_movement_aid", enabled)
+		var mode := joystick_mode_option.get_item_id(index)
+		_accessibility_manager.call(&"set_joystick_visibility_mode", mode)
 
 
 func _on_settings_changed(
@@ -66,7 +71,7 @@ func _on_settings_changed(
 	_sync_from_manager()
 
 
-func _on_movement_aid_changed(_enabled: bool) -> void:
+func _on_joystick_visibility_changed(_mode: int, _visible: bool) -> void:
 	_sync_from_manager()
 
 
@@ -75,5 +80,9 @@ func _sync_from_manager() -> void:
 	high_contrast_box.button_pressed = bool(_accessibility_manager.get("high_contrast_enabled"))
 	reduced_flash_box.button_pressed = bool(_accessibility_manager.get("reduced_flash_enabled"))
 	screen_shake_box.button_pressed = bool(_accessibility_manager.get("screen_shake_enabled"))
-	movement_aid_box.button_pressed = bool(_accessibility_manager.get("movement_aid_enabled"))
+	var mode := int(_accessibility_manager.call(&"get_joystick_visibility_mode"))
+	for index in range(joystick_mode_option.item_count):
+		if joystick_mode_option.get_item_id(index) == mode:
+			joystick_mode_option.select(index)
+			break
 	_is_syncing = false
