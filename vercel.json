@@ -1,7 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- build/final/web",
   "rewrites": [
     {
       "source": "/",
