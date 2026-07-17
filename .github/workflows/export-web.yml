@@ -1,0 +1,74 @@
+name: Export Godot Web
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "build/final/web/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: echo-kickoff-web-export
+  cancel-in-progress: true
+
+jobs:
+  export-web:
+    name: Test and export Web release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out the pushed revision
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+        with:
+          fetch-depth: 0
+
+      - name: Install Godot 4.7 with export templates
+        uses: chickensoft-games/setup-godot@f166999204a4f2722c6fe042fbaa3b3ea0d9c789
+        with:
+          version: 4.7.0
+          use-dotnet: false
+          include-templates: true
+
+      - name: Verify project and deployment-critical integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path . --editor --quit-after 4
+          for test in \
+            tests/joystick_ui_revision_test.gd \
+            tests/solid_environment_visual_test.gd \
+            tests/human_rescue_operative_test.gd \
+            tests/tutorial_revision_test.gd \
+            tests/phase_14_ux_test.gd \
+            tests/phase_15_release_candidate_test.gd; do
+            godot --headless --path . --script "${test}"
+          done
+
+      - name: Export the single-threaded Compatibility Web build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/final/web
+          godot --headless --path . --export-release Web build/final/web/index.html
+          test -s build/final/web/index.html
+          test -s build/final/web/index.pck
+          test -s build/final/web/index.wasm
+
+      - name: Commit refreshed Web artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -f build/final/web
+          if git diff --cached --quiet; then
+            echo "Web export already matches the pushed source revision."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "build: refresh Godot web export for ${GITHUB_SHA::7}"
+          git push origin HEAD:main
