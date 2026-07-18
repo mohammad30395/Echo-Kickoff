@@ -23,7 +23,10 @@ func _configure_sector() -> void:
 		Rect2(-800.0, -550.0, 1600.0, 32.0),
 		Rect2(-800.0, 518.0, 200.0, 32.0),
 		Rect2(-300.0, 518.0, 1100.0, 32.0),
-		Rect2(-800.0, -518.0, 32.0, 1036.0),
+		# The west boundary is split around extraction so the powered gate opens
+		# onto a real traversable threshold instead of an invisible outer wall.
+		Rect2(-800.0, -518.0, 32.0, 648.0),
+		Rect2(-800.0, 370.0, 32.0, 148.0),
 		Rect2(768.0, -518.0, 32.0, 168.0),
 		Rect2(768.0, -120.0, 32.0, 220.0),
 		Rect2(768.0, 330.0, 32.0, 188.0),

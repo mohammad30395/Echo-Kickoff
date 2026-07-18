@@ -8,6 +8,10 @@ const EXPECTED_CUES: Dictionary = {
 	&"decoy_impact": "res://assets/audio/decoy_impact.wav",
 	&"relay_activation": "res://assets/audio/relay_activation.wav",
 	&"door_open": "res://assets/audio/door_open.wav",
+	&"power_surge": "res://assets/audio/power_surge.wav",
+	&"gate_unlock": "res://assets/audio/gate_unlock.wav",
+	&"warden_alert": "res://assets/audio/warden_alert.wav",
+	&"level_complete": "res://assets/audio/level_complete.wav",
 	&"player_caught": "res://assets/audio/player_caught.wav",
 	&"victory_extraction": "res://assets/audio/victory_extraction.wav",
 	&"industrial_ambience": "res://assets/audio/industrial_ambience.wav",
@@ -51,7 +55,7 @@ func _test_imported_assets_and_provenance() -> void:
 	var manifest_text := FileAccess.get_file_as_string("res://assets/audio/generated-audio.json")
 	var manifest := JSON.parse_string(manifest_text) as Dictionary
 	var records := manifest.get("assets", []) as Array
-	_expect(records.size() == EXPECTED_CUES.size(), "Audio manifest does not contain exactly ten required cues.")
+	_expect(records.size() == EXPECTED_CUES.size(), "Audio manifest does not contain exactly fourteen required cues.")
 	_expect(manifest.get("generator") == "tools/generate_audio_assets.py", "Audio generator provenance is missing.")
 	_expect(String(manifest.get("authorship", "")).contains("Original Echo Kickoff"), "Original audio authorship is not recorded.")
 	var hashes: Dictionary[String, bool] = {}
@@ -75,7 +79,7 @@ func _test_imported_assets_and_provenance() -> void:
 		_expect(stream != null, "AudioManager cannot load cue %s." % cue_id)
 		if stream != null:
 			_expect(not stream.stereo and stream.mix_rate == 24000, "%s lost mono 24 kHz import settings." % cue_id)
-	print("AUDIO_ASSETS_OK | ten original PCM16 mono WAVs, deterministic manifest, safe peaks, unique signatures")
+	print("AUDIO_ASSETS_OK | fourteen original PCM16 mono WAVs, deterministic manifest, safe peaks, unique signatures")
 
 
 func _test_audio_buses_and_source_policy() -> void:
@@ -96,13 +100,17 @@ func _test_audio_buses_and_source_policy() -> void:
 
 
 func _test_user_gesture_start_and_ambience() -> void:
+	# Keep this legacy Easy-level audio route isolated from persistent campaign progress.
+	var campaign := root.get_node("CampaignManager")
+	campaign.set("highest_unlocked_index", 0)
+	campaign.call(&"start_level", &"easy")
 	_expect(not bool(audio_manager.get("user_gesture_received")), "Audio user-gesture flag was set before Start input.")
 	_expect(audio_manager.call(&"get_round_audio_player_count") == 0, "Ambience began before the user-controlled Start flow.")
 	var error := change_scene_to_file("res://scenes/boot.tscn")
 	_expect(error == OK, "Could not load Boot for audio-start test.")
 	await _wait_for_scene(&"MainMenu")
 	var start_button := current_scene.get_node_or_null(^"%NewGameButton") as Button
-	_expect(start_button != null and start_button.text.contains("START"), "Main Menu has no explicit user-controlled Start button.")
+	_expect(start_button != null and (start_button.text.contains("START") or start_button.text.contains("CONTINUE")), "Main Menu has no explicit user-controlled Start/Continue button.")
 	if start_button != null:
 		start_button.pressed.emit()
 	await _wait_for_scene(&"GameWorld")
@@ -117,7 +125,7 @@ func _test_noise_and_listener_cues() -> void:
 		var before := audio_manager.call(&"get_cue_play_count", cue_id) as int
 		event_bus.call(&"publish_noise", Vector2.ZERO, 100.0, NOISE_CATEGORIES[cue_id])
 		_expect(audio_manager.call(&"get_cue_play_count", cue_id) == before + 1, "%s noise did not route to its Effects cue." % cue_id)
-	var player := current_scene.get_node(^"EchoFacility/Player") as TopDownPlayer
+	var player := current_scene.find_child("Player", true, false) as TopDownPlayer
 	var listener_scene := load("res://scenes/entities/listener.tscn") as PackedScene
 	var listener := listener_scene.instantiate() as Listener
 	listener.position = player.global_position + Vector2(260.0, 0.0)
@@ -138,7 +146,7 @@ func _test_noise_and_listener_cues() -> void:
 
 
 func _test_door_and_terminal_cues() -> void:
-	var player := current_scene.get_node(^"EchoFacility/Player") as TopDownPlayer
+	var player := current_scene.find_child("Player", true, false) as TopDownPlayer
 	var door_scene := load("res://scenes/interactions/facility_door.tscn") as PackedScene
 	var door := door_scene.instantiate() as FacilityDoor
 	door.is_unlocked = true

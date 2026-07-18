@@ -89,6 +89,7 @@ var relay_a: ReactorRelay
 var relay_b: ReactorRelay
 var relay_c: ReactorRelay
 var extraction: ExtractionTerminal
+var extraction_gate: ExtractionGate
 var traversed_distance: float = 0.0
 
 
@@ -140,12 +141,13 @@ func _bind_sector() -> bool:
 	relay_b = sector.get_node_or_null(^"%RelayB") as ReactorRelay
 	relay_c = sector.get_node_or_null(^"%RelayC") as ReactorRelay
 	extraction = sector.get_node_or_null(^"%ExtractionTerminal") as ExtractionTerminal
+	extraction_gate = sector.get_node_or_null(^"%ExtractionGate") as ExtractionGate
 	if player == null or listener == null or mission == null:
 		failures.append("EchoFacility is missing a core player, Listener, or mission node.")
 		return false
 	pulse_controller = player.get_node_or_null(^"%PulseController") as PlayerPulseController
 	interaction_controller = player.get_node_or_null(^"%InteractionController") as PlayerInteractionController
-	return pulse_controller != null and interaction_controller != null
+	return pulse_controller != null and interaction_controller != null and extraction_gate != null
 
 
 func _test_authored_architecture_and_dark_start() -> void:
@@ -233,7 +235,9 @@ func _test_complete_objective_route_and_victory() -> void:
 	var objective_hud := sector.get_node(^"%ObjectiveHud") as ObjectiveHud
 	_expect(objective_hud.objective_label.text.contains("EXTRACTION READY"), "Objective HUD did not immediately show extraction readiness.")
 	await _walk_route(LOWER_RETURN_ROUTE, "lower return route to extraction")
-	await _hold_interact_until(extraction)
+	await create_timer(1.8).timeout
+	_expect(extraction_gate.is_open(), "Full power did not open the physical extraction gate.")
+	extraction_gate._on_body_entered(player)
 	_expect(await _wait_for_scene(&"Victory", 2.0), "Powered extraction did not route to Victory.")
 	if current_scene != null and current_scene.name == &"Victory":
 		event_bus.emit_signal(&"main_menu_requested")

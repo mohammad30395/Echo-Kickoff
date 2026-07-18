@@ -89,7 +89,7 @@ var mission: MissionObjectiveController
 var relay_a: ReactorRelay
 var relay_b: ReactorRelay
 var relay_c: ReactorRelay
-var extraction: ExtractionTerminal
+var extraction_gate: ExtractionGate
 var listeners: Array[Listener] = []
 var pulse_controller: PlayerPulseController
 var interaction_controller: PlayerInteractionController
@@ -146,9 +146,9 @@ func _bind_facility() -> bool:
 	relay_a = facility.get_node_or_null(^"%RelayA") as ReactorRelay
 	relay_b = facility.get_node_or_null(^"%RelayB") as ReactorRelay
 	relay_c = facility.get_node_or_null(^"%RelayC") as ReactorRelay
-	extraction = facility.get_node_or_null(^"%ExtractionTerminal") as ExtractionTerminal
+	extraction_gate = facility.get_node_or_null(^"%ExtractionGate") as ExtractionGate
 	listeners = facility.get_listeners()
-	if player == null or mission == null or relay_a == null or relay_b == null or relay_c == null or extraction == null:
+	if player == null or mission == null or relay_a == null or relay_b == null or relay_c == null or extraction_gate == null:
 		failures.append("EchoFacility is missing a core mission node.")
 		return false
 	pulse_controller = player.get_node_or_null(^"%PulseController") as PlayerPulseController
@@ -177,7 +177,8 @@ func _test_reusable_sector_architecture() -> void:
 	var laboratory := facility.laboratory_sector
 	var extraction_sector := facility.extraction_sector
 	_expect(_points_in_sector([relay_a.global_position, relay_b.global_position, listeners[0].global_position], laboratory), "Laboratory pressure/content anchors are outside their sector.")
-	_expect(_points_in_sector([relay_c.global_position, extraction.global_position, listeners[1].global_position], extraction_sector), "Extraction pressure/content anchors are outside their sector.")
+	_expect(_points_in_sector([relay_c.global_position, extraction_gate.global_position, listeners[1].global_position], extraction_sector), "Extraction pressure/content anchors are outside their sector.")
+	_expect(facility.get_node_or_null(^"%ExtractionTerminal") == null, "Obsolete extraction terminal still exists in the final facility.")
 	_expect(not orientation.sector_rect.has_point(orientation.to_local(listeners[0].global_position)) and not orientation.sector_rect.has_point(orientation.to_local(listeners[1].global_position)), "Orientation sector introduces an enemy before movement/Echo learning.")
 	print(
 		"CONTENT_ARCHITECTURE_OK | sectors=%d collision=%d revealables=%d rooms=%d safe_pockets=%d relays=%d listeners=%d"
@@ -199,7 +200,6 @@ func _test_spawn_collision_and_echo_coverage() -> void:
 		relay_a.global_position,
 		relay_b.global_position,
 		relay_c.global_position,
-		extraction.global_position,
 	]
 	validation_points.append_array(facility.get_all_safe_observation_pockets())
 	for sector: FacilitySector in facility.get_sectors():
@@ -225,12 +225,13 @@ func _test_spawn_collision_and_echo_coverage() -> void:
 	for revealable: EchoRevealable in revealables:
 		_expect(is_zero_approx(revealable.get_reveal_strength()), "World content began revealed before player input.")
 	_expect(player.global_position.distance_to(EchoFacility.START_POSITION) < 1.0, "Player spawn differs from the authored Orientation spawn.")
-	_expect(player.global_position.distance_to(extraction.global_position) <= 240.0, "Player no longer begins beside locked extraction.")
+	_expect(player.global_position.distance_to(extraction_gate.global_position) <= 240.0, "Player no longer begins beside locked extraction.")
 	print("CONTENT_GEOMETRY_OK | spawn anchors clear, every room Echo-readable, no isolated empty corridor, dark baseline")
 
 
 func _test_locked_extraction_and_onboarding() -> void:
-	_expect(not extraction.is_unlocked and not extraction.try_activate(player), "Extraction accepted completion before 3/3.")
+	extraction_gate._on_body_entered(player)
+	_expect(not extraction_gate.is_open() and not mission.extraction_unlocked, "Extraction accepted completion before 3/3.")
 	await _walk_route([Vector2(-3120.0, -120.0)], "orientation movement lesson")
 	_expect(facility.onboarding_stage == 1, "Movement did not introduce passive local visibility.")
 	_expect(facility.current_tutorial_step == EchoFacility.TUTORIAL_LOCAL, "Local visibility is not a distinct orientation lesson.")
@@ -305,13 +306,19 @@ func _test_full_objective_route_and_victory() -> void:
 		return
 	if not await _activate_relay_with_echo(relay_c, "Relay C"):
 		return
+	_expect(not player.controls_enabled, "Final power sequence did not temporarily suppress input.")
+	await create_timer(1.7).timeout
+	_expect(player.controls_enabled, "Final power sequence did not return input before extraction.")
 	var second_decoy_target := player.global_position + player.global_position.direction_to(listeners[1].global_position) * 350.0
 	var second_decoy := decoy_controller.try_throw_at(second_decoy_target)
 	_expect(second_decoy != null, "Relay C withdrawal could not deploy its reserved decoy.")
-	_expect(mission.active_relay_count == 3 and mission.extraction_unlocked and extraction.is_unlocked, "Three relays did not immediately power extraction.")
+	_expect(mission.active_relay_count == 3 and mission.extraction_unlocked, "Three relays did not immediately power extraction.")
 	if not await _walk_route(EXTRACTION_RETURN_ROUTE, "Relay C escape and final return loop"):
 		return
-	await _hold_interact_until(extraction)
+	await create_timer(1.8).timeout
+	_expect(extraction_gate != null and extraction_gate.is_open(), "Full restoration did not open the extraction gate.")
+	if extraction_gate != null:
+		extraction_gate._on_body_entered(player)
 	_expect(await _wait_for_scene(&"Victory", 3.0), "Complete objective route did not reach Victory.")
 	var modeled_first_time_seconds := traversed_distance / 48.0 + 330.0
 	_expect(modeled_first_time_seconds >= 720.0 and modeled_first_time_seconds <= 1200.0, "Modeled first-time duration %.1fs is outside 12–20 minutes (distance %.0fpx)." % [modeled_first_time_seconds, traversed_distance])

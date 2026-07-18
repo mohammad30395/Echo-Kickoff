@@ -8,6 +8,7 @@ signal extraction_completed(terminal: ExtractionTerminal, actor: Node2D)
 var active_relay_count: int = 0
 var required_relay_count: int = 3
 var is_unlocked: bool = false
+@export var status_only: bool = false
 
 
 func _ready() -> void:
@@ -30,7 +31,7 @@ func set_relay_progress(active_count: int, required_count: int) -> void:
 
 
 func is_interaction_available(actor: Node2D) -> bool:
-	return is_unlocked and super.is_interaction_available(actor)
+	return not status_only and is_unlocked and super.is_interaction_available(actor)
 
 
 func get_interaction_prompt(actor: Node2D) -> String:
@@ -41,6 +42,8 @@ func get_interaction_prompt(actor: Node2D) -> String:
 			active_relay_count,
 			required_relay_count,
 		]
+	if status_only:
+		return "EXTRACTION GATE // CROSS WHEN OPEN"
 	return super.get_interaction_prompt(actor)
 
 

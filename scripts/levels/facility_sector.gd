@@ -33,6 +33,7 @@ var safe_observation_pockets: Array[Vector2] = []
 var connection_points: Array[Vector2] = []
 var relay_zone_indices: Array[int] = []
 var danger_zone_indices: Array[int] = []
+var power_ratio: float = 0.0
 
 @onready var revealables: Node2D = %Revealables
 @onready var collision_geometry: Node2D = %CollisionGeometry
@@ -79,6 +80,14 @@ func get_global_connection_points() -> Array[Vector2]:
 	for point: Vector2 in connection_points:
 		points.append(to_global(point))
 	return points
+
+
+func set_power_ratio(value: float) -> void:
+	var next_ratio := clampf(value, power_ratio, 1.0)
+	if is_equal_approx(next_ratio, power_ratio):
+		return
+	power_ratio = next_ratio
+	queue_redraw()
 
 
 func _build_authored_geometry() -> void:
@@ -193,6 +202,11 @@ func _draw() -> void:
 			_draw_laboratory_signature(motif_color)
 		SectorSignature.EXTRACTION:
 			_draw_extraction_signature(motif_color)
+	if power_ratio > 0.0:
+		draw_rect(sector_rect.grow(-22.0), Color(accent_color, 0.035 + power_ratio * 0.09), true)
+		var powered_color := Color(0.42, 1.0, 0.76, 0.18 + power_ratio * 0.34)
+		for connection: Vector2 in connection_points:
+			draw_circle(connection, 18.0 + power_ratio * 8.0, powered_color, false, 3.0)
 
 
 func _draw_orientation_signature(color: Color) -> void:

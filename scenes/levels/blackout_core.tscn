@@ -1,0 +1,104 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/campaign_level.gd" id="1_level"]
+[ext_resource type="PackedScene" path="res://scenes/levels/sectors/blackout_core_sector.tscn" id="2_sector"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/entities/listener.tscn" id="4_listener"]
+[ext_resource type="PackedScene" path="res://scenes/entities/reactor_warden.tscn" id="5_warden"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/reactor_relay.tscn" id="6_relay"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/extraction_gate.tscn" id="8_gate"]
+[ext_resource type="Script" path="res://scripts/systems/mission_objective_controller.gd" id="9_mission"]
+[ext_resource type="Script" path="res://scripts/systems/power_grid_controller.gd" id="10_power"]
+[ext_resource type="PackedScene" path="res://scenes/ui/campaign_hud.tscn" id="11_hud"]
+
+[node name="BlackoutCore" type="Node2D"]
+script = ExtResource("1_level")
+level_id = &"hard"
+start_position = Vector2(-2850, 0)
+level_bounds = Rect2(-3200, -2000, 6400, 4000)
+show_level_intro = true
+
+[node name="ArenaSector" parent="." instance=ExtResource("2_sector")]
+
+[node name="WorldModulate" type="CanvasModulate" parent="."]
+unique_name_in_owner = true
+color = Color(0.7, 0.75, 0.88, 1)
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+unique_name_in_owner = true
+
+[node name="MissionController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_mission")
+required_relay_count = 7
+trigger_victory_on_completion = false
+
+[node name="PowerGridController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("10_power")
+unpowered_modulate = Color(0.7, 0.75, 0.88, 1)
+
+[node name="RelayA" parent="." instance=ExtResource("6_relay")]
+position = Vector2(-2600, -1400)
+relay_id = &"A"
+
+[node name="RelayB" parent="." instance=ExtResource("6_relay")]
+position = Vector2(-2600, 700)
+relay_id = &"B"
+
+[node name="RelayC" parent="." instance=ExtResource("6_relay")]
+position = Vector2(-1400, -1500)
+relay_id = &"C"
+
+[node name="RelayD" parent="." instance=ExtResource("6_relay")]
+position = Vector2(-1200, 1400)
+relay_id = &"D"
+
+[node name="RelayE" parent="." instance=ExtResource("6_relay")]
+position = Vector2(1300, -1450)
+relay_id = &"E"
+
+[node name="RelayF" parent="." instance=ExtResource("6_relay")]
+position = Vector2(2500, -600)
+relay_id = &"F"
+
+[node name="RelayG" parent="." instance=ExtResource("6_relay")]
+position = Vector2(2500, 1250)
+relay_id = &"G"
+
+[node name="ExtractionGate" parent="." instance=ExtResource("8_gate")]
+unique_name_in_owner = true
+position = Vector2(-2700, 1480)
+scale = Vector2(1.9, 1)
+
+[node name="ListenerWestNorth" parent="." instance=ExtResource("4_listener")]
+position = Vector2(-2100, -900)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(-500, 0), Vector2(-500, 600), Vector2(0, 600)])
+initial_idle_duration = 0.8
+
+[node name="ListenerWestSouth" parent="." instance=ExtResource("4_listener")]
+position = Vector2(-1700, 850)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(-650, 0), Vector2(-650, -500), Vector2(0, -500)])
+initial_idle_duration = 1.2
+
+[node name="ListenerEastNorth" parent="." instance=ExtResource("4_listener")]
+position = Vector2(1900, -1100)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(650, 0), Vector2(650, 500), Vector2(0, 500)])
+initial_idle_duration = 1.5
+
+[node name="ListenerEastSouth" parent="." instance=ExtResource("4_listener")]
+position = Vector2(1800, 900)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(700, 0), Vector2(700, -500), Vector2(0, -500)])
+initial_idle_duration = 1.7
+
+[node name="WardenCore" parent="." instance=ExtResource("5_warden")]
+position = Vector2(0, 0)
+patrol_points = Array[Vector2]([Vector2(-420, 0), Vector2(0, -420), Vector2(420, 0), Vector2(0, 420)])
+initial_idle_duration = 0.4
+
+[node name="WardenOuter" parent="." instance=ExtResource("5_warden")]
+position = Vector2(900, 1150)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(900, 0), Vector2(900, -650), Vector2(0, -650)])
+initial_idle_duration = 0.7
+
+[node name="HUDLayer" parent="." instance=ExtResource("11_hud")]

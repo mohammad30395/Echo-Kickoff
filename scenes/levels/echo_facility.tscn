@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/echo_facility.gd" id="1_level"]
 [ext_resource type="PackedScene" path="res://scenes/levels/sectors/orientation_sector.tscn" id="2_orientation"]
@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="5_player"]
 [ext_resource type="PackedScene" path="res://scenes/entities/listener.tscn" id="6_listener"]
 [ext_resource type="PackedScene" path="res://scenes/interactions/reactor_relay.tscn" id="7_relay"]
-[ext_resource type="PackedScene" path="res://scenes/interactions/extraction_terminal.tscn" id="8_extraction"]
 [ext_resource type="Script" path="res://scripts/systems/mission_objective_controller.gd" id="9_mission"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pulse_cooldown_hud.tscn" id="10_pulse_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/objective_hud.tscn" id="11_objective_hud"]
@@ -16,9 +15,16 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/decoy_hud.tscn" id="14_decoy_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/threat_status_hud.tscn" id="15_threat_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/movement_aid.tscn" id="16_movement_aid"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/extraction_gate.tscn" id="17_gate"]
+[ext_resource type="Script" path="res://scripts/systems/power_grid_controller.gd" id="18_power"]
+[ext_resource type="PackedScene" path="res://scenes/ui/power_restoration_overlay.tscn" id="19_power_overlay"]
+[ext_resource type="PackedScene" path="res://scenes/ui/live_minimap.tscn" id="20_minimap"]
 
 [node name="EchoFacility" type="Node2D"]
 script = ExtResource("1_level")
+level_id = &"easy"
+start_position = Vector2(-3150, 0)
+level_bounds = Rect2(-3400, -1700, 6600, 3400)
 
 [node name="Sectors" type="Node2D" parent="."]
 
@@ -41,6 +47,14 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 script = ExtResource("9_mission")
 
+[node name="WorldModulate" type="CanvasModulate" parent="."]
+unique_name_in_owner = true
+color = Color(0.72, 0.78, 0.9, 1)
+
+[node name="PowerGridController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("18_power")
+
 [node name="RelayA" parent="." instance=ExtResource("7_relay")]
 unique_name_in_owner = true
 position = Vector2(-1000, -1300)
@@ -56,9 +70,11 @@ unique_name_in_owner = true
 position = Vector2(-2480, 1450)
 relay_id = &"C"
 
-[node name="ExtractionTerminal" parent="." instance=ExtResource("8_extraction")]
+[node name="ExtractionGate" parent="." instance=ExtResource("17_gate")]
 unique_name_in_owner = true
-position = Vector2(-3070, 170)
+position = Vector2(-3290, 0)
+rotation = 1.5707963
+scale = Vector2(1.9, 1)
 
 [node name="Listener" parent="." instance=ExtResource("6_listener")]
 unique_name_in_owner = true
@@ -117,4 +133,10 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 
 [node name="MovementAid" parent="HUDLayer/HUD" instance=ExtResource("16_movement_aid")]
+unique_name_in_owner = true
+
+[node name="LiveMinimap" parent="HUDLayer/HUD" instance=ExtResource("20_minimap")]
+unique_name_in_owner = true
+
+[node name="PowerOverlay" parent="HUDLayer" instance=ExtResource("19_power_overlay")]
 unique_name_in_owner = true

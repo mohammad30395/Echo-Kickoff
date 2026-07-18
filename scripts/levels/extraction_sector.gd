@@ -20,7 +20,8 @@ func _configure_sector() -> void:
 	major_grid_color = Color(0.18, 0.68, 0.54, 0.15)
 	lane_color = Color(0.22, 0.88, 0.7, 0.34)
 	wall_rects = [
-		Rect2(-800.0, -850.0, 160.0, 32.0),
+		# Leave the powered extraction threshold clear where this sector meets the
+		# Orientation Deck. The gate itself owns collision while it is locked.
 		Rect2(-300.0, -850.0, 1100.0, 32.0),
 		Rect2(-800.0, 818.0, 1600.0, 32.0),
 		Rect2(-800.0, -818.0, 32.0, 1636.0),

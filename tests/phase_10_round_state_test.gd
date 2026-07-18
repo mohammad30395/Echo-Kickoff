@@ -235,9 +235,9 @@ func _test_caught_feedback_and_clean_restart() -> void:
 	_expect(event_bus.get_instance_id() == event_bus_id and audio_manager.get_instance_id() == audio_manager_id and game_manager.get_instance_id() == game_manager_id, "Restart replaced or duplicated an autoload.")
 	_expect(_bind_round(), "Restarted Game World could not bind its round systems.")
 	if sector != null:
-		var extraction := sector.get_node(^"%ExtractionTerminal") as ExtractionTerminal
+		var extraction_gate := sector.get_node(^"%ExtractionGate") as ExtractionGate
 		_expect(mission.active_relay_count == 0 and not mission.extraction_unlocked, "Restart retained objective progress.")
-		_expect(extraction != null and not extraction.is_unlocked, "Restart retained extraction unlock.")
+		_expect(extraction_gate != null and not extraction_gate.is_open(), "Restart retained extraction unlock.")
 		_expect(decoy_controller.remaining_charges == decoy_controller.maximum_charges, "Restart did not restore decoy charges.")
 		_expect(pulse_controller.pulse_count == 0 and is_zero_approx(pulse_controller.cooldown_remaining), "Restart retained pulse count/cooldown.")
 		_expect(listener.get_state_name() == &"IDLE" and listener.last_heard_category == &"none" and not listener.has_caught_player(), "Restart retained Listener state, hearing memory, or caught flag.")
@@ -254,9 +254,12 @@ func _test_victory_and_escape_to_menu() -> void:
 	]
 	for relay: ReactorRelay in relays:
 		_expect(relay.try_activate(player), "Victory setup could not activate Relay %s." % relay.relay_id)
-	var extraction := sector.get_node(^"%ExtractionTerminal") as ExtractionTerminal
+	var extraction_gate := sector.get_node(^"%ExtractionGate") as ExtractionGate
 	_expect(mission.active_relay_count == 3 and mission.extraction_unlocked, "Three relays did not unlock extraction before Victory.")
-	_expect(extraction.try_activate(player), "Powered extraction could not complete.")
+	_expect(sector.get_node_or_null(^"%ExtractionTerminal") == null, "Obsolete extraction terminal still exists in production.")
+	await create_timer(1.8).timeout
+	_expect(extraction_gate.is_open(), "Powered extraction gate did not open.")
+	extraction_gate._on_body_entered(player)
 	_expect(game_manager.call(&"get_round_state_name") == &"victory", "Mission completion did not enter Victory immediately.")
 	_expect(paused and current_scene != null and current_scene.name == &"GameWorld", "Victory did not freeze the completed round during fade-out.")
 	await _wait_for_manager_idle()

@@ -127,7 +127,8 @@ func _test_visibility_and_contrast_hierarchy() -> void:
 
 func _test_interactable_state_language() -> void:
 	var relay := facility.get_node(^"%RelayA/%Visual") as ReactorRelayVisual
-	var extraction := facility.get_node(^"%ExtractionTerminal/%Visual") as ExtractionTerminalVisual
+	var extraction_gate := facility.get_node(^"%ExtractionGate") as ExtractionGate
+	var extraction := facility.get_node(^"%ExtractionGate/%Visual") as ExtractionGateVisual
 	_expect(relay != null and extraction != null, "Mission visuals are missing.")
 	if relay != null:
 		_expect(relay.uses_solid_body and relay.get_visual_state_name() == &"relay_inactive", "Relay does not start as a solid inactive machine.")
@@ -135,11 +136,11 @@ func _test_interactable_state_language() -> void:
 		_expect(relay.get_visual_state_name() == &"relay_active" and relay.get_reveal_strength() > 0.9, "Relay activation lacks state and reveal feedback.")
 		relay.set_active(false)
 	if extraction != null:
-		_expect(extraction.uses_solid_body and extraction.get_visual_state_name() == &"extraction_locked", "Extraction gate does not start visibly locked.")
-		extraction.set_terminal_state(true)
-		_expect(extraction.get_visual_state_name() == &"extraction_available", "Extraction available state is not visually explicit.")
-		extraction.set_terminal_state(true, true)
-		_expect(extraction.get_visual_state_name() == &"extraction_complete", "Extraction completion state is not visually explicit.")
+		_expect(extraction.uses_solid_body and extraction.state == ExtractionGate.GateState.LOCKED, "Extraction gate does not start visibly locked.")
+		extraction_gate.begin_powering()
+		_expect(extraction.state == ExtractionGate.GateState.POWERING, "Extraction powering state is not visually explicit.")
+		extraction_gate.open_gate_immediately()
+		_expect(extraction.state == ExtractionGate.GateState.OPEN and is_equal_approx(extraction.open_progress, 1.0), "Extraction open state is not visually explicit.")
 
 	var packed_door := load("res://scenes/interactions/facility_door.tscn") as PackedScene
 	var door := packed_door.instantiate() as FacilityDoor

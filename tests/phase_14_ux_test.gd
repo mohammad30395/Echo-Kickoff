@@ -129,6 +129,10 @@ func _test_safe_browser_bounds() -> void:
 
 
 func _test_tutorial_sequence_and_accessibility_effects() -> void:
+	# The full onboarding belongs to Easy even when a prior campaign save can continue later.
+	var campaign := root.get_node("CampaignManager")
+	campaign.set("highest_unlocked_index", 0)
+	campaign.call(&"start_level", &"easy")
 	var load_error := change_scene_to_file(BOOT_SCENE_PATH)
 	_expect(load_error == OK, "Boot scene could not load for tutorial test.")
 	await _wait_for_scene(&"MainMenu")
@@ -184,7 +188,7 @@ func _test_tutorial_sequence_and_accessibility_effects() -> void:
 	_expect(onboarding.message.contains("RESTORE 3 RELAYS"), "Mission guidance does not put objectives before extraction.")
 	facility._on_objective_changed(3, 3)
 	_expect(onboarding.message.contains("POWERED") and onboarding.message.contains("RETURN"), "Powered extraction guidance is unclear.")
-	facility._on_interaction_completed(facility.extraction_terminal)
+	facility._on_extraction_crossed(player)
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_EXTRACTION), "Extraction lesson did not complete at extraction.")
 	facility._show_tutorial_step(EchoFacility.TUTORIAL_MOVE, 0, "MOVE SHOULD NOT RETURN")
 	_expect(facility.current_tutorial_step != EchoFacility.TUTORIAL_MOVE, "Completed movement tutorial reappeared in the same run.")

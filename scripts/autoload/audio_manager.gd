@@ -14,6 +14,10 @@ const CUE_LISTENER_ALERT: StringName = &"listener_alert"
 const CUE_DECOY_IMPACT: StringName = &"decoy_impact"
 const CUE_RELAY_ACTIVATION: StringName = &"relay_activation"
 const CUE_DOOR_OPEN: StringName = &"door_open"
+const CUE_POWER_SURGE: StringName = &"power_surge"
+const CUE_GATE_UNLOCK: StringName = &"gate_unlock"
+const CUE_WARDEN_ALERT: StringName = &"warden_alert"
+const CUE_LEVEL_COMPLETE: StringName = &"level_complete"
 const CUE_PLAYER_CAUGHT: StringName = &"player_caught"
 const CUE_VICTORY_EXTRACTION: StringName = &"victory_extraction"
 const CUE_INDUSTRIAL_AMBIENCE: StringName = &"industrial_ambience"
@@ -26,6 +30,10 @@ const CUE_STREAMS: Dictionary = {
 	CUE_DECOY_IMPACT: preload("res://assets/audio/decoy_impact.wav"),
 	CUE_RELAY_ACTIVATION: preload("res://assets/audio/relay_activation.wav"),
 	CUE_DOOR_OPEN: preload("res://assets/audio/door_open.wav"),
+	CUE_POWER_SURGE: preload("res://assets/audio/power_surge.wav"),
+	CUE_GATE_UNLOCK: preload("res://assets/audio/gate_unlock.wav"),
+	CUE_WARDEN_ALERT: preload("res://assets/audio/warden_alert.wav"),
+	CUE_LEVEL_COMPLETE: preload("res://assets/audio/level_complete.wav"),
 	CUE_PLAYER_CAUGHT: preload("res://assets/audio/player_caught.wav"),
 	CUE_VICTORY_EXTRACTION: preload("res://assets/audio/victory_extraction.wav"),
 	CUE_INDUSTRIAL_AMBIENCE: preload("res://assets/audio/industrial_ambience.wav"),

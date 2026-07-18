@@ -66,6 +66,7 @@ func can_emit_pulse() -> bool:
 	return (
 		is_zero_approx(cooldown_remaining)
 		and is_instance_valid(_player)
+		and _player.are_controls_enabled()
 		and _active_pulse_count < max_simultaneous_pulses
 	)
 

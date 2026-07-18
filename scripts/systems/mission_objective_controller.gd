@@ -3,6 +3,7 @@ extends Node
 
 signal objective_changed(active_relays: int, required_relays: int)
 signal extraction_state_changed(unlocked: bool)
+signal power_progress_changed(active_relays: int, required_relays: int, ratio: float)
 signal mission_completed
 
 @export_range(1, 8, 1) var required_relay_count: int = 3
@@ -11,6 +12,7 @@ signal mission_completed
 var active_relay_count: int = 0
 var extraction_unlocked: bool = false
 var is_completed: bool = false
+var testing_extraction_override: bool = false
 var relays: Array[ReactorRelay] = []
 var extraction_terminal: ExtractionTerminal
 
@@ -45,6 +47,8 @@ func discover_mission_nodes() -> void:
 func get_objective_text() -> String:
 	if is_completed:
 		return "MISSION COMPLETE // EXTRACTION CONFIRMED"
+	if testing_extraction_override:
+		return "RESTORE REACTOR RELAYS // %d/%d // TEST EXIT OPEN" % [active_relay_count, required_relay_count]
 	if extraction_unlocked:
 		return "RELAYS %d/%d // EXTRACTION READY" % [active_relay_count, required_relay_count]
 	return "RESTORE REACTOR RELAYS // %d/%d" % [active_relay_count, required_relay_count]
@@ -57,9 +61,16 @@ func _refresh_objective_state() -> void:
 			next_count += 1
 	active_relay_count = mini(next_count, required_relay_count)
 	var next_unlocked := active_relay_count >= required_relay_count
+	if next_unlocked:
+		testing_extraction_override = false
 	if extraction_terminal != null:
 		extraction_terminal.set_relay_progress(active_relay_count, required_relay_count)
 	objective_changed.emit(active_relay_count, required_relay_count)
+	power_progress_changed.emit(
+		active_relay_count,
+		required_relay_count,
+		float(active_relay_count) / float(required_relay_count),
+	)
 	if extraction_unlocked != next_unlocked:
 		extraction_unlocked = next_unlocked
 		extraction_state_changed.emit(extraction_unlocked)
@@ -70,8 +81,12 @@ func _on_relay_activated(_relay: ReactorRelay, _actor: Node2D) -> void:
 
 
 func _on_extraction_completed(_terminal: ExtractionTerminal, _actor: Node2D) -> void:
+	complete_extraction(_actor)
+
+
+func complete_extraction(_actor: Node2D) -> bool:
 	if is_completed or not extraction_unlocked:
-		return
+		return false
 	is_completed = true
 	objective_changed.emit(active_relay_count, required_relay_count)
 	mission_completed.emit()
@@ -79,6 +94,18 @@ func _on_extraction_completed(_terminal: ExtractionTerminal, _actor: Node2D) -> 
 		var event_bus := get_node_or_null("/root/EventBus")
 		if event_bus != null:
 			event_bus.emit_signal(&"victory_requested")
+	return true
+
+
+func unlock_extraction_for_testing() -> void:
+	if is_completed or extraction_unlocked:
+		return
+	testing_extraction_override = true
+	extraction_unlocked = true
+	if extraction_terminal != null:
+		extraction_terminal.set_relay_progress(required_relay_count, required_relay_count)
+	objective_changed.emit(active_relay_count, required_relay_count)
+	extraction_state_changed.emit(true)
 
 
 func _sort_relays(a: ReactorRelay, b: ReactorRelay) -> bool:

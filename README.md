@@ -1,8 +1,18 @@
 # Echo Kickoff
 
-Echo Kickoff is a Godot 4 GameJam project for the IUT 12th ICT FEST 2026 GameJam. The locked concept is a 2D top-down stealth-horror game where every echo pulse reveals the dark facility and alerts sound-sensitive Listeners.
+Echo Kickoff is a Godot 4 game-jam project for the IUT 12th ICT FEST 2026. It is a 2D top-down stealth-horror campaign where every Echo Pulse reveals the dark facility—and tells sound-sensitive enemies where to search.
 
-Phase 7 contains the technical baseline, application flow, reusable top-down player, darkness/reveal system, expanding Echo Pulse, unified noise events, sound-driven Listener AI, and a complete three-relay-to-extraction objective loop. The current Game World remains a test graybox rather than the final authored level.
+The finished campaign has three sequential operations. Easy restores 3 reactors against 2 Listeners, Medium restores 5 against 3 Listeners and 1 Reactor Warden, and Hard restores 7 against 4 Listeners and 2 Wardens. Every repaired reactor raises the facility lighting. Full power opens a physical extraction gate; cross the doorway to finish the operation. Progress, unlocks, best rank, and best time are saved locally.
+
+## Campaign
+
+| Operation | Reactors | Enemies | Par time |
+|---|---:|---|---:|
+| Easy — Orientation Deck | 3 | 2 Listeners | 12 min |
+| Medium — Resonance Labs | 5 | 3 Listeners + 1 Warden | 18 min |
+| Hard — Blackout Core | 7 | 4 Listeners + 2 Wardens | 25 min |
+
+Runs receive S/A/B/C ranks from time and chase count. Echo and decoy use are shown as play-style statistics and never penalized. The Reactor Warden reacts to recent audible trajectories, including false trajectories created by decoys; it receives no hidden player position.
 
 ## Requirements
 
@@ -29,6 +39,12 @@ From the repository root:
 godot --path . --editor
 ```
 
+If `godot` is not on `PATH` in this workspace, use the installed binary directly:
+
+```bash
+~/.local/bin/godot --path . --editor
+```
+
 Run a short headless boot check:
 
 ```bash
@@ -36,6 +52,14 @@ godot --headless --path . --quit-after 2
 ```
 
 A successful boot writes an `ECHO_KICKOFF_BOOT_OK` diagnostics line.
+
+Validate the complete campaign contract:
+
+```bash
+godot --headless --path . --script tests/campaign_expansion_test.gd
+```
+
+This checks the 3/5/7 reactor totals, 2/4/6 enemy totals, exact tuning profiles, power/gate sequence, Warden interception, ranks, unlock order, reset, and missing/corrupt save recovery.
 
 Validate the locked Phase 1 settings, input map, and export presets:
 
@@ -106,10 +130,10 @@ godot --path . --scene res://scenes/debug/interaction_test.tscn
 Boot -> Main Menu -> Game World
 Game World -> Pause -> Resume or Main Menu
 Game World -> Game Over -> Restart or Main Menu
-Game World -> Victory -> Main Menu
+Game World -> Results -> Next Level, Retry, Level Select, or Main Menu
 ```
 
-UI scenes publish requests through `EventBus`; `GameManager` owns transitions and pause state. `AudioManager` provides the asset-free audio service boundary for later phases.
+UI scenes publish requests through `EventBus`; `GameManager` owns transitions and pause state. `CampaignManager` owns the level catalog and local progression. `AudioManager` plays fourteen deterministic, original, baked WAV cues.
 
 ## Display and controls baseline
 
@@ -127,7 +151,7 @@ Configured input actions:
 | `move_left` | A, Left Arrow |
 | `move_right` | D, Right Arrow |
 | `echo_pulse` | Space, Left Mouse Button |
-| `interact` | E |
+| `interact` | E (reactor repair) |
 | `throw_decoy` | Q, Right Mouse Button |
 | `pause` | Escape |
 | `restart` | R |
@@ -135,7 +159,7 @@ Configured input actions:
 | `debug_pulse_visuals` | F2 |
 | `debug_listener_ai` | F3 |
 
-In the test room, hold E near a relay or extraction terminal, Space or left mouse emits the Echo Pulse, F1 reveals the complete room, F2 toggles pulse diagnostics, and F3 toggles Listener diagnostics. Debug visuals are disabled by default.
+In production levels, hold E near a reactor relay, restore the full grid, then cross the opened extraction doorway. Space or left mouse emits the Echo Pulse; Q or right mouse throws a decoy. Debug controls are confined to test rooms and disabled in production.
 
 ## Export
 
@@ -157,9 +181,9 @@ Generated build directories are ignored by Git. Serve the Web build over HTTP ra
 ## Project layout
 
 ```text
-scenes/              Boot, UI, game world, reusable entities, and debug rooms
-scripts/             Typed GDScript source, procedural drawing, and autoload services
-tests/               Headless configuration, flow, and layout checks
+scenes/              Three campaign levels, UI, reusable entities, and debug rooms
+scripts/             Typed campaign/gameplay code, procedural drawing, and autoloads
+tests/               Headless campaign, gameplay, flow, visual, audio, and layout checks
 docs/                GameJam planning, compliance, and phase audits
 project.godot        Project settings and input map
 export_presets.cfg   Windows and single-threaded Web presets

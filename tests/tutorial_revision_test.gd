@@ -123,7 +123,7 @@ func _test_ordered_tool_lessons() -> void:
 	_assert_short_message()
 	facility._on_objective_changed(3, 3)
 	_expect(onboarding.message.contains("POWERED") and onboarding.message.contains("RETURN TO ENTRY"), "Powered extraction return is unclear.")
-	facility._on_interaction_completed(facility.extraction_terminal)
+	facility._on_extraction_crossed(player)
 	_expect(facility.is_tutorial_completed(EchoFacility.TUTORIAL_EXTRACTION), "Extraction action did not complete onboarding.")
 	_expect(not onboarding.visible and onboarding.message.is_empty(), "Tutorial banner remained after all lessons were understood.")
 	var expected: Array[StringName] = [

@@ -43,6 +43,9 @@ func _ready() -> void:
 	_install_transition_overlay()
 	EventBus.boot_completed.connect(_on_boot_completed)
 	EventBus.new_game_requested.connect(_on_new_game_requested)
+	EventBus.level_requested.connect(_on_level_requested)
+	EventBus.retry_level_requested.connect(_on_retry_level_requested)
+	EventBus.next_level_requested.connect(_on_next_level_requested)
 	EventBus.pause_requested.connect(_on_pause_requested)
 	EventBus.resume_requested.connect(_on_resume_requested)
 	EventBus.main_menu_requested.connect(_on_main_menu_requested)
@@ -116,6 +119,29 @@ func _on_boot_completed() -> void:
 
 func _on_new_game_requested() -> void:
 	if current_screen == ScreenState.MAIN_MENU and not _transition_in_progress:
+		CampaignManager.start_level(&"easy")
+		_start_new_round(false)
+
+
+func _on_level_requested(level_id: StringName) -> void:
+	if (
+		current_screen in [ScreenState.MAIN_MENU, ScreenState.VICTORY]
+		and not _transition_in_progress
+		and CampaignManager.start_level(level_id)
+	):
+		_start_new_round(false)
+
+
+func _on_retry_level_requested() -> void:
+	if current_screen == ScreenState.VICTORY and not _transition_in_progress:
+		_start_new_round(true)
+
+
+func _on_next_level_requested() -> void:
+	if current_screen != ScreenState.VICTORY or _transition_in_progress:
+		return
+	var next_level_id := CampaignManager.get_next_level_id()
+	if not next_level_id.is_empty() and CampaignManager.start_level(next_level_id):
 		_start_new_round(false)
 
 

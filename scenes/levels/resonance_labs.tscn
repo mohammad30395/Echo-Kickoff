@@ -1,0 +1,85 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/campaign_level.gd" id="1_level"]
+[ext_resource type="PackedScene" path="res://scenes/levels/sectors/resonance_labs_sector.tscn" id="2_sector"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/entities/listener.tscn" id="4_listener"]
+[ext_resource type="PackedScene" path="res://scenes/entities/reactor_warden.tscn" id="5_warden"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/reactor_relay.tscn" id="6_relay"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/extraction_gate.tscn" id="8_gate"]
+[ext_resource type="Script" path="res://scripts/systems/mission_objective_controller.gd" id="9_mission"]
+[ext_resource type="Script" path="res://scripts/systems/power_grid_controller.gd" id="10_power"]
+[ext_resource type="PackedScene" path="res://scenes/ui/campaign_hud.tscn" id="11_hud"]
+
+[node name="ResonanceLabs" type="Node2D"]
+script = ExtResource("1_level")
+level_id = &"medium"
+start_position = Vector2(-2300, 0)
+level_bounds = Rect2(-2600, -1600, 5200, 3200)
+show_level_intro = true
+
+[node name="ArenaSector" parent="." instance=ExtResource("2_sector")]
+
+[node name="WorldModulate" type="CanvasModulate" parent="."]
+unique_name_in_owner = true
+color = Color(0.72, 0.78, 0.9, 1)
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+unique_name_in_owner = true
+
+[node name="MissionController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_mission")
+required_relay_count = 5
+trigger_victory_on_completion = false
+
+[node name="PowerGridController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("10_power")
+
+[node name="RelayA" parent="." instance=ExtResource("6_relay")]
+position = Vector2(-2100, -1050)
+relay_id = &"A"
+
+[node name="RelayB" parent="." instance=ExtResource("6_relay")]
+position = Vector2(-2100, 650)
+relay_id = &"B"
+
+[node name="RelayC" parent="." instance=ExtResource("6_relay")]
+position = Vector2(-850, -1150)
+relay_id = &"C"
+
+[node name="RelayD" parent="." instance=ExtResource("6_relay")]
+position = Vector2(2050, -900)
+relay_id = &"D"
+
+[node name="RelayE" parent="." instance=ExtResource("6_relay")]
+position = Vector2(2050, 750)
+relay_id = &"E"
+
+[node name="ExtractionGate" parent="." instance=ExtResource("8_gate")]
+unique_name_in_owner = true
+position = Vector2(-2200, 1100)
+scale = Vector2(1.9, 1)
+
+[node name="ListenerWest" parent="." instance=ExtResource("4_listener")]
+position = Vector2(-1500, -700)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(0, 580), Vector2(320, 580), Vector2(320, 0)])
+initial_idle_duration = 1.0
+
+[node name="ListenerEastNorth" parent="." instance=ExtResource("4_listener")]
+position = Vector2(1500, -1050)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(600, 0), Vector2(600, 500), Vector2(0, 500)])
+initial_idle_duration = 1.4
+
+[node name="ListenerEastSouth" parent="." instance=ExtResource("4_listener")]
+position = Vector2(1300, 850)
+patrol_points = Array[Vector2]([Vector2(0, 0), Vector2(650, 0), Vector2(650, -420), Vector2(0, -420)])
+initial_idle_duration = 1.8
+
+[node name="ReactorWarden" parent="." instance=ExtResource("5_warden")]
+position = Vector2(0, -50)
+patrol_points = Array[Vector2]([Vector2(-280, 0), Vector2(0, -280), Vector2(280, 0), Vector2(0, 280)])
+initial_idle_duration = 0.6
+
+[node name="HUDLayer" parent="." instance=ExtResource("11_hud")]

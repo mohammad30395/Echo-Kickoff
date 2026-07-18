@@ -25,6 +25,7 @@ const MOVEMENT_METHOD_JOYSTICK: StringName = &"joystick"
 
 var facing_direction: Vector2 = Vector2.RIGHT
 var movement_aid_vector: Vector2 = Vector2.ZERO
+var controls_enabled: bool = true
 var _reported_keyboard_movement: bool = false
 var _reported_joystick_movement: bool = false
 
@@ -48,6 +49,8 @@ func _physics_process(delta: float) -> void:
 		&"move_up",
 		&"move_down",
 	)
+	if not controls_enabled:
+		keyboard_direction = Vector2.ZERO
 	_report_movement_methods(keyboard_direction, movement_aid_vector)
 	var input_direction := select_strongest_movement_input(keyboard_direction, movement_aid_vector)
 	velocity = calculate_next_velocity(velocity, input_direction, delta)
@@ -68,7 +71,7 @@ func calculate_next_velocity(
 
 
 func set_movement_aid_vector(direction: Vector2) -> void:
-	movement_aid_vector = direction.limit_length(1.0)
+	movement_aid_vector = direction.limit_length(1.0) if controls_enabled else Vector2.ZERO
 
 
 func clear_movement_aid_vector() -> void:
@@ -81,6 +84,18 @@ func set_virtual_joystick_vector(direction: Vector2) -> void:
 
 func clear_virtual_joystick_vector() -> void:
 	clear_movement_aid_vector()
+
+
+func set_controls_enabled(enabled: bool) -> void:
+	controls_enabled = enabled
+	if not controls_enabled:
+		velocity = Vector2.ZERO
+		clear_movement_aid_vector()
+		visuals.set_movement_state(Vector2.ZERO, max_speed)
+
+
+func are_controls_enabled() -> bool:
+	return controls_enabled
 
 
 func select_strongest_movement_input(

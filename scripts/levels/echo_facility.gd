@@ -1,5 +1,5 @@
 class_name EchoFacility
-extends Node2D
+extends CampaignLevel
 
 signal onboarding_stage_changed(stage: int, message: String)
 signal listener_alerted(listener: Listener)
@@ -37,7 +37,6 @@ const TUTORIAL_EXTRACTION: StringName = &"extraction"
 @onready var relay_a: ReactorRelay = %RelayA
 @onready var relay_b: ReactorRelay = %RelayB
 @onready var relay_c: ReactorRelay = %RelayC
-@onready var extraction_terminal: ExtractionTerminal = %ExtractionTerminal
 @onready var listener: Listener = %Listener
 @onready var listener_south: Listener = %ListenerSouth
 @onready var pulse_hud: PulseCooldownHud = %PulseCooldownHud
@@ -67,6 +66,7 @@ var _movement_completion_method: StringName = &"none"
 
 
 func _ready() -> void:
+	super._ready()
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 	_configure_player_camera()
 	_pulse_controller = player.get_node(^"%PulseController") as PlayerPulseController
@@ -268,7 +268,7 @@ func _on_objective_changed(active_relays: int, required_relays: int) -> void:
 
 
 func _on_extraction_state_changed(unlocked: bool) -> void:
-	if unlocked:
+	if unlocked and not mission_controller.testing_extraction_override:
 		_show_tutorial_step(TUTORIAL_EXTRACTION, 6, "EXTRACTION // POWERED: RETURN TO ENTRY")
 
 
@@ -303,10 +303,6 @@ func _on_interaction_focus_changed(interactable: FacilityInteractable) -> void:
 
 
 func _on_interaction_completed(interactable: FacilityInteractable) -> void:
-	if interactable is ExtractionTerminal:
-		if not is_tutorial_completed(TUTORIAL_EXTRACTION):
-			_complete_tutorial_step(TUTORIAL_EXTRACTION)
-		return
 	if is_tutorial_completed(TUTORIAL_DANGER) and not is_tutorial_completed(TUTORIAL_INTERACT):
 		_complete_interaction_tutorial()
 	elif not is_tutorial_completed(TUTORIAL_INTERACT):
@@ -325,6 +321,12 @@ func _show_tutorial_step(
 	onboarding_stage = maxi(onboarding_stage, stage)
 	onboarding_hud.show_message(message, stage, TUTORIAL_STAGE_COUNT, hint)
 	onboarding_stage_changed.emit(onboarding_stage, message)
+
+
+func _on_extraction_crossed(actor: TopDownPlayer) -> void:
+	if not is_tutorial_completed(TUTORIAL_EXTRACTION):
+		_complete_tutorial_step(TUTORIAL_EXTRACTION)
+	super._on_extraction_crossed(actor)
 
 
 func _complete_tutorial_step(step_id: StringName) -> void:

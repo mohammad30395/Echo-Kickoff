@@ -2,6 +2,9 @@ extends Node
 
 signal boot_completed
 signal new_game_requested
+signal level_requested(level_id: StringName)
+signal retry_level_requested
+signal next_level_requested
 signal pause_requested
 signal resume_requested
 signal main_menu_requested

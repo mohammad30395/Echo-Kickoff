@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/interactions/extraction_gate.gd" id="1_gate"]
+[ext_resource type="Script" path="res://scripts/interactions/extraction_gate_visual.gd" id="2_visual"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_blocker"]
+size = Vector2(150, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
+size = Vector2(180, 84)
+
+[node name="ExtractionGate" type="Node2D"]
+script = ExtResource("1_gate")
+
+[node name="Blocker" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 1
+
+[node name="BlockerShape" type="CollisionShape2D" parent="Blocker"]
+unique_name_in_owner = true
+shape = SubResource("RectangleShape2D_blocker")
+
+[node name="Visual" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 8
+script = ExtResource("2_visual")
+darkness_visibility = 0.14
+local_visibility_cap = 0.5
+
+[node name="ExitArea" type="Area2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, 132)
+collision_layer = 0
+collision_mask = 1
+
+[node name="ExitShape" type="CollisionShape2D" parent="ExitArea"]
+shape = SubResource("RectangleShape2D_exit")

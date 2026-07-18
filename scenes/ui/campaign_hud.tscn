@@ -1,0 +1,35 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/pulse_cooldown_hud.tscn" id="1_pulse"]
+[ext_resource type="PackedScene" path="res://scenes/ui/objective_hud.tscn" id="2_objective"]
+[ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt_hud.tscn" id="3_interaction"]
+[ext_resource type="PackedScene" path="res://scenes/ui/onboarding_hud.tscn" id="4_onboarding"]
+[ext_resource type="PackedScene" path="res://scenes/ui/decoy_hud.tscn" id="5_decoy"]
+[ext_resource type="PackedScene" path="res://scenes/ui/threat_status_hud.tscn" id="6_threat"]
+[ext_resource type="PackedScene" path="res://scenes/ui/movement_aid.tscn" id="7_movement"]
+[ext_resource type="PackedScene" path="res://scenes/ui/power_restoration_overlay.tscn" id="8_overlay"]
+[ext_resource type="PackedScene" path="res://scenes/ui/live_minimap.tscn" id="9_minimap"]
+[ext_resource type="Script" path="res://scripts/ui/campaign_hud.gd" id="10_campaign_hud"]
+
+[node name="HUDLayer" type="CanvasLayer"]
+layer = 100
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_campaign_hud")
+
+[node name="PulseCooldownHud" parent="HUD" instance=ExtResource("1_pulse")]
+[node name="ObjectiveHud" parent="HUD" instance=ExtResource("2_objective")]
+[node name="InteractionPromptHud" parent="HUD" instance=ExtResource("3_interaction")]
+[node name="OnboardingHud" parent="HUD" instance=ExtResource("4_onboarding")]
+[node name="ThreatStatusHud" parent="HUD" instance=ExtResource("6_threat")]
+[node name="DecoyHud" parent="HUD" instance=ExtResource("5_decoy")]
+[node name="MovementAid" parent="HUD" instance=ExtResource("7_movement")]
+[node name="LiveMinimap" parent="HUD" instance=ExtResource("9_minimap")]
+[node name="PowerOverlay" parent="." instance=ExtResource("8_overlay")]

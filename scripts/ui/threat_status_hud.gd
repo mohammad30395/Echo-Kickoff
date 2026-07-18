@@ -8,6 +8,7 @@ extends Control
 var _listeners: Array[Listener] = []
 var _severity: int = 0
 var _accessibility_manager: Node
+var blackout_mode: bool = false
 
 
 func _ready() -> void:
@@ -40,6 +41,19 @@ func bind(listeners: Array[Listener]) -> void:
 	_refresh()
 
 
+func apply_level_theme(level_id: StringName) -> void:
+	blackout_mode = level_id == &"hard"
+	var signal_mark := get_node_or_null("SignalMark") as Label
+	if signal_mark != null:
+		signal_mark.text = "◇" if blackout_mode else "◉"
+		signal_mark.modulate = Color(0.78, 0.48, 1.0, 1.0) if blackout_mode else Color.WHITE
+	_refresh()
+
+
+func is_blackout_theme() -> bool:
+	return blackout_mode
+
+
 func get_severity() -> int:
 	return _severity
 
@@ -67,26 +81,26 @@ func _refresh() -> void:
 		if priority > _severity:
 			_severity = priority
 			strongest_state = listener.current_state
-	var accent := Color(0.34, 0.78, 0.84, 0.88)
-	status_label.text = "THREAT // QUIET"
-	detail_label.text = "LISTENERS UNAWARE"
+	var accent := Color(0.62, 0.4, 0.94, 0.92) if blackout_mode else Color(0.34, 0.78, 0.84, 0.88)
+	status_label.text = "CORE WATCH // DORMANT" if blackout_mode else "THREAT // QUIET"
+	detail_label.text = "WARDENS HOLDING RINGS" if blackout_mode else "LISTENERS UNAWARE"
 	match strongest_state:
 		Listener.ListenerState.INVESTIGATE:
-			accent = Color(1.0, 0.64, 0.24, 0.94)
-			status_label.text = "THREAT // ALERT"
-			detail_label.text = "INVESTIGATING SOUND"
+			accent = Color(1.0, 0.48, 0.18, 0.96) if blackout_mode else Color(1.0, 0.64, 0.24, 0.94)
+			status_label.text = "CORE WATCH // VECTOR" if blackout_mode else "THREAT // ALERT"
+			detail_label.text = "INTERCEPT PATH COMPUTED" if blackout_mode else "INVESTIGATING SOUND"
 		Listener.ListenerState.SEARCH:
-			accent = Color(1.0, 0.48, 0.2, 0.98)
-			status_label.text = "THREAT // SEARCH"
-			detail_label.text = "MOVE AWAY FROM SIGNAL"
+			accent = Color(0.92, 0.28, 0.72, 1.0) if blackout_mode else Color(1.0, 0.48, 0.2, 0.98)
+			status_label.text = "CORE WATCH // SWEEP" if blackout_mode else "THREAT // SEARCH"
+			detail_label.text = "RING SECTORS SCANNING" if blackout_mode else "MOVE AWAY FROM SIGNAL"
 		Listener.ListenerState.CHASE:
 			accent = Color(1.0, 0.28, 0.18, 1.0)
-			status_label.text = "THREAT // CONTACT"
-			detail_label.text = "BREAK LINE OF SIGHT"
+			status_label.text = "CORE BREACH // HUNT" if blackout_mode else "THREAT // CONTACT"
+			detail_label.text = "BREAK VECTOR // CHANGE RING" if blackout_mode else "BREAK LINE OF SIGHT"
 		Listener.ListenerState.RETURN:
-			accent = Color(0.5, 0.82, 0.78, 0.9)
-			status_label.text = "THREAT // FADING"
-			detail_label.text = "LISTENER RETURNING"
+			accent = Color(0.5, 0.56, 0.92, 0.92) if blackout_mode else Color(0.5, 0.82, 0.78, 0.9)
+			status_label.text = "CORE WATCH // RESET" if blackout_mode else "THREAT // FADING"
+			detail_label.text = "WARDEN RETURNING TO RING" if blackout_mode else "LISTENER RETURNING"
 	if _accessibility_manager != null:
 		accent = (
 			_accessibility_manager.call(&"get_warning_color", accent) as Color

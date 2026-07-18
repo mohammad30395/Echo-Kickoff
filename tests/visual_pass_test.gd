@@ -79,14 +79,14 @@ func _test_floor_and_environment_palette() -> void:
 
 func _test_interactable_color_language() -> void:
 	var relay := facility.get_node(^"%RelayA/%Visual") as ReactorRelayVisual
-	var extraction := facility.get_node(^"%ExtractionTerminal/%Visual") as ExtractionTerminalVisual
+	var extraction := facility.get_node(^"%ExtractionGate/%Visual") as ExtractionGateVisual
 	_expect(relay != null and extraction != null, "Mission interactable visuals are missing.")
 	if relay != null:
 		_expect(relay.inactive_color.r > relay.inactive_color.b, "Inactive relay is not gold/amber.")
 		_expect(relay.active_color.b > relay.active_color.r, "Active relay is not high-contrast cyan.")
 	if extraction != null:
 		_expect(extraction.locked_color.r > extraction.locked_color.g * 2.0, "Locked extraction is not danger orange/red.")
-		_expect(extraction.powered_color.g > extraction.powered_color.r * 2.0, "Powered extraction is not green-cyan.")
+		_expect(extraction.open_color.g > extraction.open_color.r * 2.0, "Open extraction is not green-cyan.")
 	var door_scene := load("res://scenes/interactions/facility_door.tscn") as PackedScene
 	var door := door_scene.instantiate() as FacilityDoor
 	var door_visual := door.get_node(^"%Visual") as FacilityDoorVisual

@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = Path("assets/audio")
 MANIFEST_PATH = Path("assets/audio/generated-audio.json")
 SAMPLE_RATE = 24_000
-GENERATOR_VERSION = 1
+GENERATOR_VERSION = 2
 TAU = math.tau
 
 Samples = List[float]
@@ -180,6 +180,68 @@ def build_door_open() -> Samples:
     return normalize(samples, -10.0)
 
 
+def build_power_surge() -> Samples:
+    duration = 0.92
+    count = round(duration * SAMPLE_RATE)
+    noise = low_pass_noise(count, 0.46, 71)
+    samples: Samples = []
+    for index in range(count):
+        time = index / SAMPLE_RATE
+        progress = time / duration
+        phase = TAU * (72.0 * time + 460.0 * time * time)
+        charge = math.sin(phase) * (0.25 + 0.75 * smoothstep(progress))
+        grid = sine(240.0, time) * decay(time, 1.9) * 0.35
+        spark = noise[index] * decay(time, 3.8) * 0.22
+        samples.append((charge + grid + spark) * envelope(time, duration, 0.012, 0.17))
+    return normalize(samples, -8.0)
+
+
+def build_gate_unlock() -> Samples:
+    duration = 1.08
+    count = round(duration * SAMPLE_RATE)
+    noise = low_pass_noise(count, 0.10, 73)
+    samples: Samples = []
+    for index in range(count):
+        time = index / SAMPLE_RATE
+        latch = sine(920.0, time) * decay(time, 23.0) * 0.42
+        motor = sine(64.0, time) * 0.48 + sine(128.0, time) * 0.18
+        slide = noise[index] * (0.42 + 0.28 * smoothstep(time / duration))
+        confirm = sine(660.0, time - 0.72) * decay(time - 0.72, 9.0) * 0.4 if time >= 0.72 else 0.0
+        samples.append((latch + motor + slide + confirm) * envelope(time, duration, 0.006, 0.16))
+    return normalize(samples, -9.0)
+
+
+def build_warden_alert() -> Samples:
+    duration = 0.84
+    count = round(duration * SAMPLE_RATE)
+    samples: Samples = []
+    for index in range(count):
+        time = index / SAMPLE_RATE
+        pulse = 0.55 + 0.45 * max(sine(6.0, time), -0.25)
+        violet = sine(196.0, time) + 0.44 * sine(294.0, time)
+        rise_phase = TAU * (410.0 * time + 120.0 * time * time)
+        samples.append((violet * pulse + 0.3 * math.sin(rise_phase)) * envelope(time, duration, 0.014, 0.19))
+    return normalize(samples, -8.0)
+
+
+def build_level_complete() -> Samples:
+    duration = 2.18
+    count = round(duration * SAMPLE_RATE)
+    notes = (174.61, 220.0, 261.63, 349.23, 440.0)
+    samples: Samples = []
+    for index in range(count):
+        time = index / SAMPLE_RATE
+        total = 0.0
+        for note_index, frequency in enumerate(notes):
+            start = note_index * 0.2
+            if time >= start:
+                local = time - start
+                total += sine(frequency, local) * decay(local, 0.72 + note_index * 0.08) * 0.26
+        shimmer = sine(880.0, time) * smoothstep(time / duration) * 0.08
+        samples.append((total + shimmer) * envelope(time, duration, 0.025, 0.38))
+    return normalize(samples, -8.0)
+
+
 def build_player_caught() -> Samples:
     duration = 0.50
     count = round(duration * SAMPLE_RATE)
@@ -240,6 +302,10 @@ ASSETS: Dict[str, Tuple[str, str, float, Builder]] = {
     "decoy_impact.wav": ("Effects", "bright metallic impact + short body", -8.0, build_decoy_impact),
     "relay_activation.wav": ("Effects", "long electrical motor rise + lock", -6.0, build_relay_activation),
     "door_open.wav": ("Effects", "mechanical slide + latch", -10.0, build_door_open),
+    "power_surge.wav": ("Effects", "ascending electrical charge + grid settle", -8.0, build_power_surge),
+    "gate_unlock.wav": ("Effects", "dual-panel motor + latch confirmation", -9.0, build_gate_unlock),
+    "warden_alert.wav": ("Effects", "gated violet warning dyad + rising intercept", -8.0, build_warden_alert),
+    "level_complete.wav": ("Effects", "five-note campaign resolution + shimmer", -8.0, build_level_complete),
     "player_caught.wav": ("Effects", "restrained low interception impact", -7.0, build_player_caught),
     "victory_extraction.wav": ("Effects", "ascending stable harmonic beacon", -8.0, build_victory_extraction),
     "industrial_ambience.wav": ("Ambience", "quiet seamless low industrial hum", -20.0, build_industrial_ambience),

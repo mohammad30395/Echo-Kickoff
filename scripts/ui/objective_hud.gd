@@ -10,6 +10,7 @@ var active_relays: int = 0
 var required_relays: int = 3
 var extraction_ready: bool = false
 var mission_complete: bool = false
+var blackout_mode: bool = false
 var _accessibility_manager: Node
 
 
@@ -34,16 +35,31 @@ func bind(mission_controller: MissionObjectiveController) -> void:
 			mission.extraction_state_changed.disconnect(_on_extraction_state_changed)
 		if mission.mission_completed.is_connected(_on_mission_completed):
 			mission.mission_completed.disconnect(_on_mission_completed)
+		if mission.power_progress_changed.is_connected(_on_power_progress_changed):
+			mission.power_progress_changed.disconnect(_on_power_progress_changed)
 	mission = mission_controller
 	if mission == null:
 		return
 	mission.objective_changed.connect(_on_objective_changed)
 	mission.extraction_state_changed.connect(_on_extraction_state_changed)
 	mission.mission_completed.connect(_on_mission_completed)
+	mission.power_progress_changed.connect(_on_power_progress_changed)
 	active_relays = mission.active_relay_count
 	required_relays = mission.required_relay_count
 	extraction_ready = mission.extraction_unlocked
 	mission_complete = mission.is_completed
+	_refresh()
+
+
+func apply_level_theme(level_id: StringName) -> void:
+	blackout_mode = level_id == &"hard"
+	var title := get_node_or_null("Title") as Label
+	if title != null:
+		title.text = "CORE DIRECTIVE // NODE ARRAY" if blackout_mode else "MISSION // REACTOR GRID"
+		title.modulate = Color(0.82, 0.68, 1.0, 1.0) if blackout_mode else Color.WHITE
+	var watermark := get_node_or_null("RelayWatermark") as TextureRect
+	if watermark != null:
+		watermark.modulate = Color(0.76, 0.38, 1.0, 0.38) if blackout_mode else Color(0.55, 0.95, 1.0, 0.28)
 	_refresh()
 
 
@@ -65,21 +81,41 @@ func _on_mission_completed() -> void:
 	_refresh()
 
 
+func _on_power_progress_changed(_active: int, _required: int, _ratio: float) -> void:
+	_refresh()
+
+
 func _refresh() -> void:
 	if mission != null:
-		objective_label.text = mission.get_objective_text()
+		objective_label.text = _get_blackout_objective_text() if blackout_mode else mission.get_objective_text()
 	if mission_complete:
-		state_label.text = "EXTRACTION // COMPLETE"
+		state_label.text = "CORE EXIT // COMPLETE" if blackout_mode else "EXTRACTION // COMPLETE"
 		frame.set_accent_color(Color(0.28, 0.94, 0.66, 0.96))
 	elif extraction_ready:
-		state_label.text = "EXTRACTION // POWERED"
-		frame.set_accent_color(Color(0.28, 0.94, 0.66, 0.92))
+		state_label.text = (
+			("CORE EXIT // TEST OPEN" if blackout_mode else "EXTRACTION // TEST OPEN")
+			if mission != null and mission.testing_extraction_override
+			else ("CORE EXIT // UNSEALED" if blackout_mode else "EXTRACTION // POWERED")
+		)
+		frame.set_accent_color(Color(0.66, 0.4, 1.0, 0.96) if blackout_mode else Color(0.28, 0.94, 0.66, 0.92))
 	else:
-		state_label.text = "EXTRACTION // LOCKED"
-		frame.set_accent_color(Color(1.0, 0.64, 0.24, 0.88))
-	frame.set_warning_palette(not extraction_ready and not mission_complete)
+		var ratio := float(active_relays) / float(maxi(required_relays, 1))
+		state_label.text = (
+			"CORE %d%% // SEALED" % int(roundf(ratio * 100.0))
+			if blackout_mode
+			else "GRID %d%% // LOCKED" % int(roundf(ratio * 100.0))
+		)
+		frame.set_accent_color(Color(0.72, 0.34, 1.0, 0.94) if blackout_mode else Color(1.0, 0.64, 0.24, 0.88))
+	frame.set_warning_palette(not blackout_mode and not extraction_ready and not mission_complete)
 	state_label.modulate = frame.accent_color
 	queue_redraw()
+
+
+func _get_blackout_objective_text() -> String:
+	if mission_complete:
+		return "BLACKOUT CORE STABLE // EXIT CONFIRMED"
+	var suffix := " // TEST EXIT OPEN" if mission != null and mission.testing_extraction_override else ""
+	return "STABILIZE CORE NODES // %d/%d%s" % [active_relays, required_relays, suffix]
 
 
 func _draw() -> void:
@@ -95,9 +131,16 @@ func _draw() -> void:
 func _draw_relay_icon(center: Vector2, active: bool) -> void:
 	var radius := 12.0
 	var points := PackedVector2Array()
-	for index in range(7):
-		var angle := -PI * 0.5 + TAU * index / 6.0
-		points.append(center + Vector2.from_angle(angle) * radius)
+	if blackout_mode:
+		points = PackedVector2Array([
+			center + Vector2(0.0, -radius), center + Vector2(radius, 0.0),
+			center + Vector2(0.0, radius), center + Vector2(-radius, 0.0),
+			center + Vector2(0.0, -radius),
+		])
+	else:
+		for index in range(7):
+			var angle := -PI * 0.5 + TAU * index / 6.0
+			points.append(center + Vector2.from_angle(angle) * radius)
 	var color := Color(0.35, 0.95, 1.0, 1.0) if active else Color(1.0, 0.72, 0.24, 0.82)
 	if _accessibility_manager != null:
 		color = _accessibility_manager.call(&"get_echo_color", color) as Color
@@ -113,7 +156,11 @@ func _draw_relay_icon(center: Vector2, active: bool) -> void:
 			color,
 		)
 	else:
-		draw_circle(center, 3.0, color, false, 1.5)
+		if blackout_mode:
+			draw_line(center + Vector2(-4.0, -4.0), center + Vector2(4.0, 4.0), color, 1.5)
+			draw_line(center + Vector2(4.0, -4.0), center + Vector2(-4.0, 4.0), color, 1.5)
+		else:
+			draw_circle(center, 3.0, color, false, 1.5)
 
 
 func _draw_extraction_icon(center: Vector2) -> void:

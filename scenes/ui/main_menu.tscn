@@ -88,17 +88,25 @@ text = "Every pulse reveals the way — and tells them where you are."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="ButtonRow" type="HBoxContainer" parent="Center/Content"]
+[node name="ButtonRow" type="GridContainer" parent="Center/Content"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 12
+columns = 3
 
 [node name="NewGameButton" type="Button" parent="Center/Content/ButtonRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "START // NEW GAME"
+text = "START // CAMPAIGN"
+
+[node name="LevelSelectButton" type="Button" parent="Center/Content/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "LEVEL SELECT"
 
 [node name="HowToPlayButton" type="Button" parent="Center/Content/ButtonRow"]
 unique_name_in_owner = true
@@ -113,6 +121,13 @@ custom_minimum_size = Vector2(130, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 text = "CREDITS"
+
+[node name="ResetProgressButton" type="Button" parent="Center/Content/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(145, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "RESET PROGRESS"
 
 [node name="SettingsRow" type="HBoxContainer" parent="Center/Content"]
 layout_mode = 2
@@ -159,6 +174,58 @@ custom_minimum_size = Vector2(120, 30)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 14
+text = "BACK"
+
+[node name="LevelSelectPanel" type="PanelContainer" parent="Center/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(700, 360)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_info")
+
+[node name="LevelSelectContent" type="VBoxContainer" parent="Center/Content/LevelSelectPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LevelSelectTitle" type="Label" parent="Center/Content/LevelSelectPanel/LevelSelectContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "CAMPAIGN // SELECT OPERATION"
+horizontal_alignment = 1
+
+[node name="EasyLevelButton" type="Button" parent="Center/Content/LevelSelectPanel/LevelSelectContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 17
+icon_max_width = 38
+text = "EASY // ORIENTATION DECK // 3 REACTORS"
+
+[node name="MediumLevelButton" type="Button" parent="Center/Content/LevelSelectPanel/LevelSelectContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 17
+icon_max_width = 38
+text = "MEDIUM // LOCKED"
+
+[node name="HardLevelButton" type="Button" parent="Center/Content/LevelSelectPanel/LevelSelectContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 17
+icon_max_width = 38
+text = "HARD // LOCKED"
+
+[node name="CloseLevelSelectButton" type="Button" parent="Center/Content/LevelSelectPanel/LevelSelectContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 34)
+layout_mode = 2
+size_flags_horizontal = 4
 text = "BACK"
 
 [node name="Controls" type="Label" parent="Center/Content"]

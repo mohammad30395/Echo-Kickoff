@@ -231,16 +231,18 @@ func _test_victory_flow_and_clean_new_run() -> void:
 	_expect(current_scene != null and current_scene.name == &"GameWorld", "New Game did not load Game World.")
 	var game_mission := current_scene.find_child("MissionController", true, false) as MissionObjectiveController
 	var game_player := current_scene.find_child("Player", true, false) as TopDownPlayer
-	var game_extraction := current_scene.find_child("ExtractionTerminal", true, false) as ExtractionTerminal
+	var game_gate := current_scene.find_child("ExtractionGate", true, false) as ExtractionGate
 	var game_listener := current_scene.find_child("Listener", true, false) as Listener
-	_expect(game_mission != null and game_player != null and game_extraction != null and game_listener != null, "Game World mission nodes are incomplete.")
-	if game_mission == null or game_player == null or game_extraction == null or game_listener == null:
+	_expect(game_mission != null and game_player != null and game_gate != null and game_listener != null, "Game World mission nodes are incomplete.")
+	if game_mission == null or game_player == null or game_gate == null or game_listener == null:
 		return
 	for relay: ReactorRelay in game_mission.relays:
 		_expect(relay.try_activate(game_player), "Game World relay could not activate during integration.")
-	_expect(game_mission.active_relay_count == 3 and game_extraction.is_unlocked, "Game World did not unlock extraction at 3/3.")
+	_expect(game_mission.active_relay_count == 3 and game_mission.extraction_unlocked, "Game World did not unlock extraction at 3/3.")
 	_expect(game_listener.last_heard_category == NoiseEvent.CATEGORY_REACTOR_RELAY, "In-range Listener did not receive the loud relay event.")
-	_expect(game_extraction.try_activate(game_player), "Powered Game World extraction could not complete.")
+	await create_timer(1.8).timeout
+	_expect(game_gate.is_open(), "Powered Game World extraction gate did not open.")
+	game_gate._on_body_entered(game_player)
 	await _settle(5)
 	_expect(current_scene != null and current_scene.name == &"Victory", "Mission completion did not route to Victory.")
 	_expect(game_manager.call(&"get_state_name") == &"victory", "GameManager did not retain Victory state.")
@@ -250,9 +252,9 @@ func _test_victory_flow_and_clean_new_run() -> void:
 	event_bus.emit_signal(&"new_game_requested")
 	await _settle(7)
 	var reset_mission := current_scene.find_child("MissionController", true, false) as MissionObjectiveController
-	var reset_extraction := current_scene.find_child("ExtractionTerminal", true, false) as ExtractionTerminal
 	_expect(reset_mission != null and reset_mission.active_relay_count == 0 and not reset_mission.is_completed, "New run retained relay or mission state.")
-	_expect(reset_extraction != null and not reset_extraction.is_unlocked and not reset_extraction.is_activated, "New run retained extraction state.")
+	var reset_gate := current_scene.find_child("ExtractionGate", true, false) as ExtractionGate
+	_expect(reset_gate != null and not reset_gate.is_open(), "New run retained extraction state.")
 	var reset_player := current_scene.find_child("Player", true, false) as TopDownPlayer
 	if reset_mission != null and reset_player != null:
 		reset_mission.relays[0].try_activate(reset_player)
@@ -262,9 +264,9 @@ func _test_victory_flow_and_clean_new_run() -> void:
 	event_bus.emit_signal(&"restart_requested")
 	await _settle(7)
 	var restarted_mission := current_scene.find_child("MissionController", true, false) as MissionObjectiveController
-	var restarted_extraction := current_scene.find_child("ExtractionTerminal", true, false) as ExtractionTerminal
 	_expect(restarted_mission != null and restarted_mission.active_relay_count == 0 and not restarted_mission.is_completed, "Game Over restart retained relay progress.")
-	_expect(restarted_extraction != null and not restarted_extraction.is_unlocked, "Game Over restart retained extraction power.")
+	var restarted_gate := current_scene.find_child("ExtractionGate", true, false) as ExtractionGate
+	_expect(restarted_gate != null and not restarted_gate.is_open(), "Game Over restart retained extraction power.")
 	print("INTERACTION_TEST_OK | Listener relay hearing, Victory route, and clean new-run/restart reset")
 
 

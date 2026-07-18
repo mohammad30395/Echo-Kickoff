@@ -184,6 +184,21 @@ func set_target_player(player: TopDownPlayer) -> void:
 	_target_player = player
 
 
+func apply_tuning(profile: EnemyTuningProfile) -> void:
+	if profile == null:
+		return
+	patrol_speed = profile.patrol_speed
+	investigate_speed = profile.investigate_speed
+	chase_speed = profile.chase_speed
+	acceleration = profile.acceleration
+	hearing_sensitivity = profile.hearing_sensitivity
+	detection_range = profile.detection_range
+	detection_check_interval = profile.detection_check_interval
+	chase_retarget_interval = profile.chase_retarget_interval
+	chase_memory_duration = profile.chase_memory_duration
+	search_duration = profile.search_duration
+
+
 func set_debug_enabled(enabled: bool) -> void:
 	debug_enabled = enabled
 	if is_node_ready():

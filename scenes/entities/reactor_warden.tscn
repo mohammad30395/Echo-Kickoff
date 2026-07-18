@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/entities/reactor_warden.gd" id="1_warden"]
+[ext_resource type="Script" path="res://scripts/entities/reactor_warden_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scripts/entities/listener_audio.gd" id="3_audio"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_warden"]
+radius = 20.0
+
+[node name="ReactorWarden" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1_warden")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_warden")
+
+[node name="Visual" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_visual")
+luminous_color = Color(0.62, 0.28, 0.92, 1)
+darkness_visibility = 0.012
+ambient_fill_alpha = 0.2
+receives_local_visibility = false
+
+[node name="Audio" type="Node" parent="."]
+script = ExtResource("3_audio")
+
+[node name="DebugLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+z_index = 120
+offset_left = -64.0
+offset_top = -92.0
+offset_right = 64.0
+offset_bottom = -48.0
+theme_override_colors/font_color = Color(0.84, 0.58, 1, 1)
+theme_override_colors/font_outline_color = Color(0.01, 0.015, 0.025, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 12
+text = "WARDEN // IDLE"
+horizontal_alignment = 1

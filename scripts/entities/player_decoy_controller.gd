@@ -77,7 +77,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func can_throw() -> bool:
-	return remaining_charges > 0 and aim_is_valid and is_instance_valid(_player)
+	return (
+		remaining_charges > 0
+		and aim_is_valid
+		and is_instance_valid(_player)
+		and _player.are_controls_enabled()
+	)
 
 
 func update_aim_target(requested_position: Vector2) -> Vector2:
