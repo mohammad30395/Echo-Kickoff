@@ -57,6 +57,8 @@ func _on_new_game_pressed() -> void:
 
 
 func _get_test_level_override() -> StringName:
+	if not OS.is_debug_build():
+		return &""
 	var requested := ""
 	if OS.has_feature("web"):
 		var browser_window: JavaScriptObject = JavaScriptBridge.get_interface("window")
@@ -107,13 +109,13 @@ func _on_close_level_select_pressed() -> void:
 
 func _on_how_to_play_pressed() -> void:
 	info_title.text = "HOW TO PLAY // CONTROLS"
-	info_body.text = "WASD / Arrow Keys — Move\nReal Virtual Joystick — Drag the bottom-right control to move\nVisibility — You can always see nearby\nEcho Pulse — Space or left click outside the joystick; scans farther and calls Listeners\nDecoy — Q or right mouse to throw a sound decoy\nInteract — Hold E to restore reactors; extraction opens automatically\nPause — Escape\nRestart — R after capture"
+	info_body.text = "WASD / Arrow Keys — Move\nReal Virtual Joystick — Optional bottom-right movement\nVisibility — You can always see nearby\nEcho Pulse — Space / left click; scans farther and calls Listeners\nDecoy — Q / right click; targeted and limited\nInteract — Hold E to restore reactors\nPause / Resume — Escape\nRestart — R after capture; restore every reactor, then cross extraction"
 	_show_info_panel()
 
 
 func _on_credits_pressed() -> void:
 	info_title.text = "CREDITS"
-	info_body.text = "Echo Kickoff\nOriginal jam code, visuals, UI, and audio.\nBuilt with Godot 4.7 for IUT 12th ICT FEST 2026.\nNo third-party game assets."
+	info_body.text = "Mohammad Mahmudul Kabir Fahmid\nShashwata Nandi\nAnimesh Singha Ayon"
 	_show_info_panel()
 
 
@@ -135,9 +137,9 @@ func _refresh_campaign_ui() -> void:
 		CampaignManager.LEVEL_ORDER[CampaignManager.highest_unlocked_index],
 	)
 	if CampaignManager.highest_unlocked_index == 0 and CampaignManager.get_best_rank(&"easy").is_empty():
-		new_game_button.text = "START // CAMPAIGN"
+		new_game_button.text = "START CAMPAIGN"
 	else:
-		new_game_button.text = "CONTINUE // %s" % continue_definition.difficulty_name
+		new_game_button.text = "CONTINUE — %s" % continue_definition.difficulty_name
 	_refresh_level_button(easy_level_button, &"easy")
 	_refresh_level_button(medium_level_button, &"medium")
 	_refresh_level_button(hard_level_button, &"hard")

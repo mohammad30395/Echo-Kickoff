@@ -154,6 +154,7 @@ func _physics_process(delta: float) -> void:
 		ListenerState.RETURN:
 			_update_return(delta)
 	_update_visual_rotation(delta)
+	listener_visual.advance_animation(delta)
 
 
 func get_state_name() -> StringName:
@@ -210,6 +211,8 @@ func set_debug_enabled(enabled: bool) -> void:
 func set_disabled(disabled: bool) -> void:
 	is_disabled = disabled
 	velocity = Vector2.ZERO
+	if is_node_ready():
+		listener_visual.set_movement_state(Vector2.ZERO, chase_speed)
 	set_physics_process(not is_disabled and not _has_caught_player)
 	if is_node_ready():
 		_update_debug_label()
@@ -515,6 +518,7 @@ func _slow_to_stop(delta: float) -> void:
 
 
 func _update_visual_rotation(delta: float) -> void:
+	listener_visual.set_movement_state(velocity, chase_speed)
 	if velocity.length_squared() <= 4.0:
 		return
 	var target_rotation := velocity.angle() + PI * 0.5
@@ -552,6 +556,8 @@ func _catch_player() -> void:
 		return
 	_has_caught_player = true
 	velocity = Vector2.ZERO
+	listener_visual.set_movement_state(Vector2.ZERO, chase_speed)
+	listener_visual.trigger_attack_lunge()
 	set_physics_process(false)
 	player_caught.emit()
 	if trigger_game_over_on_contact and _event_bus != null:

@@ -88,7 +88,6 @@ var interaction_controller: PlayerInteractionController
 var relay_a: ReactorRelay
 var relay_b: ReactorRelay
 var relay_c: ReactorRelay
-var extraction: ExtractionTerminal
 var extraction_gate: ExtractionGate
 var traversed_distance: float = 0.0
 
@@ -140,7 +139,6 @@ func _bind_sector() -> bool:
 	relay_a = sector.get_node_or_null(^"%RelayA") as ReactorRelay
 	relay_b = sector.get_node_or_null(^"%RelayB") as ReactorRelay
 	relay_c = sector.get_node_or_null(^"%RelayC") as ReactorRelay
-	extraction = sector.get_node_or_null(^"%ExtractionTerminal") as ExtractionTerminal
 	extraction_gate = sector.get_node_or_null(^"%ExtractionGate") as ExtractionGate
 	if player == null or listener == null or mission == null:
 		failures.append("EchoFacility is missing a core player, Listener, or mission node.")
@@ -155,7 +153,10 @@ func _test_authored_architecture_and_dark_start() -> void:
 	_expect(sector.get_authored_wall_count() >= 80, "Facility does not contain enough authored collision/reveal geometry.")
 	_expect(mission.relays.size() == 3 and mission.required_relay_count == 3, "Vertical slice is not the locked three-relay mission.")
 	_expect(get_nodes_in_group(&"listener").filter(_belongs_to_sector).size() == 2, "Final facility does not contain exactly two Listeners.")
-	_expect(not extraction.is_unlocked and mission.active_relay_count == 0, "Extraction did not start locked at 0/3.")
+	_expect(
+		extraction_gate.state == ExtractionGate.GateState.LOCKED and mission.active_relay_count == 0,
+		"Extraction gate did not start locked at 0/3.",
+	)
 	_expect(player.global_position.distance_to(EchoFacility.START_POSITION) < 1.0, "Player did not begin at the west Orientation spawn.")
 	_expect(not pulse_controller.allow_debug_input and not listener.allow_debug_input, "Player-facing level retained a debug input toggle.")
 	var revealable_count := 0
@@ -231,7 +232,10 @@ func _test_complete_objective_route_and_victory() -> void:
 	await _walk_route(EAST_ROUTE, "east route to Relay C")
 	await _activate_relay_with_echo(relay_c, "Relay C")
 	_expect(mission.active_relay_count == 3 and mission.extraction_unlocked, "Three relays did not unlock extraction immediately.")
-	_expect(extraction.is_unlocked, "Extraction terminal remained locked at 3/3.")
+	_expect(
+		extraction_gate.state in [ExtractionGate.GateState.POWERING, ExtractionGate.GateState.OPEN],
+		"Extraction gate did not begin its power/open sequence at 3/3.",
+	)
 	var objective_hud := sector.get_node(^"%ObjectiveHud") as ObjectiveHud
 	_expect(objective_hud.objective_label.text.contains("EXTRACTION READY"), "Objective HUD did not immediately show extraction readiness.")
 	await _walk_route(LOWER_RETURN_ROUTE, "lower return route to extraction")

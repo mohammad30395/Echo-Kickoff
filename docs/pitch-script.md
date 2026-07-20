@@ -1,106 +1,118 @@
-# Echo Kickoff — Pitch Video Script and Shot List
+# Echo Kickoff — Final Pitch Script and Capture Guide
 
-Use this for the IUT 12th ICT FEST 2026 GameJam pitch/gameplay video. Keep the final video focused on gameplay, features, and theme adaptation. Avoid implementation details.
+Target length: **90–105 seconds**. Focus on the player's decisions, visible features, and the theme adaptation. Do not explain code or implementation.
 
 ## YouTube title
 
-`[TEAM NAME]_Echo Kickoff | IUT_ICT_FEST_2026 GameJam Pitch`
-
-If the organizer requires exact rulebook naming, use:
-
-`[TEAM NAME]_Echo Kickoff | IUT_ICT_FEST_2026`
+`[TEAM NAME] — Echo Kickoff | IUT_ICT_FEST_2026 GameJam Pitch`
 
 ## YouTube description
 
-Echo Kickoff is a 2D top-down stealth-horror game made for the IUT 12th ICT FEST 2026 GameJam.
+Echo Kickoff is a 2D top-down stealth-horror campaign where sound is both sight and danger.
+
+Every Echo Pulse reveals the facility, but the same sound alerts the Listeners hunting the rescuer. Restore the reactor network, use limited decoys to redirect danger, and escape through the powered extraction gate.
 
 Theme: KICKOFF
 
-Theme adaptation: every Echo Pulse kicks off vision for the player and danger from the enemy. The pulse reveals the dark facility, but it also alerts sound-sensitive Listeners.
+Theme adaptation: every Echo Pulse kicks off vision for the player and danger from the enemy.
 
-Play objective: restore three reactor relays, use sound carefully, misdirect enemies with limited decoys, and reach extraction.
+Built with Godot 4.7, GDScript, and the Compatibility renderer.
 
-Engine: Godot 4.7 / GDScript / Compatibility renderer
+Play: https://echo-kickoff.vercel.app
 
-Repository: https://github.com/mohammad30395/Echo-Kickoff.git
+Repository: https://github.com/mohammad30395/Echo-Kickoff
 
-Team: [TEAM NAME]
+Team members:
 
-Members:
-
-- [Member 1 full name]
-- [Member 2 full name, if applicable]
-- [Member 3 full name, if applicable]
+- Mohammad Mahmudul Kabir Fahmid
+- Shashwata Nandi
+- Animesh Singha Ayon
 
 #IUT_ICT_FEST_2026_GAMEJAM
 
-## Pitch script
+## Spoken pitch
 
-Target length: 90-120 seconds.
+### 0:00–0:08 — Hook
 
-### 0:00-0:10 — Opening hook
+“In Echo Kickoff, the fastest way to see is also the fastest way to be found.”
 
-“In Echo Kickoff, seeing is dangerous. The facility is dark, and every Echo Pulse gives you vision — but it also tells the enemy where to go.”
+### 0:08–0:20 — Premise and theme
 
-### 0:10-0:25 — Core mechanic and theme
+“You are a rescue operative trapped inside a failing reactor facility. Our KICKOFF theme adaptation is simple: every Echo Pulse kicks off vision for the player and danger from the enemy.”
 
-“The GameJam theme is KICKOFF. Our interpretation is that every pulse kicks off two things at once: a temporary reveal for the player, and a threat response from the Listeners.”
+### 0:20–0:36 — Echo and Listener response
 
-### 0:25-0:40 — Pulse demonstration
+“One pulse exposes distant walls, hazards, objectives, and enemy silhouettes. But Listeners hunt through sound, so that same pulse gives them a location to investigate. Their movement and alert animation makes every state change readable.”
 
-“Here, one pulse reveals walls, hazards, doors, and the path forward. But the sound also reaches a Listener, which starts investigating the pulse location.”
+### 0:36–0:50 — Noise choices and decoy
 
-### 0:40-0:55 — Stealth decision-making
+“Footsteps are quiet and frequent. Echo is broad and risky. A decoy is targeted but limited, letting us pull a Listener away and create a safer route.”
 
-“The player has to remember the fading environment, move carefully, and decide when information is worth the noise. Footsteps are quieter, but repeated sound can still create risk.”
+### 0:50–1:05 — Reactor objective and sealed gate
 
-### 0:55-1:10 — Decoy demonstration
+“The extraction gate seals behind the rescuer and stays locked. Every reactor repair restores more facility power, but the activation is extremely loud and creates a new moment of pressure.”
 
-“The sound decoy gives the player a limited way to redirect danger. It is targeted and useful, but charges are limited, so it cannot replace careful pulse timing.”
+### 1:05–1:19 — Campaign escalation
 
-### 1:10-1:30 — Relay objective
+“Across three operations, the layouts grow larger, the reactor count rises, and Reactor Wardens turn sound trails into new threats. The same rules stay consistent while the decisions become harder.”
 
-“The goal is to restore three reactor relays. Relay activation is loud, so every objective creates a high-risk moment and forces the player to escape or misdirect the Listener.”
+### 1:19–1:32 — Extraction
 
-### 1:30-1:45 — Extraction and finish
+“Only after the full grid is online does the gate power up and open. Crossing it completes the operation and unlocks the next challenge.”
 
-“After all relays are active, extraction unlocks. The final challenge is returning through the dark facility with the enemies still reacting to sound.”
+### 1:32–1:40 — Closing line
 
-### 1:45-2:00 — Closing
+“Echo Kickoff asks one question again and again: is seeing the way forward worth telling the darkness where you are?”
 
-“Echo Kickoff is built around one repeated choice: make sound to survive, or stay quiet and remain blind.”
+## Shot list
 
-## Pitch-video shot list
+| Time | Capture | What the viewer must understand |
+|---|---|---|
+| 0:00–0:08 | Start inside the dark Easy facility, then immediately pulse | The hook appears visually in the first 10 seconds. |
+| 0:08–0:20 | Pulse ring and luminous world response | Echo creates information and directly represents KICKOFF. |
+| 0:20–0:30 | Listener switches from patrol to investigate | The same pulse starts danger; keep the Listener and its alert animation visible. |
+| 0:30–0:40 | Rescuer moves while the reveal fades | Navigation uses short visual memory. |
+| 0:40–0:50 | Aim, throw, and land one decoy | The player has a targeted, limited alternative to Echo. |
+| 0:50–1:02 | Listener diverts to the decoy | The decoy meaningfully changes the route. |
+| 1:02–1:14 | Hold E at a reactor; show the power/HUD response | Reactor repair is clear, loud, and risky. |
+| 1:14–1:22 | Brief cuts of Medium and Hard | Show campaign escalation without explaining implementation. |
+| 1:22–1:34 | Final reactor, gate opening, and crossing | The locked-door rule and extraction payoff are proven. |
+| 1:34–1:40 | Results screen and title card | End on the complete loop and game identity. |
 
-Capture in this order unless a better live route is easier.
+## Recording instructions
 
-| Order | Shot | Purpose |
-|---:|---|---|
-| 1 | Main menu title screen | Establish title and jam identity. |
-| 2 | Start game and first dark corridor | Show darkness and player vulnerability. |
-| 3 | First Echo Pulse | Hook: one pulse reveals the world. |
-| 4 | Listener reacting to pulse | Prove the pulse also alerts danger. |
-| 5 | Player navigating by fading reveal | Show stealth memory and movement. |
-| 6 | Interaction prompt at relay | Show objective clarity. |
-| 7 | Relay activation | Show loud objective event and state change. |
-| 8 | Listener pressure after relay | Show relay activation risk. |
-| 9 | Decoy aim/throw/impact | Show tactical alternative. |
-| 10 | Listener investigating decoy | Prove decoy meaningfully redirects danger. |
-| 11 | Objective HUD after relay progress | Show three-relay structure. |
-| 12 | Final extraction terminal unlocked | Show end goal. |
-| 13 | Victory screen | Confirm complete game loop. |
+1. Use the current release build, not a debug scene or editor viewport.
+2. Record at 1920×1080 or 1280×720, 60 FPS if the machine remains stable.
+3. Use Chromium or the Windows build after confirming audio starts from the Start click.
+4. Turn off unrelated notifications, hide the mouse cursor when it is not demonstrating aim, and close overlays that show private information.
+5. Use Easy for the continuous gameplay route. Capture Medium and Hard as separate short clips after they are legitimately unlocked.
+6. Record clean gameplay first, then record narration separately in a quiet room.
+7. Keep game effects audible beneath the voice. Lower ambience if it masks speech; do not mute the Echo, Listener alert, decoy impact, reactor, or gate cues.
+8. Cut travel time, retries, loading pauses, and menu hesitation. Never speed up a shot so much that the mechanic becomes unclear.
+9. Add short on-screen labels only where useful: `ECHO REVEALS + ALERTS`, `DECOY`, `REACTOR ONLINE`, and `EXTRACTION OPEN`.
+10. Watch the exported video once with sound and once muted. The gameplay story should remain understandable both ways.
 
-## Capture checklist
+## Presentation suggestions
 
-- [ ] Opening hook occurs in the first 10 seconds.
-- [ ] Video clearly states the theme: KICKOFF.
-- [ ] Video directly says: “Every echo pulse kicks off vision and danger.”
-- [ ] One pulse visibly reveals the environment.
-- [ ] The same pulse visibly or audibly alerts a Listener.
-- [ ] A sound decoy is thrown and changes enemy behavior.
-- [ ] At least one relay activation is shown.
-- [ ] Extraction or victory is shown.
-- [ ] No implementation details dominate the pitch.
-- [ ] YouTube title includes `IUT_ICT_FEST_2026`.
-- [ ] YouTube description includes `#IUT_ICT_FEST_2026_GAMEJAM`.
+- Speak calmly at roughly 125–140 words per minute; tension works better than rushing.
+- Put the strongest Echo/Listener proof first. Judges should understand the central mechanic before seeing feature breadth.
+- Let each demonstrated action finish before cutting away, especially the decoy investigation and gate opening.
+- Use direct language: “the player chooses,” “the Listener reacts,” and “the gate opens.”
+- Avoid listing technical systems, file names, algorithms, or test counts in the voice-over.
+- End with the question in the closing line, then hold the logo for two seconds.
 
+## Final capture checklist
+
+- [ ] Opening hook lands within 10 seconds.
+- [ ] One Echo Pulse visibly reveals the world.
+- [ ] The same pulse visibly alerts a Listener.
+- [ ] Procedural Listener movement/alert animation is visible.
+- [ ] One decoy lands and redirects danger.
+- [ ] One reactor repair and its loud consequence are shown.
+- [ ] The entry/extraction gate is shown locked before full power.
+- [ ] The gate opens only after every required reactor is restored.
+- [ ] Extraction crossing and the results screen are shown.
+- [ ] Title contains `IUT_ICT_FEST_2026`.
+- [ ] Description contains `#IUT_ICT_FEST_2026_GAMEJAM`.
+- [ ] Team member names and repository link are correct.
+- [ ] No debug visuals, editor windows, private notifications, or implementation explanations appear.

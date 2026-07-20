@@ -10,12 +10,13 @@ func _ready() -> void:
 	idle_color = Color(0.62, 0.28, 0.92, 1.0)
 	alert_color = Color(1.0, 0.55, 0.14, 1.0)
 	chase_color = Color(1.0, 0.16, 0.2, 1.0)
-	set_process(true)
 
 
-func _process(delta: float) -> void:
+func advance_animation(delta: float) -> void:
+	super.advance_animation(delta)
 	_rotation_phase = fmod(_rotation_phase + maxf(delta, 0.0) * 1.6, TAU)
-	queue_redraw()
+	if get_effective_visibility_strength() > 0.001:
+		queue_redraw()
 
 
 func _draw() -> void:

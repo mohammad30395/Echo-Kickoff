@@ -68,7 +68,7 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.82, 0.88, 1)
 theme_override_font_sizes/font_size = 16
-text = "IUT 12TH ICT FEST 2026 // KICKOFF"
+text = "2D STEALTH-HORROR // SOUND IS SIGHT AND DANGER"
 horizontal_alignment = 1
 
 [node name="Logo" type="TextureRect" parent="Center/Content"]
@@ -99,14 +99,14 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "START // CAMPAIGN"
+text = "START CAMPAIGN"
 
 [node name="LevelSelectButton" type="Button" parent="Center/Content/ButtonRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
-text = "LEVEL SELECT"
+text = "SELECT LEVEL"
 
 [node name="HowToPlayButton" type="Button" parent="Center/Content/ButtonRow"]
 unique_name_in_owner = true
@@ -232,5 +232,5 @@ text = "BACK"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.48, 0.54, 1)
 theme_override_font_sizes/font_size = 14
-text = "Start enables browser audio • Tab selects mix controls"
+text = "Mouse or keyboard • Tab changes focus • Enter confirms"
 horizontal_alignment = 1

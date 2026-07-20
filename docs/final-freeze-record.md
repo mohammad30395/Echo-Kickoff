@@ -17,9 +17,9 @@ Team name: **[TEAM NAME]**
 
 Registered members:
 
-1. **[Member 1 full name]** — **[Student ID / registration identifier]**
-2. **[Member 2 full name, if applicable]** — **[Student ID / registration identifier]**
-3. **[Member 3 full name, if applicable]** — **[Student ID / registration identifier]**
+1. **Mohammad Mahmudul Kabir Fahmid** — **[Student ID / registration identifier]**
+2. **Shashwata Nandi** — **[Student ID / registration identifier]**
+3. **Animesh Singha Ayon** — **[Student ID / registration identifier]**
 
 Team contact: **[Contact]**
 
@@ -140,4 +140,3 @@ Demo route:
 6. Activate one relay.
 7. Show objective progress.
 8. If time allows, show extraction/victory or a prepared clip.
-

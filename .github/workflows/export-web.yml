@@ -45,7 +45,8 @@ jobs:
             tests/human_rescue_operative_test.gd \
             tests/tutorial_revision_test.gd \
             tests/phase_14_ux_test.gd \
-            tests/phase_15_release_candidate_test.gd; do
+            tests/phase_15_release_candidate_test.gd \
+            tests/submission_polish_test.gd; do
             godot --headless --path . --script "${test}"
           done
 

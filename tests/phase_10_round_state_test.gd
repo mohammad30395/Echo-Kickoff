@@ -45,7 +45,7 @@ func _run() -> void:
 		_finish()
 		return
 	await _test_unique_audio_and_pause_safety()
-	await _test_pause_escape_to_main_menu()
+	await _test_pause_escape_resume_and_menu_exit()
 	await _start_new_game()
 	if not _bind_round():
 		_finish()
@@ -174,17 +174,25 @@ func _test_unique_audio_and_pause_safety() -> void:
 	print("ROUND_PAUSE_OK | timers, cooldown, projectile, and Listener freeze/resume without duplicate overlay or audio")
 
 
-func _test_pause_escape_to_main_menu() -> void:
+func _test_pause_escape_resume_and_menu_exit() -> void:
 	event_bus.emit_signal(&"pause_requested")
 	var pause_overlay := game_manager.call(&"get_pause_overlay") as Control
-	_expect(pause_overlay != null and paused, "Escape/pause overlay was not available for safe exit.")
+	_expect(pause_overlay != null and paused, "Pause overlay was not available for safe resume.")
 	_send_action(&"pause")
+	await _process_frames(2)
+	_expect(current_scene != null and current_scene.name == &"GameWorld", "Pause Escape did not remain in Game World.")
+	_expect(not paused and game_manager.call(&"get_pause_overlay") == null, "Pause Escape did not resume and clear its overlay.")
+	_expect(audio_manager.call(&"get_round_audio_player_count") > 0, "Pause Escape unexpectedly stopped round audio.")
+	event_bus.emit_signal(&"pause_requested")
+	pause_overlay = game_manager.call(&"get_pause_overlay") as Control
+	var main_menu_button := pause_overlay.get_node(^"%MainMenuButton") as Button
+	main_menu_button.pressed.emit()
 	await _wait_for_manager_idle()
-	_expect(current_scene != null and current_scene.name == &"MainMenu", "Pause escape did not reach Main Menu.")
-	_expect(not paused and game_manager.call(&"get_pause_overlay") == null, "Pause escape left the tree paused or retained its overlay.")
-	_expect(audio_manager.call(&"get_round_audio_player_count") == 0, "Pause escape retained round audio.")
-	_expect(get_nodes_in_group(&"active_echo_pulse").is_empty() and get_nodes_in_group(&"active_sound_decoy").is_empty(), "Pause escape retained transient gameplay nodes.")
-	print("ROUND_MENU_EXIT_OK | paused round exits through fade to an unpaused clean Main Menu")
+	_expect(current_scene != null and current_scene.name == &"MainMenu", "Pause Main Menu button did not reach Main Menu.")
+	_expect(not paused and game_manager.call(&"get_pause_overlay") == null, "Pause menu exit left the tree paused or retained its overlay.")
+	_expect(audio_manager.call(&"get_round_audio_player_count") == 0, "Pause menu exit retained round audio.")
+	_expect(get_nodes_in_group(&"active_echo_pulse").is_empty() and get_nodes_in_group(&"active_sound_decoy").is_empty(), "Pause menu exit retained transient gameplay nodes.")
+	print("ROUND_MENU_EXIT_OK | Escape resumes; explicit Main Menu exits through fade with clean transient state")
 
 
 func _test_caught_feedback_and_clean_restart() -> void:

@@ -46,7 +46,7 @@ func _configure_resonance_labs() -> void:
 		Rect2(1088, -1420, 30, 430), Rect2(1088, -720, 30, 410),
 		Rect2(1088, 300, 30, 360), Rect2(1088, 930, 30, 490),
 		# Return/extraction throat near the starting side.
-		Rect2(-2420, 1040, 32, 528), Rect2(-1980, 1040, 32, 528),
+		Rect2(-2316, 1040, 32, 528), Rect2(-2116, 1040, 32, 528),
 	]
 	prop_rects = [
 		Rect2(-2390, -310, 150, 86), Rect2(-2020, -300, 150, 86),
@@ -117,7 +117,7 @@ func _configure_blackout_core() -> void:
 		Rect2(-1240, -1760, 30, 420), Rect2(1180, -1760, 30, 410),
 		Rect2(-750, 1330, 30, 430), Rect2(1240, 1320, 30, 440),
 		# Extraction throat on the outer southwest ring.
-		Rect2(-2920, 1420, 32, 548), Rect2(-2480, 1420, 32, 548),
+		Rect2(-2816, 1420, 32, 548), Rect2(-2616, 1420, 32, 548),
 	]
 	prop_rects = [
 		Rect2(-2890, -960, 150, 110), Rect2(-2870, 180, 150, 110),

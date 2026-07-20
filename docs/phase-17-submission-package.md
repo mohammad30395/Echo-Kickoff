@@ -62,7 +62,7 @@ Source documents reviewed:
 - [ ] Copy the full description from `docs/itch-page-copy.md`.
 - [ ] Copy the How to Play and Controls sections.
 - [ ] Replace `[TEAM NAME]`.
-- [ ] Replace member placeholders with registered team member names and IDs.
+- [ ] Confirm Mohammad Mahmudul Kabir Fahmid, Shashwata Nandi, and Animesh Singha Ayon match the registered roster; fill their IDs.
 - [ ] Add repository URL: `https://github.com/mohammad30395/Echo-Kickoff.git`.
 - [ ] Verify the repository is public from a logged-out browser session.
 - [ ] Add asset credits.
@@ -104,4 +104,3 @@ This is useful for previewing, but the official jam submission should still use 
 **PASS**
 
 The requested submission copy, pitch script, video shot list, YouTube metadata, final submission checklist, freeze checklist, and onsite checklist are prepared. Remaining work is external submission execution: replacing placeholders, uploading builds/video, verifying public visibility, and freezing the repository after the official deadline.
-

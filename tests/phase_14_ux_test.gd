@@ -67,7 +67,10 @@ func _test_main_menu_help_credits_and_settings() -> void:
 	credits.pressed.emit()
 	await process_frame
 	_expect(info_panel.visible and info_title.text == "CREDITS", "Credits panel did not open.")
-	_expect(info_body.text.contains("Original jam") and info_body.text.contains("No third-party"), "Credits do not state original asset provenance.")
+	_expect(
+		info_body.text == "Mohammad Mahmudul Kabir Fahmid\nShashwata Nandi\nAnimesh Singha Ayon",
+		"Credits must contain only the three registered team-member names.",
+	)
 	close_info.pressed.emit()
 	await process_frame
 	_expect(not info_panel.visible, "Info panel did not close.")

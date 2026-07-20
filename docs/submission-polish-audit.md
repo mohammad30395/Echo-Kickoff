@@ -1,0 +1,96 @@
+# Echo Kickoff — Submission Polish Audit
+
+Date: 2026-07-20
+Result: **PASS**
+
+## Scope
+
+This audit covers the final requested polish pass: Listener animation, extraction-door mission flow, level containment, player-facing copy, menu usability, credits, pitch guidance, and repository presentation. No new gameplay feature was added.
+
+## Corrected defects
+
+### Extraction door
+
+- Fixed a release-critical Web shortcut that opened the extraction gate by default.
+- The compact entrance door now closes behind the rescuer at mission start.
+- Its collision remains active while the reactor objective is incomplete.
+- It opens only after all three required relays are active; collision is disabled only after the opening animation completes.
+- Any test-only gate override now requires a debug build and an explicit opt-in.
+- Removed the oversized horizontal scale from the gate in Easy, Medium, and Hard.
+
+### Level containment
+
+- Tightened the Medium and Hard extraction throats around the smaller gate.
+- Added physics-backed perimeter sampling across all four outer boundaries in every campaign level.
+- Added a real movement/collision test that attempts to cross every locked entrance gate.
+
+### Listener presentation
+
+- Replaced the static Listener drawing with a procedural, animation-independent body.
+- Added deterministic gait, limb swing, movement bob, idle breathing, hearing-spine response, chase presentation, and attack lunge.
+- Animation advances through the Listener's existing physics update, allowing hidden revealables to keep their sleep/performance behaviour.
+- The Reactor Warden retains its rotating-fin identity while using the shared animation base.
+
+### UI and copy
+
+- Added a global procedural Godot UI theme with distinct normal, hover, pressed, focus, and disabled states.
+- Changed the main action to `START CAMPAIGN` and clarified level selection and keyboard/mouse hints.
+- `Esc` now resumes from Pause; Main Menu remains an explicit button action.
+- Removed the player-facing festival banner.
+- Credits now contain only:
+  - Mohammad Mahmudul Kabir Fahmid
+  - Shashwata Nandi
+  - Animesh Singha Ayon
+
+## Release safeguards
+
+- Production campaign setup disables pulse and Listener debug input/visuals.
+- The release HUD no longer advertises the F2 pulse-debug shortcut.
+- The main-menu URL level override is unavailable outside debug builds.
+- The Web export workflow now runs the submission-polish regression test before refreshing deployment artifacts.
+
+## Verification
+
+### Automated Godot suite
+
+- Godot version: 4.7 stable.
+- Result: **24/24 test scripts passed**.
+- The strict rerun rejected any log containing `WARNING:`, `SCRIPT ERROR:`, or `ERROR:`; all 24 logs were clean.
+- Coverage includes Phase 01–15, campaign expansion, player/rescuer animation, Listener AI, reveal performance, objectives, decoy, round state, UX, visibility, joystick coexistence, visual passes, containment, and the new submission-polish regression suite.
+- A stale Phase 8 assertion against the removed terminal architecture was updated to validate the physical gate, eliminating two previously masked script errors.
+- GDScript import/editor parse completed without warnings or broken references.
+
+### Fresh release exports
+
+| Target | Result | Evidence |
+|---|---|---|
+| Web, Compatibility, single-threaded | PASS | `index.html`, PCK, WASM and support files generated |
+| Windows Desktop | PASS | release EXE and PCK generated |
+
+The fresh Web and Windows PCK files are both 749,328 bytes and share SHA-256:
+
+`b8e99bf26aadf61e4f76e857afc4500e1092b7837e2dcd44897a2bb96e7f6861`
+
+### Browser smoke
+
+- Chromium loaded the fresh release export at 1280×720 with zero subscribed page/runtime/console errors.
+- Main menu, themed button states, exact Credits roster, Start Campaign, closed entrance door, Pause, `Esc` resume, and gameplay HUD were visually checked.
+- A live resize to 1024×640 kept the canvas and HUD inside the browser boundary.
+- Firefox headless loaded the same release export through the Godot Web splash without process failure. Phase 15 remains the latest full interactive Firefox evidence.
+
+## Submission materials
+
+- `README.md` is now a concise public/judge-facing project overview with gameplay, campaign, controls, technology, compliance, verification, export, and team sections.
+- `docs/pitch-script.md` contains a 90–105 second presentation speech, shot list, recording instructions, delivery suggestions, YouTube title, and required hashtag.
+- itch.io and freeze/submission documents were aligned with the three-level campaign and exact requested roster.
+
+## Known non-breaking notes
+
+- Procedural visuals intentionally avoid external sprite assets.
+- The optional virtual joystick is an accessibility/movement aid; keyboard and mouse remain fully supported.
+- Final Windows hardware execution and the official itch.io/YouTube form submissions still require a team member on the target machine/accounts.
+- The tracked Web build is regenerated by GitHub Actions after this source commit is pushed to `main`.
+
+## Verdict
+
+**PASS** — the requested defects and presentation issues are corrected, every automated regression test passes, and fresh Web and Windows release exports complete successfully.

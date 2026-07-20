@@ -69,7 +69,6 @@ relay_id = &"G"
 [node name="ExtractionGate" parent="." instance=ExtResource("8_gate")]
 unique_name_in_owner = true
 position = Vector2(-2700, 1480)
-scale = Vector2(1.9, 1)
 
 [node name="ListenerWestNorth" parent="." instance=ExtResource("4_listener")]
 position = Vector2(-2100, -900)

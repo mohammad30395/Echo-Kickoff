@@ -8,11 +8,11 @@ A 2D stealth-horror game where every echo pulse reveals the dark facility and al
 
 ## Full game description
 
-**Echo Kickoff** is a short 2D top-down stealth-horror game made for the **IUT 12th ICT FEST 2026 GameJam** theme: **KICKOFF**.
+**Echo Kickoff** is a 2D top-down stealth-horror campaign made for the **IUT 12th ICT FEST 2026 GameJam** theme: **KICKOFF**.
 
-The facility is almost completely dark. You cannot safely see the world unless you make sound. Each Echo Pulse briefly reveals walls, hazards, relays, doors, extraction routes, and enemy silhouettes — but the same pulse also gives the Listeners a place to investigate.
+The failing facility provides just enough local visibility to move, but distant routes and threats remain uncertain. Each Echo Pulse briefly reveals walls, hazards, reactors, extraction routes, and enemy silhouettes — but the same pulse also gives the Listeners a place to investigate.
 
-Restore three reactor relays, manage the danger created by your own noise, use limited sound decoys to misdirect enemies, and reach extraction before the Listeners catch you.
+Complete three escalating operations, restore each reactor network, manage the danger created by your own noise, use limited sound decoys to misdirect enemies, and reach extraction before the Listeners catch you.
 
 Theme adaptation: **Every echo pulse kicks off vision for the player and danger from the enemy.**
 
@@ -21,11 +21,11 @@ Theme adaptation: **Every echo pulse kicks off vision for the player and danger 
 1. Move through the dark facility and use short memory from each fading Echo Pulse.
 2. Pulse only when information is worth the risk.
 3. Watch and listen for Listeners reacting to sound.
-4. Activate all three reactor relays.
+4. Activate every required reactor in the current operation.
 5. Use sound decoys to pull Listeners away from dangerous routes.
 6. Return to extraction after all relays are online.
 
-Win by activating all three relays and completing extraction. Lose if a Listener catches you.
+Win by restoring the full grid and crossing the powered extraction gate. Lose if a Listener catches you.
 
 ## Controls
 
@@ -47,6 +47,7 @@ Win by activating all three relays and completing extraction. Lose if a Listener
 - Screen-shake toggle.
 - Text and icon feedback for critical gameplay states.
 - Keyboard and mouse support.
+- Optional on-screen virtual joystick that never replaces the complete keyboard/mouse controls.
 
 ## Team and member information
 
@@ -54,9 +55,9 @@ Team name: **[TEAM NAME]**
 
 Members:
 
-1. **[Member 1 full name]** — **[Student ID / registration identifier]**
-2. **[Member 2 full name, if applicable]** — **[Student ID / registration identifier]**
-3. **[Member 3 full name, if applicable]** — **[Student ID / registration identifier]**
+1. **Mohammad Mahmudul Kabir Fahmid** — **[Student ID / registration identifier]**
+2. **Shashwata Nandi** — **[Student ID / registration identifier]**
+3. **Animesh Singha Ayon** — **[Student ID / registration identifier]**
 
 Contact: **[Team contact email/Discord/phone if required by organizers]**
 
@@ -106,4 +107,3 @@ No third-party game assets, copyrighted game material, stock sound packs, extern
 ## Suggested itch.io tags
 
 `stealth`, `horror`, `top-down`, `godot`, `gamejam`, `web`, `keyboard-and-mouse`, `2d`
-

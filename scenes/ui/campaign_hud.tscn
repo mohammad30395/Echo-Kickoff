@@ -25,6 +25,7 @@ mouse_filter = 2
 script = ExtResource("10_campaign_hud")
 
 [node name="PulseCooldownHud" parent="HUD" instance=ExtResource("1_pulse")]
+show_debug_hint = false
 [node name="ObjectiveHud" parent="HUD" instance=ExtResource("2_objective")]
 [node name="InteractionPromptHud" parent="HUD" instance=ExtResource("3_interaction")]
 [node name="OnboardingHud" parent="HUD" instance=ExtResource("4_onboarding")]

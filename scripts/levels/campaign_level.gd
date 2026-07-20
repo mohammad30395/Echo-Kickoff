@@ -38,8 +38,13 @@ func _finish_campaign_setup() -> void:
 	if campaign_hud != null:
 		campaign_hud.apply_level_theme(level_id)
 	var listeners := get_listeners()
+	var pulse_controller := player.get_node(^"%PulseController") as PlayerPulseController
+	pulse_controller.allow_debug_input = false
+	pulse_controller.set_debug_visuals(false)
 	for listener: Listener in listeners:
 		listener.apply_tuning(campaign_definition.tuning)
+		listener.allow_debug_input = false
+		listener.set_debug_enabled(false)
 	var objective_hud := find_child("ObjectiveHud", true, false) as ObjectiveHud
 	if objective_hud != null:
 		objective_hud.bind(mission)
@@ -141,15 +146,15 @@ func get_level_bounds() -> Rect2:
 func _should_open_gate_for_testing() -> bool:
 	if testing_gate_open:
 		return true
+	if not OS.is_debug_build():
+		return false
 	if not OS.has_feature("web"):
 		return OS.get_cmdline_user_args().has("--test-gates-open")
 	var browser_window: JavaScriptObject = JavaScriptBridge.get_interface("window")
 	if browser_window == null:
-		return true
+		return false
 	var query := String(browser_window.location.search)
-	# Browser builds are currently kept extraction-open for rapid campaign QA.
-	# The opt-out preserves a way to verify the locked restoration sequence.
-	return not query.contains("test_gates=locked")
+	return query.contains("test_gates=open")
 
 
 func _configure_player(player: TopDownPlayer) -> void:

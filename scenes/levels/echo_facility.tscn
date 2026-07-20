@@ -74,7 +74,6 @@ relay_id = &"C"
 unique_name_in_owner = true
 position = Vector2(-3290, 0)
 rotation = 1.5707963
-scale = Vector2(1.9, 1)
 
 [node name="Listener" parent="." instance=ExtResource("6_listener")]
 unique_name_in_owner = true

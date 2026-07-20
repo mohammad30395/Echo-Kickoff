@@ -4,10 +4,10 @@
 [ext_resource type="Script" path="res://scripts/interactions/extraction_gate_visual.gd" id="2_visual"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_blocker"]
-size = Vector2(150, 100)
+size = Vector2(168, 88)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
-size = Vector2(180, 84)
+size = Vector2(144, 72)
 
 [node name="ExtractionGate" type="Node2D"]
 script = ExtResource("1_gate")

@@ -17,6 +17,7 @@ var _sectors: Array[FacilitySector] = []
 var _world_modulate: CanvasModulate
 var _overlay: PowerRestorationOverlay
 var _final_sequence_started: bool = false
+var _world_tween: Tween
 
 
 func bind(
@@ -55,8 +56,10 @@ func _apply_power_ratio(next_ratio: float) -> void:
 		sector.set_power_ratio(power_ratio)
 	if _world_modulate != null:
 		var target := unpowered_modulate.lerp(powered_modulate, power_ratio)
-		var tween := create_tween()
-		tween.tween_property(_world_modulate, ^"color", target, step_duration)
+		if _world_tween != null and _world_tween.is_valid():
+			_world_tween.kill()
+		_world_tween = create_tween()
+		_world_tween.tween_property(_world_modulate, ^"color", target, step_duration)
 	power_level_changed.emit(power_ratio)
 
 
