@@ -141,6 +141,10 @@ export_presets.cfg   Windows and single-threaded Web release presets
 project.godot        Godot project and input configuration
 ```
 
-## Credits and license notes
+## Credits and license
+
+Echo Kickoff is released under the [MIT License](LICENSE).
+
+Copyright (c) 2026 Mohammad Mahmudul Kabir Fahmid.
 
 All game code, procedural visuals, UI resources, SVG icons, branding, and synthesized audio were created for Echo Kickoff. Godot Engine is used under its own license. See [the asset ledger](docs/04-asset-ledger.md) for the full provenance record and [known issues](docs/known-issues.md) for current non-breaking limitations.
